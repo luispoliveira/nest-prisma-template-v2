@@ -1,15 +1,24 @@
-import { configuration } from './config/configuration';
+import {
+  ApolloServerPluginLandingPageLocalDefault,
+  ApolloServerPluginLandingPageProductionDefault,
+} from '@apollo/server/plugin/landingPage/default';
+import { ApolloDriver } from '@nestjs/apollo';
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { ThrottlerModule } from '@nestjs/throttler';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { validationSchema } from './config/validation';
+import { APP_GUARD } from '@nestjs/core';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { PrismaModule } from 'nestjs-prisma';
-import { LoggerUtil } from './common/utils/logger.utils';
+import { AppController } from './app.controller';
+import { AppResolver } from './app.resolver';
+import { AppService } from './app.service';
+import { AuthModule } from './auth/auth.module';
+import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { EnvironmentEnum } from './common/enum/environment.enum';
-import { Prisma } from '@prisma/client';
-
+import { LoggerUtil } from './common/utils/logger.utils';
+import { configuration } from './config/configuration';
+import { validationSchema } from './config/validation';
+import { UsersModule } from './users/users.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -36,8 +45,35 @@ import { Prisma } from '@prisma/client';
       },
       inject: [ConfigService],
     }),
+    GraphQLModule.forRoot({
+      debug: process.env['NODE_ENV'] === EnvironmentEnum.DEVELOPMENT,
+      playground: false,
+      driver: ApolloDriver,
+      useGlobalPrefix: true,
+      plugins:
+        process.env['NODE_ENV'] === EnvironmentEnum.PRODUCTION
+          ? [ApolloServerPluginLandingPageProductionDefault()]
+          : [ApolloServerPluginLandingPageLocalDefault()],
+      subscriptions: {
+        'graphql-ws': true,
+        'subscriptions-transport-ws': true,
+      },
+      persistedQueries: false,
+      autoSchemaFile: true,
+      sortSchema: true,
+    }),
+    AuthModule,
+    UsersModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+
+    AppService,
+    AppResolver,
+  ],
 })
 export class AppModule {}
