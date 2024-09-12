@@ -1,0 +1,25 @@
+services:
+  # nest-api:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: nest-api
+  #   restart: always
+  #   ports:
+  #     - '3000:3000'
+  #   depends_on:
+  #     - nest-postgres
+  #   env_file:
+  #     - .env
+
+  nest-postgres:
+    image: postgres:16.4
+    container_name: nest-postgres
+    restart: always
+    ports:
+      - '5432:5432'
+    env_file:
+      - ./docker/postgres.env
+    volumes:
+      - ${DOCKER_POSTGRES_PATH}:/var/lib/postgresql/data
+

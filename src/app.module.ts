@@ -3,8 +3,12 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { validationSchema } from './config/validation';
+import { PrismaModule } from 'nestjs-prisma';
+import { LoggerUtil } from './common/utils/logger.utils';
+import { EnvironmentEnum } from './common/enum/environment.enum';
+import { Prisma } from '@prisma/client';
 
 @Module({
   imports: [
@@ -19,6 +23,19 @@ import { validationSchema } from './config/validation';
         limit: 10,
       },
     ]),
+    PrismaModule.forRootAsync({
+      isGlobal: true,
+      useFactory: (config: ConfigService) => {
+        const environment = config.get<EnvironmentEnum>('environment')!;
+
+        return {
+          prismaOptions: {
+            log: LoggerUtil.getPrismaLogger(environment),
+          },
+        };
+      },
+      inject: [ConfigService],
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

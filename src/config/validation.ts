@@ -10,4 +10,6 @@ export const validationSchema = Joi.object({
       EnvironmentEnum.PRODUCTION,
     )
     .default(EnvironmentEnum.DEVELOPMENT),
+  DOCKER_POSTGRES_PATH: Joi.string().required(),
+  DATABASE_URL: Joi.string().required(),
 });
