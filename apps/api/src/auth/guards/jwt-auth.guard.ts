@@ -1,3 +1,4 @@
+import { ContextUtil } from '@app/common';
 import {
   ExecutionContext,
   Injectable,
@@ -8,7 +9,6 @@ import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from '@nestjs/passport';
 import { Observable } from 'rxjs';
-import { ContextUtil } from 'src/common/utils/context.util';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 
 @Injectable()

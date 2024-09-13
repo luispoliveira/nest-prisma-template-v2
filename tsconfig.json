@@ -12,7 +12,20 @@
     "skipLibCheck": true,
     "strictNullChecks": true,
     "noImplicitAny": true,
-    "strictBindCallApply": true
+    "strictBindCallApply": true,
+    "paths": {
+      "@app/common": [
+        "libs/common/src/index.ts"
+      ]
+    }
   },
-  "include": ["src/**/*.ts", "test/**/*.ts"]
+  "include": [
+    "src/**/*.ts",
+    "test/**/*.ts",
+    "apps/**/*.ts",
+    "libs/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

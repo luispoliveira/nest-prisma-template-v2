@@ -1,4 +1,4 @@
-import { EnvironmentEnum } from 'src/common/enum/environment.enum';
+import { EnvironmentEnum } from '@app/common';
 
 export const configuration = () => ({
   environment: process.env.NODE_ENV || EnvironmentEnum.DEVELOPMENT,

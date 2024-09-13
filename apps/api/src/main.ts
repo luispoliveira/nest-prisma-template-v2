@@ -1,11 +1,9 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import helmet from 'helmet';
-import { GQL_APOLLO_HELMET } from './common/helpers/graphql.helper';
-import { ConfigService } from '@nestjs/config';
-import { EnvironmentEnum } from './common/enum/environment.enum';
-import { LoggerUtil } from './common/utils/logger.utils';
+import { EnvironmentEnum, GQL_APOLLO_HELMET, LoggerUtil } from '@app/common';
 import { Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { NestFactory } from '@nestjs/core';
+import helmet from 'helmet';
+import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });

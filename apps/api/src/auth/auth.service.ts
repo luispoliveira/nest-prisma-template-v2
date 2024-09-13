@@ -1,9 +1,8 @@
+import { JwtPayloadType, PasswordUtil } from '@app/common';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
-import { JwtPayloadType } from 'src/common/types/jwt-payload.type';
-import { PasswordUtil } from 'src/common/utils/password.utils';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class AuthService {

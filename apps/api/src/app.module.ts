@@ -14,8 +14,8 @@ import { AppResolver } from './app.resolver';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
-import { EnvironmentEnum } from './common/enum/environment.enum';
-import { LoggerUtil } from './common/utils/logger.utils';
+
+import { EnvironmentEnum, LoggerUtil } from '@app/common';
 import { configuration } from './config/configuration';
 import { validationSchema } from './config/validation';
 import { UsersModule } from './users/users.module';
