@@ -23,6 +23,14 @@ generator nestgraphql {
   emitSingle             = true
 }
 
+generator prismaClassGenerator {
+    provider = "prisma-class-generator"
+    dryRun = false
+    output = "../prisma/__generated__/prisma-class-generator"
+    separateRelationFields = true
+    useNonNullableAssertions = true
+}
+
 
 model User {
   id       Int  @id @default(autoincrement())
