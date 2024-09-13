@@ -1,4 +1,4 @@
-import { EnvironmentEnum, GQL_APOLLO_HELMET, LoggerUtil } from '@app/common';
+import { EnvironmentEnum, GQL_APOLLO_HELMET, LoggerUtil } from '@lib/common';
 import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';

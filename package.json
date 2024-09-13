@@ -12,12 +12,8 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/apps/api/main",
+    "command": "node dist/apps/cli/main",
     "lint": "gts lint",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:cov": "jest --coverage",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./apps/api/test/jest-e2e.json",
     "clean": "gts clean",
     "compile": "tsc",
     "fix": "gts fix",
@@ -47,11 +43,13 @@
     "graphql": "^16.9.0",
     "helmet": "^7.1.0",
     "joi": "^17.13.3",
+    "nestjs-command": "^3.1.4",
     "nestjs-prisma": "^0.23.0",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "0.2.2",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "yargs": "^17.7.2"
   },
   "devDependencies": {
     "@nestjs/cli": "10.4.5",
@@ -63,6 +61,7 @@
     "@types/node": "20.12.7",
     "@types/passport-jwt": "^4.0.1",
     "@types/supertest": "6.0.2",
+    "@types/yargs": "^17.0.33",
     "@typescript-eslint/eslint-plugin": "8.5.0",
     "@typescript-eslint/parser": "8.5.0",
     "eslint": "9.10.0",
@@ -101,7 +100,10 @@
       "<rootDir>/libs/"
     ],
     "moduleNameMapper": {
-      "^@app/common(|/.*)$": "<rootDir>/libs/common/src/$1"
+      "^@lib/common(|/.*)$": "<rootDir>/libs/common/src/$1",
+      "^@lib/prisma(|/.*)$": "<rootDir>/libs/prisma/src/$1",
+      "^@lib/graphql(|/.*)$": "<rootDir>/libs/graphql/src/$1",
+      "^@lib/auth(|/.*)$": "<rootDir>/libs/auth/src/$1"
     }
   },
   "prisma": {

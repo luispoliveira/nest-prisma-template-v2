@@ -1,21 +1,13 @@
-import {
-  ApolloServerPluginLandingPageLocalDefault,
-  ApolloServerPluginLandingPageProductionDefault,
-} from '@apollo/server/plugin/landingPage/default';
-import { ApolloDriver } from '@nestjs/apollo';
+import { JwtAuthGuard } from '@lib/auth/guards/jwt-auth.guard';
+import { GraphqlModule } from '@lib/graphql';
+import { PrismaModule } from '@lib/prisma';
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
-import { GraphQLModule } from '@nestjs/graphql';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { PrismaModule } from 'nestjs-prisma';
 import { AppController } from './app.controller';
-import { AppResolver } from './app.resolver';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
-import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
-
-import { EnvironmentEnum, LoggerUtil } from '@app/common';
 import { configuration } from './config/configuration';
 import { validationSchema } from './config/validation';
 import { UsersModule } from './users/users.module';
@@ -32,36 +24,8 @@ import { UsersModule } from './users/users.module';
         limit: 10,
       },
     ]),
-    PrismaModule.forRootAsync({
-      isGlobal: true,
-      useFactory: (config: ConfigService) => {
-        const environment = config.get<EnvironmentEnum>('environment')!;
-
-        return {
-          prismaOptions: {
-            log: LoggerUtil.getPrismaLogger(environment),
-          },
-        };
-      },
-      inject: [ConfigService],
-    }),
-    GraphQLModule.forRoot({
-      debug: process.env['NODE_ENV'] === EnvironmentEnum.DEVELOPMENT,
-      playground: false,
-      driver: ApolloDriver,
-      useGlobalPrefix: true,
-      plugins:
-        process.env['NODE_ENV'] === EnvironmentEnum.PRODUCTION
-          ? [ApolloServerPluginLandingPageProductionDefault()]
-          : [ApolloServerPluginLandingPageLocalDefault()],
-      subscriptions: {
-        'graphql-ws': true,
-        'subscriptions-transport-ws': true,
-      },
-      persistedQueries: false,
-      autoSchemaFile: true,
-      sortSchema: true,
-    }),
+    PrismaModule.register(),
+    GraphqlModule.register(),
     AuthModule,
     UsersModule,
   ],
@@ -73,7 +37,6 @@ import { UsersModule } from './users/users.module';
     },
 
     AppService,
-    AppResolver,
   ],
 })
 export class AppModule {}

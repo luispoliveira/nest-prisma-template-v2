@@ -1,9 +1,9 @@
-import { ContextUtil } from '@app/common';
+import { ContextUtil } from '@lib/common';
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { User } from '@prisma/client';
+import { LoggedUser } from '../models/user.model';
 
 export const CurrentUser = createParamDecorator(
-  (data, context: ExecutionContext): User => {
+  (data, context: ExecutionContext): LoggedUser => {
     const request = ContextUtil.getRequest(context);
     return request.user;
   },

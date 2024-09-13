@@ -1,7 +1,7 @@
+import { Public } from '@lib/auth';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { User } from '@prisma/client';
 import { AuthService } from './auth.service';
-import { Public } from './decorators/public.decorator';
 import { Login } from './models/login.model';
 
 @Resolver()
