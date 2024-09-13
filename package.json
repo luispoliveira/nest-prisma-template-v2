@@ -7,6 +7,9 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
+    "build:api": "nest build api",
+    "build:cli": "nest build cli",
+    "build:all": "concurrently 'yarn build:api' 'yarn build:cli'",
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
@@ -64,6 +67,7 @@
     "@types/yargs": "^17.0.33",
     "@typescript-eslint/eslint-plugin": "8.5.0",
     "@typescript-eslint/parser": "8.5.0",
+    "concurrently": "^9.0.1",
     "eslint": "9.10.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-prettier": "5.2.1",
