@@ -5,9 +5,11 @@ import {
 import { EnvironmentEnum } from '@lib/common';
 import { ApolloDriver } from '@nestjs/apollo';
 import { DynamicModule, Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
+import { configuration } from './config/configuration';
+import { validationSchema } from './config/validation';
 import { GraphqlResolver } from './graphql.resolver';
-
 @Module({
   providers: [GraphqlResolver],
 })
@@ -17,6 +19,11 @@ export class GraphqlModule {
       global: true,
       module: GraphqlModule,
       imports: [
+        ConfigModule.forRoot({
+          isGlobal: true,
+          load: [configuration],
+          validationSchema,
+        }),
         GraphQLModule.forRoot({
           debug: process.env['NODE_ENV'] === EnvironmentEnum.DEVELOPMENT,
           playground: false,

@@ -1,7 +1,9 @@
 import { EnvironmentEnum, LoggerUtil } from '@lib/common';
 import { DynamicModule, Module } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PrismaModule as Prisma, PrismaService } from 'nestjs-prisma';
+import { configuration } from './config/configuration';
+import { validationSchema } from './config/validation';
 @Module({})
 export class PrismaModule {
   static register(): DynamicModule {
@@ -9,6 +11,11 @@ export class PrismaModule {
       global: true,
       module: PrismaModule,
       imports: [
+        ConfigModule.forRoot({
+          isGlobal: true,
+          load: [configuration],
+          validationSchema,
+        }),
         Prisma.forRootAsync({
           isGlobal: true,
           useFactory: (config: ConfigService) => {
