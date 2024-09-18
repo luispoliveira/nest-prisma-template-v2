@@ -31,6 +31,7 @@ async function bootstrap() {
     .setDescription('API Documentation')
     .setVersion('1.0')
     .addBearerAuth()
+    .addApiKey({ type: 'apiKey', in: 'header', name: 'api-key' })
     .addTag('API')
     .build();
 

@@ -1,9 +1,7 @@
-import { JwtAuthGuard } from '@lib/auth/guards/jwt-auth.guard';
 import { GraphqlModule } from '@lib/graphql';
 import { PrismaModule } from '@lib/prisma';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -30,13 +28,6 @@ import { UsersModule } from './users/users.module';
     UsersModule,
   ],
   controllers: [AppController],
-  providers: [
-    {
-      provide: APP_GUARD,
-      useClass: JwtAuthGuard,
-    },
-
-    AppService,
-  ],
+  providers: [AppService],
 })
 export class AppModule {}

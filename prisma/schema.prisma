@@ -24,18 +24,31 @@ generator nestgraphql {
 }
 
 generator prismaClassGenerator {
-    provider = "prisma-class-generator"
-    dryRun = false
-    output = "../prisma/__generated__/prisma-class-generator"
-    separateRelationFields = true
-    useNonNullableAssertions = true
+  provider                 = "prisma-class-generator"
+  dryRun                   = false
+  output                   = "../prisma/__generated__/prisma-class-generator"
+  separateRelationFields   = true
+  useNonNullableAssertions = true
 }
 
-
 model User {
-  id       Int  @id @default(autoincrement())
+  id       Int     @id @default(autoincrement())
   email    String  @unique
   password String?
 
   @@map("user")
+}
+
+model ApiKey {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+  key         String   @unique
+  isActive    Boolean  @default(true)
+  expiresAt   DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("api_key")
 }
