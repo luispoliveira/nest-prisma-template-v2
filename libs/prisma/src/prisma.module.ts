@@ -20,10 +20,12 @@ export class PrismaModule {
           isGlobal: true,
           useFactory: (config: ConfigService) => {
             const environment = config.get<EnvironmentEnum>('environment')!;
+            const logPrisma = config.get<boolean>('logPrisma')!;
 
             return {
               prismaOptions: {
-                log: LoggerUtil.getPrismaLogger(environment),
+                log: logPrisma ? LoggerUtil.getPrismaLogger(environment) : [],
+                errorFormat: 'pretty',
               },
             };
           },
