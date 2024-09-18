@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { PasswordUtil } from '../src/common/utils/password.utils';
+import { PasswordUtil } from '../libs/common/src';
 const prisma = new PrismaClient();
 
 async function main() {
@@ -20,6 +20,7 @@ async function ensureAdmin() {
     create: {
       email: adminEmail,
       password: await PasswordUtil.hashPassword(adminPassword),
+      isActive: true,
     },
   });
 }

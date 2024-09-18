@@ -26,6 +26,12 @@
       ]
     }
   },
-  "include": ["src/**/*.ts", "test/**/*.ts", "apps/**/*.ts", "libs/**/*.ts"],
+  "include": [
+    "src/**/*.ts",
+    "test/**/*.ts",
+    "apps/**/*.ts",
+    "libs/**/*.ts",
+    "prisma/seed.ts"
+  ],
   "exclude": ["node_modules"]
 }

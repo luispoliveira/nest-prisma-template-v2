@@ -1,5 +1,4 @@
-import { Public } from '@lib/auth';
-import { BaseApiKeyController } from '@lib/auth/controllers/base-api-key.controller';
+import { BaseAuthController } from '@lib/auth/controllers/base-auth.controller';
 import { Controller, Get } from '@nestjs/common';
 import { ApiBearerAuth, ApiHeader } from '@nestjs/swagger';
 import { AppService } from './app.service';
@@ -10,12 +9,12 @@ import { AppService } from './app.service';
 })
 @ApiBearerAuth()
 @Controller()
-export class AppController extends BaseApiKeyController {
+export class AppController extends BaseAuthController {
   constructor(private readonly appService: AppService) {
     super();
   }
 
-  @Public()
+  // @Public()
   @Get()
   getHello(): string {
     return this.appService.getHello();
