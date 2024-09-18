@@ -22,4 +22,9 @@ services:
       - ./docker/postgres.env
     volumes:
       - ${DOCKER_POSTGRES_PATH}:/var/lib/postgresql/data
+  nest-redis:
+    container_name: nest-redis
+    image: redis:7.2.5
+    ports:
+      - '6379:6379'
 

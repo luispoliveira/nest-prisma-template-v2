@@ -1,6 +1,6 @@
-import { NeedsPermissions } from '@lib/auth';
+import { Public } from '@lib/auth';
 import { BaseAuthController } from '@lib/auth/controllers/base-auth.controller';
-import { PermissionEnum } from '@lib/common';
+import { DefaultJob } from '@lib/queue';
 import { Controller, Get } from '@nestjs/common';
 import { ApiBearerAuth, ApiHeader } from '@nestjs/swagger';
 import { AppService } from './app.service';
@@ -12,14 +12,23 @@ import { AppService } from './app.service';
 @ApiBearerAuth()
 @Controller()
 export class AppController extends BaseAuthController {
-  constructor(private readonly appService: AppService) {
+  constructor(
+    private readonly appService: AppService,
+    private readonly _defaultJob: DefaultJob,
+  ) {
     super();
   }
 
-  // @Public()
-  @NeedsPermissions(PermissionEnum.USER_CREATE)
+  @Public()
   @Get()
-  getHello(): string {
+  async getHello(): Promise<string> {
+    await this._defaultJob.addTestJob();
+
+    // wait 5 seconds
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+
+    await this._defaultJob.addAnotherTestJob();
+
     return this.appService.getHello();
   }
 }
