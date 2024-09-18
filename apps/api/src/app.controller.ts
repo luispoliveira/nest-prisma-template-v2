@@ -1,3 +1,4 @@
+import { Public } from '@lib/auth';
 import { BaseApiKeyController } from '@lib/auth/controllers/base-api-key.controller';
 import { Controller, Get } from '@nestjs/common';
 import { ApiBearerAuth, ApiHeader } from '@nestjs/swagger';
@@ -14,7 +15,7 @@ export class AppController extends BaseApiKeyController {
     super();
   }
 
-  // @Public()
+  @Public()
   @Get()
   getHello(): string {
     return this.appService.getHello();
