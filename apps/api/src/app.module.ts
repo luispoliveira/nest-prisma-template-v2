@@ -1,3 +1,4 @@
+import { RbacModule } from '@lib/auth';
 import { GraphqlModule } from '@lib/graphql';
 import { PrismaModule } from '@lib/prisma';
 import { Module } from '@nestjs/common';
@@ -24,6 +25,7 @@ import { UsersModule } from './users/users.module';
     ]),
     PrismaModule.register(),
     GraphqlModule.register(),
+    RbacModule,
     AuthModule,
     UsersModule,
   ],

@@ -1,4 +1,6 @@
+import { NeedsPermissions } from '@lib/auth';
 import { BaseAuthController } from '@lib/auth/controllers/base-auth.controller';
+import { PermissionEnum } from '@lib/common';
 import { Controller, Get } from '@nestjs/common';
 import { ApiBearerAuth, ApiHeader } from '@nestjs/swagger';
 import { AppService } from './app.service';
@@ -15,6 +17,7 @@ export class AppController extends BaseAuthController {
   }
 
   // @Public()
+  @NeedsPermissions(PermissionEnum.USER_CREATE)
   @Get()
   getHello(): string {
     return this.appService.getHello();

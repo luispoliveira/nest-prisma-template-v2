@@ -35,7 +35,6 @@ export class LoggerInterceptor implements NestInterceptor {
     const handlerName = context.getHandler().name;
 
     const username = request.user?.email || 'anonymous';
-    console.log('🚀 ~ LoggerInterceptor ~ request.user:', request.user);
 
     const log = await this._prismaService.log.create({
       data: {
