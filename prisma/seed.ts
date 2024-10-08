@@ -1,53 +1,24 @@
 import { PrismaClient } from '@prisma/client';
-import { PasswordUtil, PermissionEnum, RoleEnum } from '../libs/common/src';
+import { PasswordUtil, RoleEnum } from '../libs/common/src';
+import PermissionSeeder from './seeders/permission.seeder';
+import RoleSeeder from './seeders/role.seeder';
 const prisma = new PrismaClient();
 
 async function main() {
   console.log('Start seeding ...');
-  await createRoles();
-  await createPermissions();
+
+  const roleSeeder = new RoleSeeder(prisma);
+  const permissionSeeder = new PermissionSeeder(prisma);
+
+  await roleSeeder.createRoles();
+  await permissionSeeder.createPermissions();
+
   await ensureAdmin();
 
   console.log('Seeding finished.');
 }
 
-async function createPermissions() {
-  for (const permission of Object.values(PermissionEnum)) {
-    const module = permission.split('_')[0];
-    await prisma.permission.upsert({
-      where: { name: permission },
-      update: {},
-      create: {
-        name: permission,
-        module,
-        isActive: true,
-        Permission2Role: {
-          create: {
-            role: { connect: { name: RoleEnum.ADMIN } },
-            isActive: true,
-            createdBy: 'system',
-            updatedBy: 'system',
-          },
-        },
-      },
-    });
-  }
-}
 
-async function createRoles() {
-  for (const role of Object.values(RoleEnum)) {
-    await prisma.role.upsert({
-      where: { name: role },
-      update: {},
-      create: {
-        name: role,
-        isActive: true,
-        createdBy: 'system',
-        updatedBy: 'system',
-      },
-    });
-  }
-}
 
 async function ensureAdmin() {
   const adminEmail = process.env.ADMIN_EMAIL!;
