@@ -63,6 +63,7 @@
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "0.2.2",
     "rxjs": "^7.8.1",
+    "uuid": "^10.0.0",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
@@ -75,6 +76,7 @@
     "@types/node": "22.7.4",
     "@types/passport-jwt": "^4.0.1",
     "@types/supertest": "6.0.2",
+    "@types/uuid": "^10.0.0",
     "@types/yargs": "^17.0.33",
     "@typescript-eslint/eslint-plugin": "8.8.0",
     "@typescript-eslint/parser": "8.8.0",
@@ -126,5 +128,6 @@
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
-  }
+  },
+  "packageManager": "yarn@1.22.21+sha1.1959a18351b811cdeedbd484a8f86c3cc3bbaf72"
 }

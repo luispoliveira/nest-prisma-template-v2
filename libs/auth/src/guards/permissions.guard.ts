@@ -21,7 +21,7 @@ export class PermissionsGuard implements CanActivate {
     const requestUser = ContextUtil.getRequest(context).user;
     if (!requestUser) return false;
 
-    return await this._rbacService.useHasPermissions(
+    return await this._rbacService.userHasPermissions(
       requestUser.id,
       requiredPermissions,
     );

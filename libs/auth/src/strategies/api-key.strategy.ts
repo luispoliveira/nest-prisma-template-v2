@@ -9,7 +9,7 @@ export class ApiKeyStrategy extends PassportStrategy(
   HeaderAPIKeyStrategy,
   'api-key',
 ) {
-  constructor(private readonly _prismService: PrismaService) {
+  constructor(private readonly _prismaService: PrismaService) {
     super(
       {
         header: 'api-key',
@@ -17,7 +17,7 @@ export class ApiKeyStrategy extends PassportStrategy(
       },
       true,
       async (apiKey: string, done: any) => {
-        const apiKeyRecord = await this._prismService.apiKey.findUnique({
+        const apiKeyRecord = await this._prismaService.apiKey.findUnique({
           where: { key: ApiKeyUtil.encode(apiKey) },
         });
 

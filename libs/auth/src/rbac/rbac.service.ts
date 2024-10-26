@@ -5,7 +5,7 @@ import { PrismaService } from 'nestjs-prisma';
 export class RbacService {
   constructor(private readonly _prismaService: PrismaService) {}
 
-  async useHasPermissions(userId: number, permissions: string[]) {
+  async userHasPermissions(userId: number, permissions: string[]) {
     const userPermissions = await this.getUserPermissions(userId);
 
     return userPermissions.some((permission) =>
