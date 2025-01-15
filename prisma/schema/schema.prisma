@@ -5,7 +5,8 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["prismaSchemaFolder"]
 }
 
 datasource db {
@@ -15,7 +16,7 @@ datasource db {
 
 generator nestgraphql {
   provider               = "node node_modules/prisma-nestjs-graphql"
-  output                 = "../prisma/__generated__/prisma-nestjs-graphql"
+  output                 = "../__generated__/prisma-nestjs-graphql"
   fields_Validator_from  = "class-validator"
   fields_Validator_input = true
   reExport               = All
@@ -26,9 +27,20 @@ generator nestgraphql {
 generator prismaClassGenerator {
   provider                 = "prisma-class-generator"
   dryRun                   = false
-  output                   = "../prisma/__generated__/prisma-class-generator"
+  output                   = "../__generated__/prisma-class-generator"
   separateRelationFields   = true
-  useNonNullableAssertions = true
+  useNonNullableAssertions = false
+}
+
+generator primaClassValidatorGenerator {
+  provider = "prisma-class-validator-generator"
+  output   = "../__generated__/prisma-class-validator-generator"
+}
+
+generator erd {
+  provider    = "prisma-erd-generator"
+  output      = "../__generated__/ERD.svg"
+  ignoreEnums = true
 }
 
 model User {

@@ -17,7 +17,7 @@ export class AuthService {
 
     if (!user.password) throw new UnauthorizedException('Invalid credentials');
 
-    if (!PasswordUtil.comparePassword(user.password, password))
+    if (!await PasswordUtil.comparePassword(user.password, password))
       throw new UnauthorizedException('Invalid credentials');
 
     /**
