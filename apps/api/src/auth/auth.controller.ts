@@ -1,21 +1,21 @@
-import { Public } from '@lib/auth';
-import { BaseAuthController } from '@lib/auth/controllers/base-auth.controller';
-import { Body, Controller, Post } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { User } from '@prisma/client';
-import { AuthService } from './auth.service';
-import { SignInDto } from './dto/sign-in.dto';
-import { Login } from './models/login.model';
+import { Public } from "@lib/auth";
+import { BaseAuthController } from "@lib/auth/controllers/base-auth.controller";
+import { Body, Controller, Post } from "@nestjs/common";
+import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
+import { User } from "@prisma/client";
+import { AuthService } from "./auth.service";
+import { SignInDto } from "./dto/sign-in.dto";
+import { Login } from "./models/login.model";
 
-@ApiTags('Auth')
-@Controller('auth')
+@ApiTags("Auth")
+@Controller("auth")
 export class AuthController extends BaseAuthController {
   constructor(private readonly _authService: AuthService) {
     super();
   }
 
   @Public()
-  @Post('signin')
+  @Post("signin")
   @ApiOkResponse({
     type: Login,
   })

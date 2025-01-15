@@ -1,12 +1,12 @@
-import { ApiKeyStrategy } from '@lib/auth';
-import { JwtStrategy } from '@lib/auth/strategies/jwt.strategy';
-import { Module } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { JwtModule } from '@nestjs/jwt';
-import { UsersModule } from '../users/users.module';
-import { AuthController } from './auth.controller';
-import { AuthResolver } from './auth.resolver';
-import { AuthService } from './auth.service';
+import { ApiKeyStrategy } from "@lib/auth";
+import { JwtStrategy } from "@lib/auth/strategies/jwt.strategy";
+import { Module } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { JwtModule } from "@nestjs/jwt";
+import { UsersModule } from "../users/users.module";
+import { AuthController } from "./auth.controller";
+import { AuthResolver } from "./auth.resolver";
+import { AuthService } from "./auth.service";
 
 @Module({
   imports: [
@@ -16,7 +16,7 @@ import { AuthService } from './auth.service';
         const jwt = config.get<{
           secret: string;
           expiresIn: string;
-        }>('jwt')!;
+        }>("jwt")!;
 
         return {
           global: true,

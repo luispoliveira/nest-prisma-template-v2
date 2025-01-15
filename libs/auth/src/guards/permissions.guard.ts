@@ -1,8 +1,8 @@
-import { ContextUtil, PermissionEnum } from '@lib/common';
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
-import { NEEDS_PERMISSIONS_KEY } from '../decorators/needs-permissions.decorator';
-import { RbacService } from '../rbac/rbac.service';
+import { ContextUtil, PermissionEnum } from "@lib/common";
+import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
+import { Reflector } from "@nestjs/core";
+import { NEEDS_PERMISSIONS_KEY } from "../decorators/needs-permissions.decorator";
+import { RbacService } from "../rbac/rbac.service";
 
 @Injectable()
 export class PermissionsGuard implements CanActivate {
@@ -12,18 +12,16 @@ export class PermissionsGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const requiredPermissions = this._reflector.getAllAndOverride<
-      PermissionEnum[]
-    >(NEEDS_PERMISSIONS_KEY, [context.getHandler(), context.getClass()]);
+    const requiredPermissions = this._reflector.getAllAndOverride<PermissionEnum[]>(
+      NEEDS_PERMISSIONS_KEY,
+      [context.getHandler(), context.getClass()],
+    );
 
     if (!requiredPermissions) return true;
 
     const requestUser = ContextUtil.getRequest(context).user;
     if (!requestUser) return false;
 
-    return await this._rbacService.userHasPermissions(
-      requestUser.id,
-      requiredPermissions,
-    );
+    return await this._rbacService.userHasPermissions(requestUser.id, requiredPermissions);
   }
 }

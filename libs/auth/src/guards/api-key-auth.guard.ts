@@ -1,23 +1,17 @@
-import { ContextUtil } from '@lib/common';
-import {
-  ExecutionContext,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
-import { AuthGuard } from '@nestjs/passport';
-import { Observable } from 'rxjs';
-import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
+import { ContextUtil } from "@lib/common";
+import { ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/common";
+import { Reflector } from "@nestjs/core";
+import { AuthGuard } from "@nestjs/passport";
+import { Observable } from "rxjs";
+import { IS_PUBLIC_KEY } from "../decorators/public.decorator";
 
 @Injectable()
-export class ApiKeyAuthGuard extends AuthGuard('api-key') {
+export class ApiKeyAuthGuard extends AuthGuard("api-key") {
   constructor(private readonly _reflector: Reflector) {
     super();
   }
 
-  canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
+  canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
     const isPublic = this._reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
@@ -43,7 +37,7 @@ export class ApiKeyAuthGuard extends AuthGuard('api-key') {
     status?: unknown,
   ): TUser {
     if (err || !user) {
-      throw err || new UnauthorizedException('User not found');
+      throw err || new UnauthorizedException("User not found");
     }
 
     return user as TUser;

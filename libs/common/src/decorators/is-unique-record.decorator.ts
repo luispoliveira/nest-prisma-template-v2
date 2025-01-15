@@ -1,7 +1,11 @@
 import { registerDecorator, ValidationOptions } from "class-validator";
 import { IsUniqueRecordValidator } from "../validators/is-unique-record.validator";
 
-export function IsUniqueRecord(table: string, column: string, validationOptions?: ValidationOptions) {
+export function IsUniqueRecord(
+  table: string,
+  column: string,
+  validationOptions?: ValidationOptions,
+) {
   return function (object: Object, propertyName: string) {
     registerDecorator({
       target: object.constructor,

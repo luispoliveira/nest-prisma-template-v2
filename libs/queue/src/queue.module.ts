@@ -1,9 +1,9 @@
-import { BullModule, BullModuleAsyncOptions } from '@nestjs/bull';
-import { DynamicModule, Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { configuration } from './config/configuration';
-import { validationSchema } from './config/validation';
-import { DefaultJob } from './jobs/default.job';
+import { BullModule, BullModuleAsyncOptions } from "@nestjs/bull";
+import { DynamicModule, Module } from "@nestjs/common";
+import { ConfigModule, ConfigService } from "@nestjs/config";
+import { configuration } from "./config/configuration";
+import { validationSchema } from "./config/validation";
+import { DefaultJob } from "./jobs/default.job";
 
 @Module({})
 export class QueueModule {
@@ -16,8 +16,8 @@ export class QueueModule {
         name: queueName,
         useFactory: (configService: ConfigService) => ({
           redis: {
-            host: configService.get('redis.host'),
-            port: configService.get('redis.port'),
+            host: configService.get("redis.host"),
+            port: configService.get("redis.port"),
           },
         }),
         inject: [ConfigService],

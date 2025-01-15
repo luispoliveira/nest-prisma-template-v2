@@ -6,7 +6,9 @@ export class InputJsonValue {
   // Tipos possíveis de InputJsonValue
   value: string | number | boolean | InputJsonObject | InputJsonArray | { toJSON(): unknown };
 
-  constructor(value: string | number | boolean | InputJsonObject | InputJsonArray | { toJSON(): unknown }) {
+  constructor(
+    value: string | number | boolean | InputJsonObject | InputJsonArray | { toJSON(): unknown },
+  ) {
     this.value = value;
   }
 

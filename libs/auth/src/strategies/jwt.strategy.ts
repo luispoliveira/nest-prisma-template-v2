@@ -1,9 +1,9 @@
-import { JwtPayloadType } from '@lib/common';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { PassportStrategy } from '@nestjs/passport';
-import { PrismaService } from 'nestjs-prisma';
-import { ExtractJwt, Strategy } from 'passport-jwt';
+import { JwtPayloadType } from "@lib/common";
+import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { PassportStrategy } from "@nestjs/passport";
+import { PrismaService } from "nestjs-prisma";
+import { ExtractJwt, Strategy } from "passport-jwt";
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -11,12 +11,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     private readonly _configService: ConfigService,
     private readonly _prismaService: PrismaService,
   ) {
-    const jwt = _configService.get('jwt');
+    const jwt = _configService.get("jwt");
 
     const extractJwt = (req: any) => {
       let token = null;
       if (req && req.cookies) {
-        token = req.cookies['access_token'];
+        token = req.cookies["access_token"];
       }
       return token || ExtractJwt.fromAuthHeaderAsBearerToken()(req);
     };
@@ -35,7 +35,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     if (!user) throw new UnauthorizedException();
 
-    if (!user.isActive) throw new UnauthorizedException('User is not active');
+    if (!user.isActive) throw new UnauthorizedException("User is not active");
 
     /**
      * if you want info on @CurrentUser add here

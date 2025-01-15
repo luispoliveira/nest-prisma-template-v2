@@ -1,8 +1,8 @@
-import { JwtPayloadType, PasswordUtil } from '@lib/common';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { User } from '@prisma/client';
-import { UsersService } from '../users/users.service';
+import { JwtPayloadType, PasswordUtil } from "@lib/common";
+import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import { User } from "@prisma/client";
+import { UsersService } from "../users/users.service";
 
 @Injectable()
 export class AuthService {
@@ -13,12 +13,12 @@ export class AuthService {
 
   async signIn(email: string, password: string) {
     const user = await this._usersService.findUserByEmail(email);
-    if (!user) throw new UnauthorizedException('Invalid credentials');
+    if (!user) throw new UnauthorizedException("Invalid credentials");
 
-    if (!user.password) throw new UnauthorizedException('Invalid credentials');
+    if (!user.password) throw new UnauthorizedException("Invalid credentials");
 
-    if (!await PasswordUtil.comparePassword(user.password, password))
-      throw new UnauthorizedException('Invalid credentials');
+    if (!(await PasswordUtil.comparePassword(user.password, password)))
+      throw new UnauthorizedException("Invalid credentials");
 
     /**
      * check if user is active

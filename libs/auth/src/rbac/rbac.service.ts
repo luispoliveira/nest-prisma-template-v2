@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'nestjs-prisma';
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "nestjs-prisma";
 
 @Injectable()
 export class RbacService {
@@ -8,9 +8,7 @@ export class RbacService {
   async userHasPermissions(userId: number, permissions: string[]) {
     const userPermissions = await this.getUserPermissions(userId);
 
-    return userPermissions.some((permission) =>
-      permissions.includes(permission),
-    );
+    return userPermissions.some(permission => permissions.includes(permission));
   }
 
   async getUserRoles(userId: number) {
@@ -27,7 +25,7 @@ export class RbacService {
       },
     });
 
-    roles.map((role) => {
+    roles.map(role => {
       if (!allRoles.includes(role.name)) {
         allRoles.push(role.name);
       }
@@ -50,7 +48,7 @@ export class RbacService {
       },
     });
 
-    permissions.map((permission) => {
+    permissions.map(permission => {
       if (!allPermissions.includes(permission.name)) {
         allPermissions.push(permission.name);
       }
@@ -78,8 +76,8 @@ export class RbacService {
       },
     });
 
-    roles.map((role) => {
-      role.Permission2Role.map((permission) => {
+    roles.map(role => {
+      role.Permission2Role.map(permission => {
         if (!allPermissions.includes(permission.permission.name)) {
           allPermissions.push(permission.permission.name);
         }
