@@ -55,6 +55,51 @@ CREATE TABLE "otp" (
 );
 
 -- CreateTable
+CREATE TABLE "app" (
+    "id" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "app_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "app_2_user" (
+    "id" SERIAL NOT NULL,
+    "appId" INTEGER NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "createdBy" TEXT,
+    "updatedBy" TEXT,
+
+    CONSTRAINT "app_2_user_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "log" (
+    "id" SERIAL NOT NULL,
+    "userAgent" TEXT,
+    "ip" TEXT,
+    "method" TEXT,
+    "headers" JSONB,
+    "url" TEXT,
+    "body" JSONB,
+    "query" JSONB,
+    "params" JSONB,
+    "className" TEXT,
+    "methodName" TEXT,
+    "username" TEXT,
+    "response" JSONB,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "isError" BOOLEAN NOT NULL DEFAULT false,
+
+    CONSTRAINT "log_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "role" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
@@ -121,50 +166,6 @@ CREATE TABLE "permission_2_user" (
     CONSTRAINT "permission_2_user_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
-CREATE TABLE "app" (
-    "id" SERIAL NOT NULL,
-    "name" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "app_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "app_2_user" (
-    "id" SERIAL NOT NULL,
-    "appId" INTEGER NOT NULL,
-    "userId" INTEGER NOT NULL,
-    "isActive" BOOLEAN NOT NULL DEFAULT true,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-    "createdBy" TEXT,
-    "updatedBy" TEXT,
-
-    CONSTRAINT "app_2_user_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "log" (
-    "id" SERIAL NOT NULL,
-    "userAgent" TEXT,
-    "ip" TEXT,
-    "method" TEXT,
-    "headers" JSONB,
-    "url" TEXT,
-    "body" JSONB,
-    "query" JSONB,
-    "params" JSONB,
-    "className" TEXT,
-    "methodName" TEXT,
-    "username" TEXT,
-    "response" JSONB,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT "log_pkey" PRIMARY KEY ("id")
-);
-
 -- CreateIndex
 CREATE UNIQUE INDEX "user_email_key" ON "user"("email");
 
@@ -181,6 +182,12 @@ CREATE UNIQUE INDEX "api_key_name_key" ON "api_key"("name");
 CREATE UNIQUE INDEX "api_key_key_key" ON "api_key"("key");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "app_name_key" ON "app"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "app_2_user_appId_userId_key" ON "app_2_user"("appId", "userId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "role_name_key" ON "role"("name");
 
 -- CreateIndex
@@ -195,14 +202,14 @@ CREATE UNIQUE INDEX "permission_2_role_permissionId_roleId_key" ON "permission_2
 -- CreateIndex
 CREATE UNIQUE INDEX "permission_2_user_permissionId_userId_key" ON "permission_2_user"("permissionId", "userId");
 
--- CreateIndex
-CREATE UNIQUE INDEX "app_name_key" ON "app"("name");
-
--- CreateIndex
-CREATE UNIQUE INDEX "app_2_user_appId_userId_key" ON "app_2_user"("appId", "userId");
-
 -- AddForeignKey
 ALTER TABLE "otp" ADD CONSTRAINT "otp_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "app_2_user" ADD CONSTRAINT "app_2_user_appId_fkey" FOREIGN KEY ("appId") REFERENCES "app"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "app_2_user" ADD CONSTRAINT "app_2_user_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "role_2_user" ADD CONSTRAINT "role_2_user_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "role"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -221,9 +228,3 @@ ALTER TABLE "permission_2_user" ADD CONSTRAINT "permission_2_user_permissionId_f
 
 -- AddForeignKey
 ALTER TABLE "permission_2_user" ADD CONSTRAINT "permission_2_user_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "app_2_user" ADD CONSTRAINT "app_2_user_appId_fkey" FOREIGN KEY ("appId") REFERENCES "app"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "app_2_user" ADD CONSTRAINT "app_2_user_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

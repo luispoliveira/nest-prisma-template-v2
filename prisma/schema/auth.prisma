@@ -1,0 +1,92 @@
+model User {
+  id                          Int       @id @default(autoincrement())
+  email                       String    @unique
+  password                    String?
+  isActive                    Boolean   @default(false)
+  activationToken             String?   @unique
+  activationTokenExpiresAt    DateTime?
+  resetPasswordToken          String?   @unique
+  resetPasswordTokenExpiresAt DateTime?
+  lastLogin                   DateTime?
+  hasTwoFA                    Boolean   @default(false)
+  twoFAPhoneNumber            String?
+  twoFAPPhoneVerified         Boolean   @default(false)
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  createdBy     String?
+  updatedBy     String?
+  activatedAt   DateTime?
+  activatedBy   String?
+  deactivatedAt DateTime?
+  deactivatedBy String?
+
+  Otp             Otp[]
+  Role2User       Role2User[]
+  Permission2User Permission2User[]
+  App2User        App2User[]
+
+  @@map("user")
+}
+
+model ApiKey {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+  key         String   @unique
+  isActive    Boolean  @default(true)
+  expiresAt   DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("api_key")
+}
+
+enum OtpUseCaseEnum {
+  LOGIN
+  D2FA
+  PHV
+}
+
+model Otp {
+  id     Int            @id @default(autoincrement())
+  user   User           @relation(fields: [userId], references: [id])
+  userId Int
+  code   String
+  use    OtpUseCaseEnum
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  expiresAt DateTime
+
+  @@map("otp")
+}
+
+model App {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  App2User  App2User[]
+
+  @@map("app")
+}
+
+model App2User {
+  id       Int     @id @default(autoincrement())
+  app      App     @relation(fields: [appId], references: [id])
+  appId    Int
+  user     User    @relation(fields: [userId], references: [id])
+  userId   Int
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String?
+  updatedBy String?
+
+  @@unique([appId, userId])
+  @@map("app_2_user")
+}

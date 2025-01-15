@@ -18,7 +18,7 @@ export class ApiKeyStrategy extends PassportStrategy(
       true,
       async (apiKey: string, done: any) => {
         const apiKeyRecord = await this._prismaService.apiKey.findUnique({
-          where: { key: ApiKeyUtil.encode(apiKey) },
+          where: { key: ApiKeyUtil.encode(apiKey), isActive: true },
         });
 
         if (!apiKeyRecord) return done(new UnauthorizedException(), null);

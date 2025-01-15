@@ -1,0 +1,19 @@
+model Log {
+  id         Int      @id @default(autoincrement())
+  userAgent  String?
+  ip         String?
+  method     String?
+  headers    Json?
+  url        String?
+  body       Json?
+  query      Json?
+  params     Json?
+  className  String?
+  methodName String?
+  username   String?
+  response   Json?
+  createdAt  DateTime @default(now())
+  isError    Boolean  @default(false)
+
+  @@map("log")
+}
