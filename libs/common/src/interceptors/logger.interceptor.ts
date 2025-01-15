@@ -5,7 +5,7 @@ import {
   NestInterceptor,
 } from '@nestjs/common';
 import { PrismaService } from 'nestjs-prisma';
-import { Observable, tap } from 'rxjs';
+import { catchError, Observable, tap } from 'rxjs';
 import { ContextUtil } from '../utils/context.util';
 
 @Injectable()
@@ -61,6 +61,18 @@ export class LoggerInterceptor implements NestInterceptor {
               : res,
           },
         });
+      }),
+      catchError(async (err) => {
+        await this._prismaService.log.update({
+          where: { id: log.id },
+          data: {
+            response: this._blackListedMethods.includes(handlerName)
+              ? undefined
+              : err,
+            isError: true,
+          },
+        });
+        throw err;
       }),
     );
   }
