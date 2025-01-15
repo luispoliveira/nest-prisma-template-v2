@@ -13,47 +13,20 @@
     "strictNullChecks": true,
     "noImplicitAny": true,
     "strictBindCallApply": true,
+    "strictPropertyInitialization": false,
     "paths": {
-      "@lib/common": [
-        "libs/common/src/index.ts"
-      ],
-      "@lib/prisma": [
-        "libs/prisma/src"
-      ],
-      "@lib/prisma/*": [
-        "libs/prisma/src/*"
-      ],
-      "@lib/graphql": [
-        "libs/graphql/src"
-      ],
-      "@lib/graphql/*": [
-        "libs/graphql/src/*"
-      ],
-      "@lib/auth": [
-        "libs/auth/src"
-      ],
-      "@lib/auth/*": [
-        "libs/auth/src/*"
-      ],
-      "@gen/prisma-class-generator": [
-        "prisma/__generated__/prisma-class-generator/index.ts"
-      ],
-      "@lib/queue": [
-        "libs/queue/src"
-      ],
-      "@lib/queue/*": [
-        "libs/queue/src/*"
-      ]
+      "@lib/common": ["libs/common/src/index.ts"],
+      "@lib/prisma": ["libs/prisma/src"],
+      "@lib/prisma/*": ["libs/prisma/src/*"],
+      "@lib/graphql": ["libs/graphql/src"],
+      "@lib/graphql/*": ["libs/graphql/src/*"],
+      "@lib/auth": ["libs/auth/src"],
+      "@lib/auth/*": ["libs/auth/src/*"],
+      "@gen/prisma-class-generator": ["prisma/__generated__/prisma-class-generator/index.ts"],
+      "@lib/queue": ["libs/queue/src"],
+      "@lib/queue/*": ["libs/queue/src/*"]
     }
   },
-  "include": [
-    "src/**/*.ts",
-    "test/**/*.ts",
-    "apps/**/*.ts",
-    "libs/**/*.ts",
-    "prisma/seed.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["src/**/*.ts", "test/**/*.ts", "apps/**/*.ts", "libs/**/*.ts", "prisma/seed.ts"],
+  "exclude": ["node_modules"]
 }
