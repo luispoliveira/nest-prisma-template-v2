@@ -1,4 +1,4 @@
-import { BullModule, RegisterQueueAsyncOptions } from '@nestjs/bullmq';
+import { BullModule, BullModuleAsyncOptions } from '@nestjs/bull';
 import { DynamicModule, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { configuration } from './config/configuration';
@@ -8,14 +8,14 @@ import { DefaultJob } from './jobs/default.job';
 @Module({})
 export class QueueModule {
   static register(queuesName: string[]): DynamicModule {
-    const configs: RegisterQueueAsyncOptions[] = [];
+    const configs: BullModuleAsyncOptions[] = [];
 
     for (const queueName of queuesName) {
       configs.push({
         imports: [ConfigModule],
         name: queueName,
         useFactory: (configService: ConfigService) => ({
-          connection: {
+          redis: {
             host: configService.get('redis.host'),
             port: configService.get('redis.port'),
           },

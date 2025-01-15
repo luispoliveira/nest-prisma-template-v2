@@ -1,6 +1,6 @@
-import { InjectQueue } from '@nestjs/bullmq';
+import { InjectQueue } from '@nestjs/bull';
 import { Injectable } from '@nestjs/common';
-import { Queue } from 'bullmq';
+import { Queue } from 'bull';
 import { EVENTS, QUEUES } from '../queue.const';
 
 @Injectable()
@@ -9,7 +9,7 @@ export class DefaultJob {
     @InjectQueue(QUEUES.DEFAULT) private readonly _defaultQueue: Queue,
   ) {}
 
-  private _defaultOptions = {
+  #defaultOptions = {
     removeOnComplete: true,
   };
 
@@ -18,7 +18,7 @@ export class DefaultJob {
       EVENTS.TEST,
       {},
       {
-        ...this._defaultOptions,
+        ...this.#defaultOptions,
       },
     );
     return event;
@@ -29,7 +29,7 @@ export class DefaultJob {
       EVENTS.ANOTHER_TEST,
       {},
       {
-        ...this._defaultOptions,
+        ...this.#defaultOptions,
       },
     );
     return event;
