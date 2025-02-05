@@ -14,16 +14,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-generator nestgraphql {
-  provider               = "node node_modules/prisma-nestjs-graphql"
-  output                 = "../__generated__/prisma-nestjs-graphql"
-  fields_Validator_from  = "class-validator"
-  fields_Validator_input = true
-  reExport               = All
-  purgeOutput            = true
-  emitSingle             = true
-}
-
 generator prismaClassGenerator {
   provider                 = "prisma-class-generator"
   dryRun                   = false

@@ -1,4 +1,4 @@
-import { ContextUtil, PermissionEnum } from "@lib/common";
+import { ContextUtil, RbacPermission } from "@lib/common";
 import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { NEEDS_PERMISSIONS_KEY } from "../decorators/needs-permissions.decorator";
@@ -12,7 +12,7 @@ export class PermissionsGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const requiredPermissions = this._reflector.getAllAndOverride<PermissionEnum[]>(
+    const requiredPermissions = this._reflector.getAllAndOverride<RbacPermission[]>(
       NEEDS_PERMISSIONS_KEY,
       [context.getHandler(), context.getClass()],
     );

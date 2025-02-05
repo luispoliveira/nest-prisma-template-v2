@@ -1,4 +1,7 @@
+import { Role } from "@lib/common";
+
 export class LoggedUser {
-  id!: number;
-  email!: string;
+  id: number;
+  email: string;
+  roles: Role[] = [];
 }
