@@ -13,21 +13,21 @@ export class ApiKeyStrategy extends PassportStrategy(HeaderAPIKeyStrategy, "api-
         prefix: "",
       },
       true,
-      async (apiKey: string, done: any) => {
-        const apiKeyRecord = await this._prismaService.apiKey.findUnique({
-          where: { key: ApiKeyUtil.encode(apiKey), isActive: true },
-        });
-
-        if (!apiKeyRecord) return done(new UnauthorizedException(), null);
-
-        if (!apiKeyRecord.isActive) return done(new UnauthorizedException(), null);
-
-        const currentDate = new Date();
-
-        if (apiKeyRecord.expiresAt < currentDate) return done(new UnauthorizedException(), null);
-
-        done(null, true);
-      },
     );
+  }
+  async validate(apiKey: string) {
+    const apiKeyRecord = await this._prismaService.apiKey.findUnique({
+      where: { key: ApiKeyUtil.encode(apiKey), isActive: true },
+    });
+
+    if (!apiKeyRecord) throw new UnauthorizedException();
+
+    if (!apiKeyRecord.isActive) throw new UnauthorizedException();
+
+    const currentDate = new Date();
+
+    if (apiKeyRecord.expiresAt < currentDate) throw new UnauthorizedException();
+
+    return apiKeyRecord;
   }
 }
