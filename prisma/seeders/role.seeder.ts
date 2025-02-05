@@ -1,5 +1,5 @@
-import { PrismaClient } from '@prisma/client';
-import { RoleEnum } from './../../libs/common/src/enum/role.enum';
+import { PrismaClient } from "@prisma/client";
+import { RBAC_ROLES } from "../../libs/common/src/types/rbac-permissions";
 
 export default class RoleSeeder {
   private _prismaClient: PrismaClient;
@@ -9,19 +9,19 @@ export default class RoleSeeder {
   }
 
   async createRoles() {
-    console.debug('Creating roles ...');
-    for (const role of Object.values(RoleEnum)) {
+    console.debug("Creating roles ...");
+    for (const role of Object.keys(RBAC_ROLES)) {
       await this._prismaClient.role.upsert({
         where: { name: role },
         update: {},
         create: {
           name: role,
           isActive: true,
-          createdBy: 'system',
-          updatedBy: 'system',
+          createdBy: "system",
+          updatedBy: "system",
         },
       });
     }
-    console.debug('Roles created.');
+    console.debug("Roles created.");
   }
 }

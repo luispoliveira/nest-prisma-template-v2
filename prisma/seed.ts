@@ -1,11 +1,11 @@
 import { PrismaClient } from '@prisma/client';
-import { PasswordUtil, RoleEnum } from '../libs/common/src';
-import PermissionSeeder from './seeders/permission.seeder';
-import RoleSeeder from './seeders/role.seeder';
+import { PasswordUtil } from "../libs/common/src";
+import PermissionSeeder from "./seeders/permission.seeder";
+import RoleSeeder from "./seeders/role.seeder";
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('Start seeding ...');
+  console.log("Start seeding ...");
 
   const roleSeeder = new RoleSeeder(prisma);
   const permissionSeeder = new PermissionSeeder(prisma);
@@ -15,10 +15,8 @@ async function main() {
 
   await ensureAdmin();
 
-  console.log('Seeding finished.');
+  console.log("Seeding finished.");
 }
-
-
 
 async function ensureAdmin() {
   const adminEmail = process.env.ADMIN_EMAIL!;
@@ -33,10 +31,10 @@ async function ensureAdmin() {
       isActive: true,
       Role2User: {
         create: {
-          role: { connect: { name: RoleEnum.ADMIN } },
+          role: { connect: { name: "admin" } },
           isActive: true,
-          createdBy: 'system',
-          updatedBy: 'system',
+          createdBy: "system",
+          updatedBy: "system",
         },
       },
     },
