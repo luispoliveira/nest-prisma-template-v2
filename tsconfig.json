@@ -14,6 +14,7 @@
     "noImplicitAny": true,
     "strictBindCallApply": true,
     "strictPropertyInitialization": false,
+    "composite": false,
     "paths": {
       "@lib/common": ["libs/common/src/index.ts"],
       "@lib/prisma": ["libs/prisma/src"],
@@ -27,6 +28,6 @@
       "@lib/queue/*": ["libs/queue/src/*"]
     }
   },
-  "include": ["src/**/*.ts", "test/**/*.ts", "apps/**/*.ts", "libs/**/*.ts", "prisma/seed.ts"],
+  "include": ["src/**/*.ts", "test/**/*.ts", "apps/**/*.ts", "libs/**/*.ts", "prisma/**/*.ts"],
   "exclude": ["node_modules"]
 }

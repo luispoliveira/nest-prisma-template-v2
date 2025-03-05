@@ -45,6 +45,7 @@ async function bootstrap() {
   await app.listen(port, async () => {
     Logger.log(`Server running on: ${await app.getUrl()} | http://localhost:${port}`, "Bootstrap");
     Logger.log(`Environment: ${environment}`, "Bootstrap");
+    Logger.debug(`Se chegou até aqui, você é um gênio!`, "Bootstrap");
   });
 }
 bootstrap();
