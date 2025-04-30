@@ -12,15 +12,12 @@ export class AbacService {
     action: AbacPermissions[Resource]["action"],
     data?: AbacPermissions[Resource]["dataType"],
   ) {
-    return user.roles.some(role => {
-      const permission = (ABAC_ROLES as RolesWithPermissions)[role][resource]?.[action];
+    const permission = (ABAC_ROLES as RolesWithPermissions)[user.role][resource]?.[action];
+    if (permission == null) return false;
 
-      if (permission == null) return false;
+    if (typeof permission === "boolean") return permission;
 
-      if (typeof permission === "boolean") return permission;
-
-      return data != null && permission(user, data);
-    });
+    return data != null && permission(user, data);
   }
 
   async getUserRoles(userId: number) {

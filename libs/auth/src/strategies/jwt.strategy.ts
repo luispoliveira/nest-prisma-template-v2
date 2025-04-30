@@ -33,14 +33,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       where: { id: payload.sub },
       omit: { password: true },
       include: {
-        Role2User: {
-          where: {
-            isActive: true,
-          },
-          include: {
-            role: true,
-          },
-        },
+        role: true,
       },
     });
 
@@ -53,7 +46,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
      */
     return {
       ...user,
-      roles: user.Role2User.map(r2u => r2u.role.name) as Role[],
+      role: user.role?.name as Role,
     };
   }
 }

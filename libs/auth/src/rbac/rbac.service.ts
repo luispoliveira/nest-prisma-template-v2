@@ -8,10 +8,8 @@ export class RbacService {
   constructor(private readonly _prismaService: PrismaService) {}
 
   async userHasPermissions(user: LoggedUser, permissions: RbacPermission[]) {
-    return user.roles.some(role =>
-      (RBAC_ROLES[role] as readonly RbacPermission[]).some(permission =>
-        permissions.includes(permission),
-      ),
+    return permissions.some(permission =>
+      (RBAC_ROLES[user.role] as readonly RbacPermission[]).includes(permission),
     );
   }
 }
