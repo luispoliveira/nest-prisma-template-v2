@@ -8,8 +8,8 @@ model Role {
   createdBy String?
   updatedBy String?
 
-  Role2User       Role2User[]
   Permission2Role Permission2Role[]
+  User            User[]
 
   @@map("role")
 }
@@ -27,23 +27,6 @@ model Permission {
   Permission2User Permission2User[]
 
   @@map("permission")
-}
-
-model Role2User {
-  id       Int     @id @default(autoincrement())
-  role     Role    @relation(fields: [roleId], references: [id])
-  roleId   Int
-  user     User    @relation(fields: [userId], references: [id])
-  userId   Int
-  isActive Boolean @default(true)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  createdBy String?
-  updatedBy String?
-
-  @@unique([roleId, userId])
-  @@map("role_2_user")
 }
 
 model Permission2Role {

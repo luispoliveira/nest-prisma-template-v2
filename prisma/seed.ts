@@ -1,4 +1,5 @@
-import { PrismaClient } from '@prisma/client';
+import { Role } from "@lib/common";
+import { PrismaClient } from "@prisma/client";
 import { PasswordUtil } from "../libs/common/src";
 import PermissionSeeder from "./seeders/permission.seeder";
 import RoleSeeder from "./seeders/role.seeder";
@@ -29,13 +30,8 @@ async function ensureAdmin() {
       email: adminEmail,
       password: await PasswordUtil.hashPassword(adminPassword),
       isActive: true,
-      Role2User: {
-        create: {
-          role: { connect: { name: "admin" } },
-          isActive: true,
-          createdBy: "system",
-          updatedBy: "system",
-        },
+      role: {
+        connect: { name: "admin" as Role },
       },
     },
   });
@@ -45,7 +41,7 @@ main()
   .then(async () => {
     await prisma.$disconnect();
   })
-  .catch(async (e) => {
+  .catch(async e => {
     console.error(e);
     await prisma.$disconnect();
     process.exit(1);

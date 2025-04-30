@@ -15,6 +15,7 @@ CREATE TABLE "user" (
     "hasTwoFA" BOOLEAN NOT NULL DEFAULT false,
     "twoFAPhoneNumber" TEXT,
     "twoFAPPhoneVerified" BOOLEAN NOT NULL DEFAULT false,
+    "roleId" INTEGER,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "createdBy" TEXT,
@@ -125,20 +126,6 @@ CREATE TABLE "permission" (
 );
 
 -- CreateTable
-CREATE TABLE "role_2_user" (
-    "id" SERIAL NOT NULL,
-    "roleId" INTEGER NOT NULL,
-    "userId" INTEGER NOT NULL,
-    "isActive" BOOLEAN NOT NULL DEFAULT true,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-    "createdBy" TEXT,
-    "updatedBy" TEXT,
-
-    CONSTRAINT "role_2_user_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "permission_2_role" (
     "id" SERIAL NOT NULL,
     "permissionId" INTEGER NOT NULL,
@@ -194,13 +181,13 @@ CREATE UNIQUE INDEX "role_name_key" ON "role"("name");
 CREATE UNIQUE INDEX "permission_name_key" ON "permission"("name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "role_2_user_roleId_userId_key" ON "role_2_user"("roleId", "userId");
-
--- CreateIndex
 CREATE UNIQUE INDEX "permission_2_role_permissionId_roleId_key" ON "permission_2_role"("permissionId", "roleId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "permission_2_user_permissionId_userId_key" ON "permission_2_user"("permissionId", "userId");
+
+-- AddForeignKey
+ALTER TABLE "user" ADD CONSTRAINT "user_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "role"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "otp" ADD CONSTRAINT "otp_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -210,12 +197,6 @@ ALTER TABLE "app_2_user" ADD CONSTRAINT "app_2_user_appId_fkey" FOREIGN KEY ("ap
 
 -- AddForeignKey
 ALTER TABLE "app_2_user" ADD CONSTRAINT "app_2_user_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "role_2_user" ADD CONSTRAINT "role_2_user_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "role"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "role_2_user" ADD CONSTRAINT "role_2_user_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "permission_2_role" ADD CONSTRAINT "permission_2_role_permissionId_fkey" FOREIGN KEY ("permissionId") REFERENCES "permission"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -28,9 +28,9 @@ export class AbacService {
     const roles = await this._prismaService.role.findMany({
       where: {
         isActive: true,
-        Role2User: {
+        User: {
           some: {
-            userId: userId,
+            id: userId,
             isActive: true,
           },
         },

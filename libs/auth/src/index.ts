@@ -1,3 +1,5 @@
+export * from "./abac/abac.module";
+export * from "./abac/abac.service";
 export * from "./controllers/base-api-key.controller";
 export * from "./controllers/base-auth.controller";
 export * from "./controllers/base-public.controller";

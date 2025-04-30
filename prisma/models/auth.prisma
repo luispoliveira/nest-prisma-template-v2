@@ -12,6 +12,9 @@ model User {
   twoFAPhoneNumber            String?
   twoFAPPhoneVerified         Boolean   @default(false)
 
+  role   Role? @relation(fields: [roleId], references: [id])
+  roleId Int?
+
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   createdBy     String?
@@ -22,7 +25,6 @@ model User {
   deactivatedBy String?
 
   Otp             Otp[]
-  Role2User       Role2User[]
   Permission2User Permission2User[]
   App2User        App2User[]
 
