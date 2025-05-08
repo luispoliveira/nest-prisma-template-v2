@@ -4,7 +4,7 @@ import { RbacService } from "./rbac.service";
 
 @Global()
 @Module({
-  imports: [PrismaModule.register()],
+  imports: [PrismaModule],
   providers: [RbacService],
   exports: [RbacService],
 })

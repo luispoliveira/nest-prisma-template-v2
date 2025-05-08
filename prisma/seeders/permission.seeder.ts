@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@gen/prisma-client";
 import { RBAC_ROLES } from "../../libs/common/src/types/rbac-permissions";
 export default class PermissionSeeder {
   private _prismaClient: PrismaClient;

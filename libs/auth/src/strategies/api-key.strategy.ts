@@ -1,7 +1,7 @@
 import { ApiKeyUtil } from "@lib/common";
+import { PrismaService } from "@lib/prisma";
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
-import { PrismaService } from "nestjs-prisma";
 import { HeaderAPIKeyStrategy } from "passport-headerapikey";
 
 @Injectable()

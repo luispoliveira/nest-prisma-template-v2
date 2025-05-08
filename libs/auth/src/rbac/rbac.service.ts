@@ -1,6 +1,6 @@
 import { RBAC_ROLES, RbacPermission } from "@lib/common";
+import { PrismaService } from "@lib/prisma";
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "nestjs-prisma";
 import { LoggedUser } from "../models/user.model";
 
 @Injectable()
