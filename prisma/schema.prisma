@@ -6,8 +6,8 @@
 
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["driverAdapters"]
-  // output          = "../__generated__/prisma-client-js"
+  previewFeatures = ["queryCompiler", "driverAdapters"]
+  output          = "../__generated__/prisma-client-js"
   moduleFormat    = "esm"
 }
 
@@ -22,11 +22,6 @@ generator prismaClassGenerator {
   output                   = "../__generated__/prisma-class-generator"
   separateRelationFields   = true
   useNonNullableAssertions = false
-}
-
-generator primaClassValidatorGenerator {
-  provider = "prisma-class-validator-generator"
-  output   = "../__generated__/prisma-class-validator-generator"
 }
 
 generator erd {

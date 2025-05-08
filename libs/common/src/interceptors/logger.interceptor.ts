@@ -1,5 +1,5 @@
+import { PrismaService } from "@lib/prisma";
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from "@nestjs/common";
-import { PrismaService } from "nestjs-prisma";
 import { catchError, Observable, tap } from "rxjs";
 import { ContextUtil } from "../utils/context.util";
 

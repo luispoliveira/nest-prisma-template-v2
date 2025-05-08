@@ -1,7 +1,7 @@
 import { ApiKeyUtil } from "@lib/common";
+import { PrismaService } from "@lib/prisma";
 import { Injectable } from "@nestjs/common";
 import { Command, Option, Positional } from "nestjs-command";
-import { PrismaService } from "nestjs-prisma";
 
 @Injectable()
 export class ApiKeysService {

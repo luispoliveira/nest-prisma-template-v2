@@ -25,7 +25,7 @@ import { UsersModule } from "./users/users.module";
         limit: 100,
       },
     ]),
-    PrismaModule.register(),
+    PrismaModule,
     GraphqlModule.register(),
     RbacModule,
     QueueModule.register([QUEUES.DEFAULT]),

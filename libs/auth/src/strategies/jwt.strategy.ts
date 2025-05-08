@@ -1,8 +1,8 @@
 import { JwtPayloadType, Role } from "@lib/common";
+import { PrismaService } from "@lib/prisma";
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
-import { PrismaService } from "nestjs-prisma";
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { LoggedUser } from "../models/user.model";
 

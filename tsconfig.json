@@ -24,6 +24,7 @@
       "@lib/auth": ["libs/auth/src"],
       "@lib/auth/*": ["libs/auth/src/*"],
       "@gen/prisma-class-generator": ["__generated__/prisma-class-generator/index.ts"],
+      "@gen/prisma-client": ["__generated__/prisma-client-js"],
       "@lib/queue": ["libs/queue/src"],
       "@lib/queue/*": ["libs/queue/src/*"]
       // "@prisma/client": ["__generated__/prisma-client-js/index.d.ts"]
