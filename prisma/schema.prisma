@@ -5,10 +5,10 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["queryCompiler", "driverAdapters"]
-  output          = "../__generated__/prisma-client-js"
-  moduleFormat    = "esm"
+  provider     = "prisma-client-js"
+  // previewFeatures = ["queryCompiler", "driverAdapters"]
+  output       = "../generated/prisma-client-js"
+  moduleFormat = "esm"
 }
 
 datasource db {
@@ -19,13 +19,13 @@ datasource db {
 generator prismaClassGenerator {
   provider                 = "prisma-class-generator"
   dryRun                   = false
-  output                   = "../__generated__/prisma-class-generator"
+  output                   = "../generated/prisma-class-generator"
   separateRelationFields   = true
   useNonNullableAssertions = false
 }
 
 generator erd {
   provider    = "prisma-erd-generator"
-  output      = "../__generated__/ERD.svg"
+  output      = "../generated/ERD.svg"
   ignoreEnums = true
 }
