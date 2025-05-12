@@ -23,11 +23,11 @@
       "@lib/graphql/*": ["libs/graphql/src/*"],
       "@lib/auth": ["libs/auth/src"],
       "@lib/auth/*": ["libs/auth/src/*"],
-      "@gen/prisma-class-generator": ["__generated__/prisma-class-generator/index.ts"],
-      "@gen/prisma-client": ["__generated__/prisma-client-js"],
+      "@gen/prisma-class-generator": ["generated/prisma-class-generator/index.ts"],
       "@lib/queue": ["libs/queue/src"],
-      "@lib/queue/*": ["libs/queue/src/*"]
-      // "@prisma/client": ["__generated__/prisma-client-js/index.d.ts"]
+      "@lib/queue/*": ["libs/queue/src/*"],
+      "@gen/prisma-client": ["generated/prisma-client"],
+      "@gen/prisma-client/runtime/library": ["generated/prisma-client/runtime/library"]
     }
   },
   "include": ["src/**/*.ts", "test/**/*.ts", "apps/**/*.ts", "libs/**/*.ts", "prisma/**/*.ts"],
