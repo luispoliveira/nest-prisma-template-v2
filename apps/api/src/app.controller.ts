@@ -21,7 +21,7 @@ export class AppController extends BaseAuthController {
 
   @Public()
   @Get()
-  async getHello(): Promise<string> {
+  async getHello() {
     await this._defaultJob.addTestJob();
 
     // wait 5 seconds
