@@ -1,7 +1,7 @@
-import { PrismaService } from "@lib/prisma";
+import { ContextUtil } from "@lib/common";
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from "@nestjs/common";
 import { catchError, Observable, tap } from "rxjs";
-import { ContextUtil } from "../utils/context.util";
+import { LogService } from "../log/log.service";
 
 @Injectable()
 export class LoggerInterceptor implements NestInterceptor {
@@ -15,7 +15,7 @@ export class LoggerInterceptor implements NestInterceptor {
     "activateAccount",
   ];
 
-  constructor(private readonly _prismaService: PrismaService) {}
+  constructor(private readonly _logService: LogService) {}
 
   async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
     const request = ContextUtil.getRequest(context);
@@ -28,37 +28,29 @@ export class LoggerInterceptor implements NestInterceptor {
 
     const username = request.user?.email || "anonymous";
 
-    const log = await this._prismaService.log.create({
-      data: {
-        userAgent,
-        ip,
-        method,
-        url,
-        body: body,
-        query,
-        params,
-        username,
-        className,
-        methodName: handlerName,
-      },
+    const log = await this._logService.create({
+      userAgent,
+      ip,
+      method,
+      url,
+      body: body,
+      query,
+      params,
+      username,
+      className,
+      methodName: handlerName,
     });
 
     return next.handle().pipe(
       tap(async res => {
-        await this._prismaService.log.update({
-          where: { id: log.id },
-          data: {
-            response: this._blackListedMethods.includes(handlerName) ? undefined : res,
-          },
+        await this._logService.update(log._id!, {
+          response: this._blackListedMethods.includes(handlerName) ? undefined : res,
         });
       }),
       catchError(async err => {
-        await this._prismaService.log.update({
-          where: { id: log.id },
-          data: {
-            response: this._blackListedMethods.includes(handlerName) ? undefined : err,
-            isError: true,
-          },
+        await this._logService.update(log._id!, {
+          response: this._blackListedMethods.includes(handlerName) ? undefined : err,
+          isError: true,
         });
         throw err;
       }),

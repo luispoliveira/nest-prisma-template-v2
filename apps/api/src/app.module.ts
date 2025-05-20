@@ -1,3 +1,4 @@
+import { AuditModule } from "@app/audit";
 import { RbacModule } from "@lib/auth";
 import { GraphqlModule } from "@lib/graphql";
 import { PrismaModule } from "@lib/prisma";
@@ -25,6 +26,7 @@ import { UsersModule } from "./users/users.module";
         limit: 100,
       },
     ]),
+    AuditModule,
     PrismaModule,
     GraphqlModule.register(),
     RbacModule,
