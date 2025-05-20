@@ -13,18 +13,27 @@ services:
   #     - .env
 
   nest-postgres:
-    image: postgres:16.4
+    image: postgres:17.5-alpine
     container_name: nest-postgres
     restart: always
     ports:
-      - '5432:5432'
+      - "5432:5432"
     env_file:
       - ./docker/postgres.env
     volumes:
       - ${DOCKER_POSTGRES_PATH}:/var/lib/postgresql/data
+  nest-mongo:
+    image: mongo:8.0.9
+    container_name: nest-mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    env_file:
+      - ./docker/mongo.env
+    volumes:
+      - ${DOCKER_MONGO_PATH}:/data/db
   nest-redis:
     container_name: nest-redis
     image: redis:7.2.5
     ports:
-      - '6379:6379'
-
+      - "6379:6379"

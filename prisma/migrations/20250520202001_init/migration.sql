@@ -80,27 +80,6 @@ CREATE TABLE "app_2_user" (
 );
 
 -- CreateTable
-CREATE TABLE "log" (
-    "id" SERIAL NOT NULL,
-    "userAgent" TEXT,
-    "ip" TEXT,
-    "method" TEXT,
-    "headers" JSONB,
-    "url" TEXT,
-    "body" JSONB,
-    "query" JSONB,
-    "params" JSONB,
-    "className" TEXT,
-    "methodName" TEXT,
-    "username" TEXT,
-    "response" JSONB,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "isError" BOOLEAN NOT NULL DEFAULT false,
-
-    CONSTRAINT "log_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "role" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,

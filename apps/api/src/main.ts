@@ -38,7 +38,7 @@ async function bootstrap() {
   const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig, {
     extraModels: [...PrismaModel.extraModels],
   });
-  SwaggerModule.setup("api-docs", app, swaggerDocument, {
+  SwaggerModule.setup("api/api-docs", app, swaggerDocument, {
     jsonDocumentUrl: "swagger/json",
   });
 

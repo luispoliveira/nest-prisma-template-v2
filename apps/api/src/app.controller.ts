@@ -21,11 +21,11 @@ export class AppController extends BaseAuthController {
 
   @Public()
   @Get()
-  async getHello(): Promise<string> {
+  async getHello() {
     await this._defaultJob.addTestJob();
 
     // wait 5 seconds
-    await new Promise(resolve => setTimeout(resolve, 5000));
+    // await new Promise(resolve => setTimeout(resolve, 5000));
 
     await this._defaultJob.addAnotherTestJob();
 
