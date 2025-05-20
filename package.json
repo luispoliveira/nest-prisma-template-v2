@@ -122,9 +122,8 @@
     ],
     "moduleNameMapper": {
       "^@lib/common(|/.*)$": "<rootDir>/libs/common/src/$1",
-      "^@lib/prisma(|/.*)$": "<rootDir>/libs/prisma/src/$1",
       "^@lib/graphql(|/.*)$": "<rootDir>/libs/graphql/src/$1",
-      "^@lib/auth(|/.*)$": "<rootDir>/libs/auth/src/$1",
+      "^@lib/prisma(|/.*)$": "<rootDir>/libs/prisma/src/$1",
       "^@lib/queue(|/.*)$": "<rootDir>/libs/queue/src/$1"
     }
   },

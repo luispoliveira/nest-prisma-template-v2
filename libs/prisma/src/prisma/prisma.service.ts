@@ -1,8 +1,8 @@
+import { PrismaClient } from "@gen/prisma-client";
 import { EnvironmentEnum, LoggerUtil } from "@lib/common";
 import { Injectable, OnModuleInit } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient } from "@prisma/client";
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit {
   constructor(private readonly _configService: ConfigService) {
@@ -14,7 +14,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     const logPrisma = _configService.get<boolean>("logPrisma")!;
 
     super({
-      adapter,
+      // adapter,
       log: logPrisma ? LoggerUtil.getPrismaLogger(environment) : [],
       errorFormat: "pretty",
     });
