@@ -13,18 +13,40 @@ services:
   #     - .env
 
   nest-postgres:
-    image: postgres:16.4
+    image: postgres:17.5-alpine
     container_name: nest-postgres
     restart: always
     ports:
-      - '5432:5432'
+      - "5432:5432"
     env_file:
       - ./docker/postgres.env
     volumes:
       - ${DOCKER_POSTGRES_PATH}:/var/lib/postgresql/data
+  nest-mongo:
+    image: mongo:8.0.9
+    container_name: nest-mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    env_file:
+      - ./docker/mongo.env
+    volumes:
+      - ${DOCKER_MONGO_PATH}:/data/db
+  nest-mongo-express:
+    image: mongo-express:1.0.2-20-alpine3.19
+    container_name: nest-mongo-express
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+      ME_CONFIG_MONGODB_URL: mongodb://root:example@nest-mongo:27017/
+      ME_CONFIG_BASICAUTH: false
+    depends_on:
+      - nest-mongo
   nest-redis:
     container_name: nest-redis
     image: redis:7.2.5
     ports:
-      - '6379:6379'
-
+      - "6379:6379"
