@@ -14,15 +14,15 @@ export class Log {
   @Prop()
   method?: string;
   @Prop({ type: mongoose.Schema.Types.Mixed })
-  headers?: Record<string, unknown>;
+  headers?: any;
   @Prop()
   url?: string;
   @Prop({ type: mongoose.Schema.Types.Mixed })
-  body?: Record<string, unknown>;
+  body?: any;
   @Prop({ type: mongoose.Schema.Types.Mixed })
-  query?: Record<string, unknown>;
+  query?: any;
   @Prop({ type: mongoose.Schema.Types.Mixed })
-  params?: Record<string, unknown>;
+  params?: any;
   @Prop()
   className?: string;
   @Prop()
@@ -30,7 +30,7 @@ export class Log {
   @Prop()
   username?: string;
   @Prop({ type: mongoose.Schema.Types.Mixed })
-  response?: Record<string, unknown>;
+  response?: any;
   @Prop()
   createdAt?: Date;
   @Prop()

@@ -1,5 +1,5 @@
+import { Prisma } from "@gen/prisma-client";
 import { ApiPropertyOptional } from "@nestjs/swagger";
-import { Prisma } from "@prisma/client";
 import { Type } from "class-transformer";
 import {
   IsArray,

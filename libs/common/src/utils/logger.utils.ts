@@ -1,6 +1,6 @@
+import { Prisma } from "@gen/prisma-client";
 import { LogLevel } from "@nestjs/common";
 import { EnvironmentEnum } from "../enum/environment.enum";
-import { Prisma } from "@prisma/client";
 
 export class LoggerUtil {
   static getLogger(environment: EnvironmentEnum) {

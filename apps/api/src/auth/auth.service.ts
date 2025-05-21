@@ -1,7 +1,7 @@
+import { User } from "@gen/prisma-client";
 import { JwtPayloadType, PasswordUtil } from "@lib/common";
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { User } from "@prisma/client";
 import { UsersService } from "../users/users.service";
 
 @Injectable()

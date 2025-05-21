@@ -1,5 +1,5 @@
+import { PrismaClient } from "@gen/prisma-client";
 import { Injectable } from "@nestjs/common";
-import { PrismaClient } from "@prisma/client";
 import {
   ValidationArguments,
   ValidatorConstraint,

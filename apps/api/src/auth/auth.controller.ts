@@ -1,8 +1,8 @@
+import { User } from "@gen/prisma-client";
 import { Public } from "@lib/auth";
 import { BaseAuthController } from "@lib/auth/controllers/base-auth.controller";
 import { Body, Controller, Post } from "@nestjs/common";
 import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
-import { User } from "@prisma/client";
 import { AuthService } from "./auth.service";
 import { SignInDto } from "./dto/sign-in.dto";
 import { Login } from "./models/login.model";

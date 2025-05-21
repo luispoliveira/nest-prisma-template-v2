@@ -1,5 +1,5 @@
+import { User } from "@gen/prisma-client";
 import { LoggedUser } from "@lib/auth";
-import { User } from "@prisma/client";
 
 export type Role = "admin" | "moderator" | "user";
 

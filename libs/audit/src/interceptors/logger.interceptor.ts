@@ -21,12 +21,18 @@ export class LoggerInterceptor implements NestInterceptor {
     const request = ContextUtil.getRequest(context);
 
     const userAgent = request.get("user-agent") || "";
-    const { ip, method, url, body, query, params } = request;
+    const { ip, method, url, body, query, params, headers } = request;
 
     const className = context.getClass().name;
     const handlerName = context.getHandler().name;
 
-    const username = request.user?.email || "anonymous";
+    let username = "anonymous";
+
+    const apiKeyHeader = request.get("api-key");
+
+    if (apiKeyHeader) username = `APIKEY:${apiKeyHeader}`;
+
+    if (request.user) username = request.user.email;
 
     const log = await this._logService.create({
       userAgent,
@@ -39,6 +45,7 @@ export class LoggerInterceptor implements NestInterceptor {
       username,
       className,
       methodName: handlerName,
+      headers,
     });
 
     return next.handle().pipe(

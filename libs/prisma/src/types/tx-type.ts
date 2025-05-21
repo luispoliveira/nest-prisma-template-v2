@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@gen/prisma-client";
 import { DefaultArgs } from "@prisma/client/runtime/library";
 
 export type PrismaTx = Omit<

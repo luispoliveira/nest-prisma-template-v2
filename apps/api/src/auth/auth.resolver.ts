@@ -1,6 +1,6 @@
+import { User } from "@gen/prisma-client";
 import { Public } from "@lib/auth";
 import { Args, Mutation, Resolver } from "@nestjs/graphql";
-import { User } from "@prisma/client";
 import { AuthService } from "./auth.service";
 import { Login } from "./models/login.model";
 
