@@ -20,6 +20,8 @@ export class AuthService {
     });
     if (!user) throw new UnauthorizedException("User not found");
 
+    if (!user.isActive) throw new UnauthorizedException("User is not active");
+
     if (!user.password) throw new UnauthorizedException("User with no active credentials");
 
     if (!(await PasswordUtil.comparePassword(user.password, password)))

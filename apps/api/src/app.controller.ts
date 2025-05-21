@@ -30,7 +30,6 @@ export class AppController extends BaseAuthController {
     // await new Promise(resolve => setTimeout(resolve, 5000));
 
     const user = this._clsService.get<LoggedUser>("user");
-    console.log("🚀 ~ AppController ~ getHello ~ user:", user);
 
     await this._defaultJob.addAnotherTestJob();
 

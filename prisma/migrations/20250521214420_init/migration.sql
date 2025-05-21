@@ -56,30 +56,6 @@ CREATE TABLE "otp" (
 );
 
 -- CreateTable
-CREATE TABLE "app" (
-    "id" SERIAL NOT NULL,
-    "name" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "app_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "app_2_user" (
-    "id" SERIAL NOT NULL,
-    "appId" INTEGER NOT NULL,
-    "userId" INTEGER NOT NULL,
-    "isActive" BOOLEAN NOT NULL DEFAULT true,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-    "createdBy" TEXT,
-    "updatedBy" TEXT,
-
-    CONSTRAINT "app_2_user_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "role" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
@@ -148,12 +124,6 @@ CREATE UNIQUE INDEX "api_key_name_key" ON "api_key"("name");
 CREATE UNIQUE INDEX "api_key_key_key" ON "api_key"("key");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "app_name_key" ON "app"("name");
-
--- CreateIndex
-CREATE UNIQUE INDEX "app_2_user_appId_userId_key" ON "app_2_user"("appId", "userId");
-
--- CreateIndex
 CREATE UNIQUE INDEX "role_name_key" ON "role"("name");
 
 -- CreateIndex
@@ -170,12 +140,6 @@ ALTER TABLE "user" ADD CONSTRAINT "user_roleId_fkey" FOREIGN KEY ("roleId") REFE
 
 -- AddForeignKey
 ALTER TABLE "otp" ADD CONSTRAINT "otp_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "app_2_user" ADD CONSTRAINT "app_2_user_appId_fkey" FOREIGN KEY ("appId") REFERENCES "app"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "app_2_user" ADD CONSTRAINT "app_2_user_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "permission_2_role" ADD CONSTRAINT "permission_2_role_permissionId_fkey" FOREIGN KEY ("permissionId") REFERENCES "permission"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

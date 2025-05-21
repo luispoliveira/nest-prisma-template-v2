@@ -36,6 +36,10 @@ enum OtpUseCaseEnum {
 
 model User {
   id                          Int               @id() @default(autoincrement())
+  createdAt                   DateTime          @default(now())
+  updatedAt                   DateTime          @updatedAt()
+  createdBy                   String?
+  updatedBy                   String?
   email                       String            @unique()
   password                    String?
   isActive                    Boolean           @default(false)
@@ -49,81 +53,54 @@ model User {
   twoFAPPhoneVerified         Boolean           @default(false)
   role                        Role?             @relation(fields: [roleId], references: [id])
   roleId                      Int?
-  createdAt                   DateTime          @default(now())
-  updatedAt                   DateTime          @updatedAt()
-  createdBy                   String?
-  updatedBy                   String?
   activatedAt                 DateTime?
   activatedBy                 String?
   deactivatedAt               DateTime?
   deactivatedBy               String?
   Otp                         Otp[]
   Permission2User             Permission2User[]
-  App2User                    App2User[]
 
   @@map("user")
 }
 
 model ApiKey {
   id          Int      @id() @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt()
+  createdBy   String?
+  updatedBy   String?
   name        String   @unique()
   description String?
   key         String   @unique()
   isActive    Boolean  @default(true)
   expiresAt   DateTime
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt()
 
   @@map("api_key")
 }
 
 model Otp {
   id        Int            @id() @default(autoincrement())
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt()
+  createdBy String?
+  updatedBy String?
   user      User           @relation(fields: [userId], references: [id])
   userId    Int
   code      String
   use       OtpUseCaseEnum
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt()
   expiresAt DateTime
 
   @@map("otp")
 }
 
-model App {
-  id        Int        @id() @default(autoincrement())
-  name      String     @unique()
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt()
-  App2User  App2User[]
-
-  @@map("app")
-}
-
-model App2User {
-  id        Int      @id() @default(autoincrement())
-  app       App      @relation(fields: [appId], references: [id])
-  appId     Int
-  user      User     @relation(fields: [userId], references: [id])
-  userId    Int
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt()
-  createdBy String?
-  updatedBy String?
-
-  @@unique([appId, userId])
-  @@map("app_2_user")
-}
-
 model Role {
   id              Int               @id() @default(autoincrement())
-  name            String            @unique()
-  isActive        Boolean           @default(true)
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt()
   createdBy       String?
   updatedBy       String?
+  name            String            @unique()
+  isActive        Boolean           @default(true)
   Permission2Role Permission2Role[]
   User            User[]
 
@@ -132,11 +109,13 @@ model Role {
 
 model Permission {
   id              Int               @id() @default(autoincrement())
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt()
+  createdBy       String?
+  updatedBy       String?
   name            String            @unique()
   module          String
   isActive        Boolean           @default(true)
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt()
   Permission2Role Permission2Role[]
   Permission2User Permission2User[]
 
@@ -145,15 +124,15 @@ model Permission {
 
 model Permission2Role {
   id           Int        @id() @default(autoincrement())
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt()
+  createdBy    String?
+  updatedBy    String?
   permission   Permission @relation(fields: [permissionId], references: [id])
   permissionId Int
   role         Role       @relation(fields: [roleId], references: [id])
   roleId       Int
   isActive     Boolean    @default(true)
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt()
-  createdBy    String?
-  updatedBy    String?
 
   @@unique([permissionId, roleId])
   @@map("permission_2_role")
@@ -161,15 +140,15 @@ model Permission2Role {
 
 model Permission2User {
   id           Int        @id() @default(autoincrement())
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt()
+  createdBy    String?
+  updatedBy    String?
   permission   Permission @relation(fields: [permissionId], references: [id])
   permissionId Int
   user         User       @relation(fields: [userId], references: [id])
   userId       Int
   isActive     Boolean    @default(true)
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt()
-  createdBy    String?
-  updatedBy    String?
 
   @@unique([permissionId, userId])
   @@map("permission_2_user")

@@ -1,7 +1,7 @@
+import "base"
 import "rbac"
 
-model User {
-  id                          Int               @id @default(autoincrement())
+model User extends BaseModel {
   email                       String            @unique
   password                    String?
   isActive                    Boolean           @default(false)
@@ -17,10 +17,6 @@ model User {
   role                        Role?             @relation(fields: [roleId], references: [id])
   roleId                      Int?
 
-  createdAt                   DateTime          @default(now())
-  updatedAt                   DateTime          @updatedAt
-  createdBy                   String?
-  updatedBy                   String?
   activatedAt                 DateTime?
   activatedBy                 String?
   deactivatedAt               DateTime?
@@ -28,24 +24,20 @@ model User {
 
   Otp                         Otp[]
   Permission2User             Permission2User[]
-  App2User                    App2User[]
 
   @@allow('read,create', true)
-  @@allow('all', auth() == this)
+  @@allow('all', auth() == this || auth().roleId == 1)
 
   @@map("user")
 }
 
-model ApiKey {
-  id          Int      @id @default(autoincrement())
+model ApiKey extends BaseModel {
   name        String   @unique
   description String?
   key         String   @unique
   isActive    Boolean  @default(true)
   expiresAt   DateTime
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
 
   @@map("api_key")
 }
@@ -56,44 +48,13 @@ enum OtpUseCaseEnum {
   PHV
 }
 
-model Otp {
-  id        Int            @id @default(autoincrement())
+model Otp extends BaseModel {
   user      User           @relation(fields: [userId], references: [id])
   userId    Int
   code      String
   use       OtpUseCaseEnum
 
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
   expiresAt DateTime
 
   @@map("otp")
-}
-
-model App {
-  id        Int        @id @default(autoincrement())
-  name      String     @unique
-
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  App2User  App2User[]
-
-  @@map("app")
-}
-
-model App2User {
-  id        Int      @id @default(autoincrement())
-  app       App      @relation(fields: [appId], references: [id])
-  appId     Int
-  user      User     @relation(fields: [userId], references: [id])
-  userId    Int
-  isActive  Boolean  @default(true)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  createdBy String?
-  updatedBy String?
-
-  @@unique([appId, userId])
-  @@map("app_2_user")
 }
