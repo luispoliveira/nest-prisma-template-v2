@@ -15,7 +15,6 @@ import { AppService } from "./app.service";
 import { AuthModule } from "./auth/auth.module";
 import { configuration } from "./config/configuration";
 import { validationSchema } from "./config/validation";
-import { UsersModule } from "./users/users.module";
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -50,7 +49,6 @@ import { UsersModule } from "./users/users.module";
     RbacModule,
     QueueModule.register([QUEUES.DEFAULT]),
     AuthModule,
-    UsersModule,
   ],
   controllers: [AppController],
   providers: [

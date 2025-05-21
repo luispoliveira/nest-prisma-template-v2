@@ -30,6 +30,9 @@ model User {
   Permission2User             Permission2User[]
   App2User                    App2User[]
 
+  @@allow('read,create', true)
+  @@allow('all', auth() == this)
+
   @@map("user")
 }
 
