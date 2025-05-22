@@ -22,6 +22,9 @@ model Permission extends BaseModel {
   Permission2Role Permission2Role[]
   Permission2User Permission2User[]
 
+  @@allow('all', auth().roleId == 1)
+
+
   @@map("permission")
 }
 
@@ -31,6 +34,8 @@ model Permission2Role extends BaseModel {
   role         Role       @relation(fields: [roleId], references: [id])
   roleId       Int
   isActive     Boolean    @default(true)
+
+  @@allow('all', auth().roleId == 1)
 
 
   @@unique([permissionId, roleId])
@@ -43,6 +48,8 @@ model Permission2User extends BaseModel {
   user         User       @relation(fields: [userId], references: [id])
   userId       Int
   isActive     Boolean    @default(true)
+
+  @@allow('all', auth().roleId == 1)
 
 
   @@unique([permissionId, userId])

@@ -16,6 +16,8 @@ import { AuthModule } from "./auth/auth.module";
 import { configuration } from "./config/configuration";
 import { validationSchema } from "./config/validation";
 import { UsersModule } from "./users/users.module";
+import { RolesModule } from './roles/roles.module';
+import { PermissionsModule } from './permissions/permissions.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -51,6 +53,8 @@ import { UsersModule } from "./users/users.module";
     QueueModule.register([QUEUES.DEFAULT]),
     AuthModule,
     UsersModule,
+    RolesModule,
+    PermissionsModule,
   ],
   controllers: [AppController],
   providers: [
