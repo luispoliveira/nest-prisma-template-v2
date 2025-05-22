@@ -1,12 +1,13 @@
 import { BaseAuthController } from "@lib/auth";
 import { PrismaService } from "@lib/prisma";
-import { Controller, Get, Param, ParseIntPipe } from "@nestjs/common";
+import { Controller, Get, Inject, Param, ParseIntPipe } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
+import { ENHANCED_PRISMA } from "@zenstackhq/server/nestjs";
 
 @Controller("permissions")
 @ApiTags("Permissions")
 export class PermissionsController extends BaseAuthController {
-  constructor(private readonly _prismaService: PrismaService) {
+  constructor(@Inject(ENHANCED_PRISMA) private readonly _prismaService: PrismaService) {
     super();
   }
 
