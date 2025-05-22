@@ -15,7 +15,7 @@ export class RolesController extends BaseAuthController {
 
   @Get("")
   async findAll() {
-    return this._prismaService.role.findMany({
+    return await this._prismaService.role.findMany({
       include: {
         Permission2Role: {
           include: {
@@ -28,7 +28,7 @@ export class RolesController extends BaseAuthController {
 
   @Get(":id")
   async findOne(@Param("id", ParseIntPipe) id: number) {
-    return this._prismaService.role.findUnique({
+    return await this._prismaService.role.findUnique({
       where: { id },
       include: {
         Permission2Role: {
@@ -42,7 +42,7 @@ export class RolesController extends BaseAuthController {
 
   @Get(":id/permissions")
   async permissions(@Param("id", ParseIntPipe) id: number) {
-    return this._prismaService.permission.findMany({
+    return await this._prismaService.permission.findMany({
       where: {
         Permission2Role: {
           some: {
@@ -56,7 +56,7 @@ export class RolesController extends BaseAuthController {
   @Post("")
   async create(@Body() body: CreateRoleDto) {
     try {
-      return this._prismaService.role.create({
+      return await this._prismaService.role.create({
         data: {
           name: body.name,
         },
@@ -73,7 +73,7 @@ export class RolesController extends BaseAuthController {
     };
 
     try {
-      return this._prismaService.role.update({
+      return await this._prismaService.role.update({
         where: { id },
         data,
       });
@@ -88,7 +88,7 @@ export class RolesController extends BaseAuthController {
     @Param("permissionId", ParseIntPipe) permissionId: number,
   ) {
     try {
-      return this._prismaService.permission2Role.create({
+      return await this._prismaService.permission2Role.create({
         data: {
           roleId: id,
           permissionId,
@@ -105,7 +105,7 @@ export class RolesController extends BaseAuthController {
     @Param("permissionId", ParseIntPipe) permissionId: number,
   ) {
     try {
-      return this._prismaService.permission2Role.delete({
+      return await this._prismaService.permission2Role.delete({
         where: {
           permissionId_roleId: {
             permissionId,
