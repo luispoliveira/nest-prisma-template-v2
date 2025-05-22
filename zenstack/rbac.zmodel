@@ -8,6 +8,9 @@ model Role extends BaseModel {
   Permission2Role Permission2Role[]
   User            User[]
 
+  @@allow('all', auth().roleId == 1)
+  @@allow('read', auth().roleId == this.id)
+
   @@map("role")
 }
 

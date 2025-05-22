@@ -43,7 +43,7 @@ export class JwtAuthGuard extends AuthGuard("jwt") {
     status?: unknown,
   ): TUser {
     if (err || !user) {
-      throw err || new UnauthorizedException("User not found");
+      throw err || new UnauthorizedException("You are not logged in");
     }
 
     return user as TUser;

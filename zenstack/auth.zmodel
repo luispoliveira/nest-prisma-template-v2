@@ -25,7 +25,6 @@ model User extends BaseModel {
   Otp                         Otp[]
   Permission2User             Permission2User[]
 
-  @@allow('read,create', true)
   @@allow('all', auth() == this || auth().roleId == 1)
 
   @@map("user")

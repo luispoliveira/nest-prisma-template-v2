@@ -1,5 +1,6 @@
-import { ApiProperty, PartialType } from "@nestjs/swagger";
-import { IsDefined, IsEmail, IsString, IsStrongPassword, MinLength } from "class-validator";
+import { ItExistsRecord } from "@lib/common";
+import { ApiProperty, OmitType, PartialType } from "@nestjs/swagger";
+import { IsDefined, IsEmail, IsInt, IsString, IsStrongPassword, MinLength } from "class-validator";
 
 export class CreateUserDto {
   @ApiProperty()
@@ -16,6 +17,12 @@ export class CreateUserDto {
     minSymbols: 0,
   })
   password: string;
+
+  @ApiProperty()
+  @IsDefined()
+  @IsInt()
+  @ItExistsRecord("role", "id")
+  roleId: number;
 }
 
-export class UpdateUserDto extends PartialType(CreateUserDto) {}
+export class UpdateUserDto extends OmitType(PartialType(CreateUserDto), ["roleId"]) {}
