@@ -1,8 +1,10 @@
 import { BaseAuthController } from "@lib/auth";
 import { PrismaService } from "@lib/prisma";
 import { Controller, Get, Param, ParseIntPipe } from "@nestjs/common";
+import { ApiTags } from "@nestjs/swagger";
 
 @Controller("permissions")
+@ApiTags("Permissions")
 export class PermissionsController extends BaseAuthController {
   constructor(private readonly _prismaService: PrismaService) {
     super();
