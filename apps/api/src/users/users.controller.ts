@@ -2,17 +2,7 @@ import { Prisma } from "@gen/prisma-client";
 import { BaseAuthController, CurrentUser, LoggedUser } from "@lib/auth";
 import { PasswordUtil, TokenUtil } from "@lib/common";
 import { PrismaErrorHandler, PrismaService } from "@lib/prisma";
-import {
-  Body,
-  Controller,
-  ForbiddenException,
-  Get,
-  Inject,
-  Param,
-  ParseIntPipe,
-  Patch,
-  Post,
-} from "@nestjs/common";
+import { Body, Controller, Get, Inject, Param, ParseIntPipe, Patch, Post } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { ENHANCED_PRISMA } from "@zenstackhq/server/nestjs";
 import { CreateUserDto, UpdateUserDto } from "./dto/user.dto";
@@ -50,8 +40,6 @@ export class UsersController extends BaseAuthController {
         data: body,
       });
     } catch (error: any) {
-      if (error.meta.reason) throw new ForbiddenException("Access denied");
-
       throw PrismaErrorHandler.handlePrismaError(error);
     }
   }
@@ -72,8 +60,6 @@ export class UsersController extends BaseAuthController {
         data,
       });
     } catch (error: any) {
-      if (error.meta.reason) throw new ForbiddenException("Access denied");
-
       throw PrismaErrorHandler.handlePrismaError(error);
     }
   }
@@ -97,8 +83,6 @@ export class UsersController extends BaseAuthController {
        */
       return user;
     } catch (error: any) {
-      if (error.meta.reason) throw new ForbiddenException("Access denied");
-
       throw PrismaErrorHandler.handlePrismaError(error);
     }
   }
@@ -131,8 +115,6 @@ export class UsersController extends BaseAuthController {
         data: { role: { connect: { id: roleId } } },
       });
     } catch (error: any) {
-      if (error.meta.reason) throw new ForbiddenException("Access denied");
-
       throw PrismaErrorHandler.handlePrismaError(error);
     }
   }

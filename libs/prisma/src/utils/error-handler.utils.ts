@@ -1,8 +1,10 @@
 import { Prisma } from "@gen/prisma-client";
-import { BadRequestException, NotFoundException } from "@nestjs/common";
+import { BadRequestException, ForbiddenException, NotFoundException } from "@nestjs/common";
 
 export class PrismaErrorHandler {
   static handlePrismaError(error: any) {
+    if (error.meta.reason) throw new ForbiddenException("Access denied");
+
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       switch (error.code) {
         case "P2002": // Unique constraint failed

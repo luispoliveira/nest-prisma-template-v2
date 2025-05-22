@@ -1,6 +1,6 @@
 import { Prisma } from "@gen/prisma-client";
 import { BaseAuthController } from "@lib/auth";
-import { PrismaService } from "@lib/prisma";
+import { PrismaErrorHandler, PrismaService } from "@lib/prisma";
 import { Body, Controller, Get, Inject, Param, ParseIntPipe, Patch, Post } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { ENHANCED_PRISMA } from "@zenstackhq/server/nestjs";
@@ -55,11 +55,15 @@ export class RolesController extends BaseAuthController {
 
   @Post("")
   async create(@Body() body: CreateRoleDto) {
-    return this._prismaService.role.create({
-      data: {
-        name: body.name,
-      },
-    });
+    try {
+      return this._prismaService.role.create({
+        data: {
+          name: body.name,
+        },
+      });
+    } catch (e) {
+      throw PrismaErrorHandler.handlePrismaError(e);
+    }
   }
 
   @Patch(":id")
@@ -68,10 +72,14 @@ export class RolesController extends BaseAuthController {
       ...body,
     };
 
-    return this._prismaService.role.update({
-      where: { id },
-      data,
-    });
+    try {
+      return this._prismaService.role.update({
+        where: { id },
+        data,
+      });
+    } catch (e) {
+      throw PrismaErrorHandler.handlePrismaError(e);
+    }
   }
 
   @Post(":id/permissions/:permissionId")
@@ -79,12 +87,16 @@ export class RolesController extends BaseAuthController {
     @Param("id", ParseIntPipe) id: number,
     @Param("permissionId", ParseIntPipe) permissionId: number,
   ) {
-    return this._prismaService.permission2Role.create({
-      data: {
-        roleId: id,
-        permissionId,
-      },
-    });
+    try {
+      return this._prismaService.permission2Role.create({
+        data: {
+          roleId: id,
+          permissionId,
+        },
+      });
+    } catch (e) {
+      throw PrismaErrorHandler.handlePrismaError(e);
+    }
   }
 
   @Patch(":id/permissions/:permissionId")
@@ -92,13 +104,17 @@ export class RolesController extends BaseAuthController {
     @Param("id", ParseIntPipe) id: number,
     @Param("permissionId", ParseIntPipe) permissionId: number,
   ) {
-    return this._prismaService.permission2Role.delete({
-      where: {
-        permissionId_roleId: {
-          permissionId,
-          roleId: id,
+    try {
+      return this._prismaService.permission2Role.delete({
+        where: {
+          permissionId_roleId: {
+            permissionId,
+            roleId: id,
+          },
         },
-      },
-    });
+      });
+    } catch (e) {
+      throw PrismaErrorHandler.handlePrismaError(e);
+    }
   }
 }
