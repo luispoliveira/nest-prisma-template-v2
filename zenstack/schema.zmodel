@@ -19,6 +19,8 @@ generator prismaClassGenerator {
   output                   = "../generated/prisma-class-generator"
   separateRelationFields   = true
   useNonNullableAssertions = false
+  useSwagger               = true
+  clientImportPath         = "@gen/prisma-client"
 }
 
 generator erd {

@@ -29,8 +29,7 @@
       "@lib/prisma": ["libs/prisma/src"],
       "@lib/prisma/*": ["libs/prisma/src/*"],
       "@lib/queue": ["libs/queue/src"],
-      "@lib/queue/*": ["libs/queue/src/*"],
-      "@prisma/client": ["generated/prisma-client"]
+      "@lib/queue/*": ["libs/queue/src/*"]
     }
   },
   "include": ["src/**/*.ts", "test/**/*.ts", "apps/**/*.ts", "libs/**/*.ts", "prisma/**/*.ts"],
