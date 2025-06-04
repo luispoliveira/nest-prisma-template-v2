@@ -38,6 +38,9 @@
     "prisma:seed": "npx prisma db seed --schema=schema.prisma"
   },
   "dependencies": {
+    "@adminjs/express": "^6.1.1",
+    "@adminjs/prisma": "^5.0.3",
+    "@adminjs/sql": "^2.2.6",
     "@apollo/server": "4.12.1",
     "@nestjs/apollo": "13.1.0",
     "@nestjs/bull": "11.0.2",
@@ -55,10 +58,15 @@
     "@prisma/client": "6.8.2",
     "@zenstackhq/runtime": "2.15.0",
     "@zenstackhq/server": "^2.15.0",
+    "adminjs": "^7.8.16",
     "bcrypt": "6.0.0",
     "bull": "^4.16.5",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
+    "connect-pg-simple": "^10.0.0",
+    "express": "^5.1.0",
+    "express-formidable": "^1.2.0",
+    "express-session": "^1.18.1",
     "graphql": "^16.11.0",
     "helmet": "^8.1.0",
     "joi": "^17.13.3",
@@ -73,6 +81,7 @@
     "prisma-erd-generator": "2.0.4",
     "reflect-metadata": "0.2.2",
     "rxjs": "^7.8.2",
+    "tslib": "^2.8.1",
     "uuid": "^11.1.0",
     "yargs": "^17.7.2"
   },
