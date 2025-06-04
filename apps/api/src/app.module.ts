@@ -1,5 +1,5 @@
 import { AuditModule } from "@app/audit";
-import { RbacModule } from "@lib/auth";
+import { RBAC } from "@lib/auth";
 import { GraphqlModule } from "@lib/graphql";
 import { PrismaModule, PrismaService } from "@lib/prisma";
 import { QueueModule, QUEUES } from "@lib/queue";
@@ -10,14 +10,15 @@ import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 import { enhance } from "@zenstackhq/runtime";
 import { ZenStackModule } from "@zenstackhq/server/nestjs";
 import { ClsModule, ClsService } from "nestjs-cls";
+import { RBAcModule } from "nestjs-rbac";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { AuthModule } from "./auth/auth.module";
 import { configuration } from "./config/configuration";
 import { validationSchema } from "./config/validation";
+import { PermissionsModule } from "./permissions/permissions.module";
+import { RolesModule } from "./roles/roles.module";
 import { UsersModule } from "./users/users.module";
-import { RolesModule } from './roles/roles.module';
-import { PermissionsModule } from './permissions/permissions.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -49,12 +50,12 @@ import { PermissionsModule } from './permissions/permissions.module';
       extraProviders: [PrismaService],
     }),
     GraphqlModule.register(),
-    RbacModule,
     QueueModule.register([QUEUES.DEFAULT]),
     AuthModule,
     UsersModule,
     RolesModule,
     PermissionsModule,
+    RBAcModule.forRoot(RBAC),
   ],
   controllers: [AppController],
   providers: [

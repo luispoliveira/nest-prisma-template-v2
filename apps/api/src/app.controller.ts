@@ -2,14 +2,11 @@ import { LoggedUser } from "@lib/auth";
 import { BaseAuthController } from "@lib/auth/controllers/base-auth.controller";
 import { DefaultJob } from "@lib/queue";
 import { Controller, Get } from "@nestjs/common";
-import { ApiBearerAuth, ApiHeader } from "@nestjs/swagger";
+import { ApiBearerAuth } from "@nestjs/swagger";
 import { ClsService } from "nestjs-cls";
+import { RBAcAsyncPermissions } from "nestjs-rbac";
 import { AppService } from "./app.service";
 
-@ApiHeader({
-  name: "api-key",
-  description: "API Key",
-})
 @ApiBearerAuth()
 @Controller()
 export class AppController extends BaseAuthController {
@@ -23,6 +20,7 @@ export class AppController extends BaseAuthController {
 
   // @Public()
   @Get()
+  @RBAcAsyncPermissions("user@create")
   async getHello() {
     // await this._defaultJob.addTestJob();
 

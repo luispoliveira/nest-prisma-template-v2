@@ -8008,6 +8008,11 @@ nestjs-command@^3.1.5:
     lodash.compact "^3.0.1"
     lodash.flattendeep "^4.4.0"
 
+nestjs-rbac@^2025.1.1:
+  version "2025.1.1"
+  resolved "https://registry.yarnpkg.com/nestjs-rbac/-/nestjs-rbac-2025.1.1.tgz#f5c744411d6e66c9194f280a2289c323ea6de9b5"
+  integrity sha512-W+nWzlRVvlV8x6na6t1v3XkCHIFgfK/YsCdYO0AcLuycDTIRLZZf77RFim6eY3AVtcoENatL2MfDpSbcy0FSsA==
+
 no-case@^3.0.4:
   version "3.0.4"
   resolved "https://registry.npmjs.org/no-case/-/no-case-3.0.4.tgz"

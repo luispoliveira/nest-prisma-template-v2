@@ -1,5 +1,3 @@
-export * from "./abac/abac.module";
-export * from "./abac/abac.service";
 export * from "./controllers/base-api-key.controller";
 export * from "./controllers/base-auth.controller";
 export * from "./controllers/base-public.controller";
@@ -8,9 +6,8 @@ export * from "./decorators/needs-permissions.decorator";
 export * from "./decorators/public.decorator";
 export * from "./guards/api-key-auth.guard";
 export * from "./guards/jwt-auth.guard";
-export * from "./guards/permissions.guard";
+export * from "./interceptor/auth.interceptor";
 export * from "./models/user.model";
-export * from "./rbac/rbac.module";
-export * from "./rbac/rbac.service";
+export * from "./rbac.const";
 export * from "./strategies/api-key.strategy";
 export * from "./strategies/jwt.strategy";
