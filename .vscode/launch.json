@@ -15,6 +15,14 @@
       "autoAttachChildProcesses": true,
       "restart": true,
       "console": "integratedTerminal"
+    },
+    {
+      "type": "node",
+      "request": "attach",
+      "name": "Attach to NestJS App",
+      "port": 9229,
+      "restart": true,
+      "skipFiles": ["<node_internals>/**"]
     }
   ],
   "inputs": [
