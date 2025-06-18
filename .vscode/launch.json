@@ -1,0 +1,28 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug NestJS App",
+      "program": "${workspaceFolder}/${input:entryPoint}",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "runtimeArgs": ["-r", "ts-node/register", "-r", "tsconfig-paths/register"],
+      "envFile": "${workspaceFolder}/.env",
+      "sourceMaps": true,
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+      "autoAttachChildProcesses": true,
+      "restart": true,
+      "console": "integratedTerminal"
+    }
+  ],
+  "inputs": [
+    {
+      "id": "entryPoint",
+      "type": "pickString",
+      "description": "Select the entry point TypeScript file to debug",
+      "options": ["apps/api/src/main.ts", "apps/cli/src/main.ts", "apps/worker/src/main.ts"]
+    }
+  ]
+}
