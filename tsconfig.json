@@ -16,8 +16,10 @@
     "strictPropertyInitialization": false,
     "composite": false,
     "paths": {
-      "@app/audit": ["libs/audit/src"],
-      "@app/audit/*": ["libs/audit/src/*"],
+      "@lib/audit": ["libs/audit/src"],
+      "@lib/audit/*": ["libs/audit/src/*"],
+      "@lib/health": ["libs/health/src"],
+      "@lib/health/*": ["libs/health/src/*"],
       "@gen/prisma-class-generator": ["generated/prisma-class-generator/index.ts"],
       "@gen/prisma-client": ["generated/prisma-client"],
       "@gen/prisma-client/runtime/library": ["generated/prisma-client/runtime/library"],

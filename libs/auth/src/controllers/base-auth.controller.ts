@@ -1,4 +1,4 @@
-import { LoggerInterceptor } from "@app/audit";
+import { LoggerInterceptor } from "@lib/audit";
 import { UseGuards, UseInterceptors } from "@nestjs/common";
 import { ApiBearerAuth } from "@nestjs/swagger";
 import { JwtAuthGuard } from "../guards/jwt-auth.guard";

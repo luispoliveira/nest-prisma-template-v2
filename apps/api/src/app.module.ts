@@ -1,6 +1,7 @@
-import { AuditModule } from "@app/audit";
+import { AuditModule } from "@lib/audit";
 import { RbacModule } from "@lib/auth";
 import { GraphqlModule } from "@lib/graphql";
+import { HealthModule } from "@lib/health";
 import { PrismaModule, PrismaService } from "@lib/prisma";
 import { QueueModule, QUEUES } from "@lib/queue";
 import { Module } from "@nestjs/common";
@@ -15,9 +16,9 @@ import { AppService } from "./app.service";
 import { AuthModule } from "./auth/auth.module";
 import { configuration } from "./config/configuration";
 import { validationSchema } from "./config/validation";
+import { PermissionsModule } from "./permissions/permissions.module";
+import { RolesModule } from "./roles/roles.module";
 import { UsersModule } from "./users/users.module";
-import { RolesModule } from './roles/roles.module';
-import { PermissionsModule } from './permissions/permissions.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -48,6 +49,7 @@ import { PermissionsModule } from './permissions/permissions.module';
       inject: [PrismaService, ClsService],
       extraProviders: [PrismaService],
     }),
+    HealthModule,
     GraphqlModule.register(),
     RbacModule,
     QueueModule.register([QUEUES.DEFAULT]),

@@ -1,4 +1,4 @@
-import { LoggerInterceptor } from "@app/audit";
+import { LoggerInterceptor } from "@lib/audit";
 import { UseGuards, UseInterceptors } from "@nestjs/common";
 import { ApiHeader } from "@nestjs/swagger";
 import { ApiKeyAuthGuard } from "../guards/api-key-auth.guard";
