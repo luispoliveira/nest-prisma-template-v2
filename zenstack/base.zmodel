@@ -4,4 +4,6 @@ abstract model BaseModel {
   updatedAt DateTime @updatedAt
   createdBy String?  @default(auth().email)
   updatedBy String?  @default(auth().email)
+
+  @@allow('all', auth().roleId == 1)
 }

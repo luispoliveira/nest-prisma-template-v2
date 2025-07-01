@@ -3,7 +3,7 @@ import "misc"
 import "rbac"
 generator client {
   provider     = "prisma-client-js"
-  // previewFeatures = ["queryCompiler", "driverAdapters"]
+  previewFeatures = ["queryCompiler", "driverAdapters"]
   output       = "../generated/prisma-client"
   moduleFormat = "esm"
 }

@@ -3,7 +3,7 @@ import "rbac"
 
 model User extends BaseModel {
   email                       String            @unique
-  password                    String?
+  password                    String?           @omit
   isActive                    Boolean           @default(false)
   activationToken             String?           @unique
   activationTokenExpiresAt    DateTime?

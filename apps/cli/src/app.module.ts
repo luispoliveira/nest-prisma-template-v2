@@ -14,7 +14,7 @@ import { validationSchema } from "./config/validation";
       load: [configuration],
       validationSchema,
     }),
-    PrismaModule.register(),
+    PrismaModule,
     CommandModule,
     ApiKeysModule,
   ],

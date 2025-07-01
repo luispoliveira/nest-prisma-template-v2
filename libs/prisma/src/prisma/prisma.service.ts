@@ -14,7 +14,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     const logPrisma = _configService.get<boolean>("logPrisma")!;
 
     super({
-      // adapter,
+      adapter,
       log: logPrisma ? LoggerUtil.getPrismaLogger(environment) : [],
       errorFormat: "pretty",
     });

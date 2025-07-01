@@ -5,7 +5,7 @@ import { DefaultConsumer } from "./consumer/default.consumer";
 import { WorkerService } from "./worker.service";
 
 @Module({
-  imports: [PrismaModule.register(), QueueModule.register([QUEUES.DEFAULT])],
+  imports: [PrismaModule, QueueModule.register([QUEUES.DEFAULT])],
   controllers: [],
   providers: [WorkerService, DefaultConsumer],
 })
