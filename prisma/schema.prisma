@@ -37,6 +37,15 @@ enum OtpUseCaseEnum {
   PHV
 }
 
+model Session {
+  sid    String   @id()
+  sess   Json
+  expire DateTime
+
+  @@index([expire])
+  @@map("session")
+}
+
 model User {
   id                          Int               @id() @default(autoincrement())
   createdAt                   DateTime          @default(now())
