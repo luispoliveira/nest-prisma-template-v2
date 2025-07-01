@@ -20,6 +20,8 @@ generator prismaClassGenerator {
   output                   = "../generated/prisma-class-generator"
   separateRelationFields   = true
   useNonNullableAssertions = false
+  useSwagger               = true
+  clientImportPath         = "@gen/prisma-client"
 }
 
 generator erd {
@@ -32,6 +34,15 @@ enum OtpUseCaseEnum {
   LOGIN
   D2FA
   PHV
+}
+
+model Session {
+  sid    String   @id()
+  sess   Json
+  expire DateTime
+
+  @@index([expire])
+  @@map("session")
 }
 
 model User {
