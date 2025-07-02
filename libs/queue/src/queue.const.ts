@@ -1,5 +1,6 @@
 export const QUEUES = {
   DEFAULT: "default",
+  EMAIL: "email",
 };
 
 export const EVENTS = {

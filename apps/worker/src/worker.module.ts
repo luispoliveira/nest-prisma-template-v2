@@ -1,6 +1,6 @@
 import { HealthModule } from "@lib/health";
 import { PrismaModule } from "@lib/prisma";
-import { QueueModule, QUEUES } from "@lib/queue";
+import { ALL_QUEUES, QueueModule } from "@lib/queue";
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { ScheduleModule } from "@nestjs/schedule";
@@ -23,7 +23,7 @@ import { WorkerService } from "./worker.service";
     }),
     ScheduleModule.forRoot(),
     PrismaModule,
-    QueueModule.register([QUEUES.DEFAULT]),
+    QueueModule.register(ALL_QUEUES),
     HealthModule,
   ],
   controllers: [],

@@ -4,10 +4,13 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { configuration } from "./config/configuration";
 import { validationSchema } from "./config/validation";
 import { DefaultJob } from "./jobs/default.job";
+import { QUEUES } from "./queue.const";
 import { EnhancedQueueService } from "./services/enhanced-queue.service";
 import { QueueDashboardService } from "./services/queue-dashboard.service";
 import { QueueIntegrationService } from "./services/queue-integration.service";
 import { QueueMonitoringService } from "./services/queue-monitoring.service";
+
+export const ALL_QUEUES = [QUEUES.DEFAULT, QUEUES.EMAIL];
 
 @Global()
 @Module({})

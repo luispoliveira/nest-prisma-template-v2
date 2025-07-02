@@ -1,6 +1,6 @@
 import { PrismaModel } from "@gen/prisma-class-generator";
 import { EnvironmentEnum, GQL_APOLLO_HELMET, LoggerUtil } from "@lib/common";
-import { Logger, ValidationPipe } from "@nestjs/common";
+import { Logger, ValidationPipe, VersioningType } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
@@ -25,6 +25,11 @@ async function bootstrap() {
   );
 
   app.useGlobalPipes(new ValidationPipe());
+
+  app.enableVersioning({
+    type: VersioningType.URI,
+    defaultVersion: "1",
+  });
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle("API")

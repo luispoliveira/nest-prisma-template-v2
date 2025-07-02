@@ -1,5 +1,5 @@
 import { PrismaModule } from "@lib/prisma";
-import { QueueModule, QUEUES } from "@lib/queue";
+import { ALL_QUEUES, QueueModule } from "@lib/queue";
 import { HttpModule } from "@nestjs/axios";
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
@@ -25,7 +25,7 @@ import { SystemHealthIndicator } from "./indicators/system-health.indicator";
     TerminusModule,
     HttpModule,
     PrismaModule,
-    QueueModule.register([QUEUES.DEFAULT]), // Import queue module with default queue
+    QueueModule.register(ALL_QUEUES), // Import queue module with default queue
   ],
   providers: [
     HealthService,

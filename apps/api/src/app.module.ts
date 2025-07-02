@@ -3,7 +3,7 @@ import { RbacModule } from "@lib/auth";
 import { GraphqlModule } from "@lib/graphql";
 import { HealthModule } from "@lib/health";
 import { PrismaModule, PrismaService } from "@lib/prisma";
-import { QueueModule, QUEUES } from "@lib/queue";
+import { ALL_QUEUES, QueueModule } from "@lib/queue";
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { APP_GUARD } from "@nestjs/core";
@@ -17,6 +17,7 @@ import { AuthModule } from "./auth/auth.module";
 import { configuration } from "./config/configuration";
 import { validationSchema } from "./config/validation";
 import { PermissionsModule } from "./permissions/permissions.module";
+import { QueueController } from "./queue.controller";
 import { RolesModule } from "./roles/roles.module";
 import { UsersModule } from "./users/users.module";
 @Module({
@@ -52,13 +53,13 @@ import { UsersModule } from "./users/users.module";
     HealthModule,
     GraphqlModule.register(),
     RbacModule,
-    QueueModule.register([QUEUES.DEFAULT]),
+    QueueModule.register(ALL_QUEUES),
     AuthModule,
     UsersModule,
     RolesModule,
     PermissionsModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, QueueController],
   providers: [
     {
       provide: APP_GUARD,
