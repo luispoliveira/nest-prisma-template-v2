@@ -1,9 +1,9 @@
 abstract model BaseModel {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  createdBy String?  @default(auth().email)
-  updatedBy String?  @default(auth().email)
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  createdBy String?   @default(auth().email)
+  updatedBy String?   @default(auth().email)
 
   @@allow('all', auth().roleId == 1)
 }
