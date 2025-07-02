@@ -1,3 +1,4 @@
+// Original exports
 export * from "./decorators/is-unique-record.decorator";
 export * from "./decorators/it-exists-record.decorator";
 export * from "./dtos/create.dto";
@@ -20,3 +21,21 @@ export * from "./utils/password.utils";
 export * from "./utils/token.util";
 export * from "./validators/is-unique-record.validator";
 export * from "./validators/it-exists-record.validator";
+
+// Enhanced exports
+export * from "./decorators/cache.decorator";
+export * from "./decorators/validation.decorator";
+export * from "./dtos/advanced-pagination.dto";
+export * from "./dtos/base-filter.dto";
+export * from "./exceptions/base.exception";
+export * from "./exceptions/business.exceptions";
+export * from "./filters/global-exception.filter";
+export * from "./interceptors/response.interceptor";
+export * from "./middleware/common.middleware";
+export * from "./types/api-response.type";
+export * from "./utils/config.util";
+export * from "./utils/database.util";
+export * from "./utils/file.util";
+export * from "./utils/health-check.util";
+export * from "./utils/performance.util";
+export * from "./utils/security.util";
