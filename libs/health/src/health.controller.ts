@@ -1,4 +1,3 @@
-import { BaseAuthController } from "@lib/auth";
 import { Controller, Get } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { HealthCheckResult } from "@nestjs/terminus";
@@ -7,10 +6,8 @@ import { HealthStatus, LivenessResponse, ReadinessResponse } from "./interfaces/
 
 @ApiTags("Health")
 @Controller("health")
-export class HealthController extends BaseAuthController {
-  constructor(private readonly healthService: HealthService) {
-    super();
-  }
+export class HealthController {
+  constructor(private readonly healthService: HealthService) {}
 
   @Get()
   @ApiOperation({ summary: "Complete health check endpoint" })

@@ -1,4 +1,3 @@
-import { BaseAuthController } from "@lib/auth";
 import { Controller, Get, Logger, Query } from "@nestjs/common";
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { HealthCheck, HealthCheckResult, HealthCheckService } from "@nestjs/terminus";
@@ -7,16 +6,14 @@ import { HealthService } from "./health.service";
 
 @ApiTags("Health")
 @Controller("health")
-export class EnhancedHealthController extends BaseAuthController {
+export class EnhancedHealthController {
   private readonly logger = new Logger(EnhancedHealthController.name);
 
   constructor(
     private readonly healthCheckService: HealthCheckService,
     private readonly healthService: HealthService,
     private readonly enhancedHealthService: EnhancedHealthService,
-  ) {
-    super();
-  }
+  ) {}
 
   @Get()
   @HealthCheck()
