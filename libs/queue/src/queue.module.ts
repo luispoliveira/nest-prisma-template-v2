@@ -5,6 +5,7 @@ import { configuration } from "./config/configuration";
 import { validationSchema } from "./config/validation";
 import { DefaultJob } from "./jobs/default.job";
 import { QUEUES } from "./queue.const";
+import { QueueController } from "./queue.controller";
 import { EnhancedQueueService } from "./services/enhanced-queue.service";
 import { QueueDashboardService } from "./services/queue-dashboard.service";
 import { QueueIntegrationService } from "./services/queue-integration.service";
@@ -53,6 +54,7 @@ export class QueueModule {
         QueueDashboardService,
         QueueIntegrationService,
       ],
+      controllers: [QueueController], // Add controllers if needed
       exports: [
         DefaultJob,
         EnhancedQueueService,

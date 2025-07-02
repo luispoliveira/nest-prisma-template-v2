@@ -1,15 +1,18 @@
-import { EnhancedQueueService, QueueDashboardService } from "@lib/queue";
+import { BaseAuthController } from "@lib/auth";
 import { Body, Controller, Get, Post, Query } from "@nestjs/common";
-import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import { ApiTags } from "@nestjs/swagger";
+import { EnhancedQueueService } from "./services/enhanced-queue.service";
+import { QueueDashboardService } from "./services/queue-dashboard.service";
 
 @ApiTags("Queue")
-@ApiBearerAuth()
 @Controller("queue")
-export class QueueController {
+export class QueueController extends BaseAuthController {
   constructor(
     private readonly queueService: EnhancedQueueService,
     private readonly dashboardService: QueueDashboardService,
-  ) {}
+  ) {
+    super();
+  }
 
   @Get("status")
   async getStatus(@Query("queue") queue = "default") {
