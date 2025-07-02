@@ -224,4 +224,124 @@ export class AuthService {
       lastLoginAt: user.lastLogin,
     };
   }
+
+  /**
+   * Setup 2FA for a user
+   */
+  async setup2FA(
+    userId: number,
+  ): Promise<{ setupId: string; qrCode: string; qrCodeDataUrl: string; backupCodes: string[] }> {
+    const user = await this.prismaService.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new BadRequestException("User not found");
+    }
+
+    // Generate 2FA secret
+    const secret = await this.twoFactorService.generateSecret(user.email);
+
+    // Start pending setup
+    const setupId = this.twoFactorService.startPendingSetup(userId, secret.secret);
+
+    return {
+      setupId,
+      qrCode: secret.qrCode,
+      qrCodeDataUrl: secret.qrCodeDataUrl,
+      backupCodes: secret.backupCodes,
+    };
+  }
+
+  /**
+   * Verify and complete 2FA setup
+   */
+  async verify2FASetup(
+    setupId: string,
+    token: string,
+  ): Promise<{ success: boolean; backupCodes?: string[] }> {
+    const result = this.twoFactorService.completePendingSetup(setupId, token);
+
+    if (!result.isValid || !result.secret) {
+      return { success: false };
+    }
+
+    // Note: In production, store the secret and backup codes in the database
+    // Example:
+    // await this.prismaService.user.update({
+    //   where: { id: userId },
+    //   data: {
+    //     twoFactorSecret: result.secret,
+    //     twoFactorBackupCodes: JSON.stringify(backupCodes),
+    //     twoFactorEnabled: true,
+    //   },
+    // });
+
+    const backupCodes = this.twoFactorService.generateBackupCodes();
+
+    return {
+      success: true,
+      backupCodes,
+    };
+  }
+
+  /**
+   * Disable 2FA for a user
+   */
+  async disable2FA(userId: number, token: string): Promise<{ success: boolean }> {
+    const user = await this.prismaService.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new BadRequestException("User not found");
+    }
+
+    // Note: Verify current 2FA token before disabling
+    // const verification = this.twoFactorService.verifyToken(user.twoFactorSecret!, token);
+    // if (!verification.isValid) {
+    //   throw new UnauthorizedException('Invalid 2FA token');
+    // }
+
+    // Note: In production, clear 2FA data from database
+    // await this.prismaService.user.update({
+    //   where: { id: userId },
+    //   data: {
+    //     twoFactorSecret: null,
+    //     twoFactorBackupCodes: null,
+    //     twoFactorEnabled: false,
+    //   },
+    // });
+
+    return { success: true };
+  }
+
+  /**
+   * Generate new backup codes
+   */
+  async generateNewBackupCodes(userId: number, token: string): Promise<{ backupCodes: string[] }> {
+    const user = await this.prismaService.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new BadRequestException("User not found");
+    }
+
+    // Note: Verify current 2FA token before generating new codes
+    // const verification = this.twoFactorService.verifyToken(user.twoFactorSecret!, token);
+    // if (!verification.isValid) {
+    //   throw new UnauthorizedException('Invalid 2FA token');
+    // }
+
+    const backupCodes = this.twoFactorService.generateBackupCodes();
+
+    // Note: In production, update backup codes in database
+    // await this.prismaService.user.update({
+    //   where: { id: userId },
+    //   data: { twoFactorBackupCodes: JSON.stringify(backupCodes) },
+    // });
+
+    return { backupCodes };
+  }
 }

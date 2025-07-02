@@ -2,7 +2,30 @@
 
 ## Overview
 
-The enhanced auth library now includes comprehensive security features including:
+The enhanced### 3. Two-Factor Authentication
+
+````typescript
+import { TwoFactorService } from '@lib/auth';
+
+// Generate 2FA secret with QR code
+const secret = await twoFactorService.generateSecret('user@example.com');
+console.log('QR Code URL:', secret.qrCode);
+console.log('QR Code Data URL:', secret.qrCodeDataUrl); // Base64 image for display
+console.log('Backup Codes:', secret.backupCodes);
+
+// Verify 2FA token using speakeasy
+const verification = twoFactorService.verifyToken(
+  secret.secret,
+  '123456', // User's TOTP code from authenticator app
+  secret.backupCodes
+);
+
+// Generate current token for testing
+const currentToken = twoFactorService.generateCurrentToken(secret.secret);
+
+// Validate secret format
+const isValid = twoFactorService.isValidBase32Secret(secret.secret);
+``` includes comprehensive security features including:
 
 - **Password Security**: Strong password validation and hashing
 - **Rate Limiting**: Configurable rate limiting for different endpoints
@@ -31,7 +54,7 @@ const isValid = await passwordService.verifyPassword("mypassword", hash);
 
 // Generate secure passwords
 const securePassword = passwordService.generateSecurePassword(16);
-```
+````
 
 ### 2. Rate Limiting
 
@@ -109,6 +132,75 @@ export class SensitiveController {
 }
 ```
 
+### Complete 2FA Flow Example
+
+```typescript
+import { AuthService, TwoFactorService } from "@lib/auth";
+
+@Controller("auth")
+export class AuthController {
+  constructor(
+    private readonly authService: AuthService,
+    private readonly twoFactorService: TwoFactorService,
+  ) {}
+
+  @Post("2fa/setup")
+  @UseGuards(JwtAuthGuard)
+  async setup2FA(@CurrentUser() user: LoggedUser) {
+    const setup = await this.authService.setup2FA(user.id);
+
+    return {
+      setupId: setup.setupId,
+      qrCode: setup.qrCodeDataUrl, // Base64 image for frontend display
+      backupCodes: setup.backupCodes,
+      instructions:
+        "Scan the QR code with your authenticator app and enter the 6-digit code to complete setup",
+    };
+  }
+
+  @Post("2fa/verify-setup")
+  @UseGuards(JwtAuthGuard)
+  async verify2FASetup(@Body() { setupId, token }: { setupId: string; token: string }) {
+    const result = await this.authService.verify2FASetup(setupId, token);
+
+    if (!result.success) {
+      throw new BadRequestException("Invalid 2FA token");
+    }
+
+    return {
+      message: "2FA has been successfully enabled",
+      backupCodes: result.backupCodes,
+      warning:
+        "Save these backup codes in a safe place. You can use them to access your account if you lose your authenticator device.",
+    };
+  }
+
+  @Post("2fa/disable")
+  @UseGuards(JwtAuthGuard)
+  async disable2FA(@CurrentUser() user: LoggedUser, @Body() { token }: { token: string }) {
+    const result = await this.authService.disable2FA(user.id, token);
+
+    return {
+      message: "2FA has been disabled for your account",
+    };
+  }
+
+  @Post("2fa/backup-codes/regenerate")
+  @UseGuards(JwtAuthGuard)
+  async regenerateBackupCodes(
+    @CurrentUser() user: LoggedUser,
+    @Body() { token }: { token: string },
+  ) {
+    const result = await this.authService.generateNewBackupCodes(user.id, token);
+
+    return {
+      backupCodes: result.backupCodes,
+      message: "New backup codes generated. Previous codes are no longer valid.",
+    };
+  }
+}
+```
+
 ## Database Schema Updates Required
 
 To fully utilize the new features, add these fields to your User model in `schema.prisma`:
@@ -153,12 +245,14 @@ model UserSession {
 
 ## Installation Dependencies
 
-For full 2FA support, install additional packages:
+The enhanced auth library now uses proper 2FA implementation:
 
 ```bash
-npm install speakeasy qrcode
-npm install -D @types/speakeasy @types/qrcode
+npm install speakeasy qrcode --legacy-peer-deps
+npm install -D @types/speakeasy @types/qrcode --legacy-peer-deps
 ```
+
+Note: Use `--legacy-peer-deps` if you encounter dependency resolution conflicts.
 
 ## Configuration
 

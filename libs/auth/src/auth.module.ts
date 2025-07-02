@@ -26,6 +26,9 @@ import { TwoFactorGuard } from "./guards/two-factor.guard";
 import { AbacModule } from "./abac/abac.module";
 import { RbacModule } from "./rbac/rbac.module";
 
+// Controllers
+import { TwoFactorController } from "./controllers/two-factor.controller";
+
 @Module({
   imports: [
     PassportModule,
@@ -66,6 +69,7 @@ import { RbacModule } from "./rbac/rbac.module";
     TwoFactorGuard,
     RateLimitGuard,
   ],
+  controllers: [TwoFactorController],
   exports: [
     // Services
     AuthService,

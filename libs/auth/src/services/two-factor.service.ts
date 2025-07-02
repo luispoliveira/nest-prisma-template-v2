@@ -1,10 +1,13 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import * as crypto from "crypto";
+import * as QRCode from "qrcode";
+import * as speakeasy from "speakeasy";
 
 export interface TwoFactorSecret {
   secret: string;
   qrCode: string;
+  qrCodeDataUrl: string;
   backupCodes: string[];
 }
 
@@ -30,28 +33,39 @@ export class TwoFactorService {
 
   /**
    * Generate a new 2FA secret for a user
-   * Note: Install 'speakeasy' package for full TOTP functionality
    */
-  generateSecret(userEmail: string): TwoFactorSecret {
-    // Generate a base32 secret (32 characters)
-    const secret = this.generateBase32Secret();
+  async generateSecret(userEmail: string): Promise<TwoFactorSecret> {
+    // Generate secret using speakeasy
+    const secret = speakeasy.generateSecret({
+      name: userEmail,
+      issuer: this.appName,
+      length: 32,
+    });
+
     const backupCodes = this.generateBackupCodes();
-    const qrCode = this.generateQRCodeUrl(secret, userEmail);
+
+    // Generate QR code data URL
+    const qrCodeDataUrl = await QRCode.toDataURL(secret.otpauth_url!);
 
     return {
-      secret,
-      qrCode,
+      secret: secret.base32!,
+      qrCode: secret.otpauth_url!,
+      qrCodeDataUrl,
       backupCodes,
     };
   }
 
   /**
-   * Verify a 2FA token
-   * Note: This is a simplified implementation. Use 'speakeasy' for production TOTP verification
+   * Verify a 2FA token using speakeasy TOTP verification
    */
   verifyToken(secret: string, token: string, backupCodes?: string[]): TwoFactorVerification {
-    // Simplified TOTP verification (replace with speakeasy.totp.verify in production)
-    const isValidToken = this.verifyTOTP(secret, token);
+    // First try to verify with TOTP using speakeasy
+    const isValidToken = speakeasy.totp.verify({
+      secret,
+      encoding: "base32",
+      token,
+      window: 2, // Allow some time drift (±2 intervals)
+    });
 
     if (isValidToken) {
       return { isValid: true };
@@ -120,12 +134,22 @@ export class TwoFactorService {
   }
 
   /**
-   * Generate a QR code URL for 2FA setup
+   * Generate a QR code URL for 2FA setup using speakeasy
    */
   generateQRCodeUrl(secret: string, userEmail: string): string {
-    const issuer = encodeURIComponent(this.appName);
-    const label = encodeURIComponent(userEmail);
-    return `otpauth://totp/${label}?secret=${secret}&issuer=${issuer}`;
+    return speakeasy.otpauthURL({
+      secret,
+      label: userEmail,
+      issuer: this.appName,
+      encoding: "base32",
+    });
+  }
+
+  /**
+   * Generate QR code data URL from otpauth URL
+   */
+  async generateQRCodeDataUrl(otpauthUrl: string): Promise<string> {
+    return QRCode.toDataURL(otpauthUrl);
   }
 
   /**
@@ -156,26 +180,34 @@ export class TwoFactorService {
   }
 
   /**
-   * Generate a base32 secret
+   * Generate a base32 secret using speakeasy
    */
   private generateBase32Secret(): string {
-    const base32Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
-    let secret = "";
-
-    for (let i = 0; i < 32; i++) {
-      secret += base32Chars[Math.floor(Math.random() * base32Chars.length)];
-    }
-
-    return secret;
+    // Use speakeasy to generate a proper base32 secret
+    const secret = speakeasy.generateSecret({ length: 32 });
+    return secret.base32!;
   }
 
   /**
-   * Simplified TOTP verification (replace with speakeasy in production)
+   * Generate current TOTP token for testing purposes
    */
-  private verifyTOTP(secret: string, token: string): boolean {
-    // This is a simplified implementation
-    // In production, use speakeasy.totp.verify() for proper TOTP verification
-    // For now, we'll just validate the token format
-    return /^\d{6}$/.test(token);
+  generateCurrentToken(secret: string): string {
+    return speakeasy.totp({
+      secret,
+      encoding: "base32",
+    });
+  }
+
+  /**
+   * Verify if a secret is valid base32
+   */
+  isValidBase32Secret(secret: string): boolean {
+    try {
+      // Try to generate a token with the secret
+      speakeasy.totp({ secret, encoding: "base32" });
+      return true;
+    } catch {
+      return false;
+    }
   }
 }

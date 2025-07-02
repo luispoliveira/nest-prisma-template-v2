@@ -20,6 +20,7 @@ export * from "./services/two-factor.service";
 export * from "./controllers/base-api-key.controller";
 export * from "./controllers/base-auth.controller";
 export * from "./controllers/base-public.controller";
+export * from "./controllers/two-factor.controller";
 
 // Decorators
 export * from "./decorators/current-user.decorator";
