@@ -6,6 +6,7 @@ import { validationSchema } from "./config/validation";
 import { DefaultJob } from "./jobs/default.job";
 import { EnhancedQueueService } from "./services/enhanced-queue.service";
 import { QueueDashboardService } from "./services/queue-dashboard.service";
+import { QueueIntegrationService } from "./services/queue-integration.service";
 import { QueueMonitoringService } from "./services/queue-monitoring.service";
 
 @Module({})
@@ -27,6 +28,9 @@ export class QueueModule {
       });
     }
 
+    // Store queue names for the integration service
+    QueueIntegrationService.setQueueNames(queuesName);
+
     return {
       module: QueueModule,
       imports: [
@@ -37,8 +41,20 @@ export class QueueModule {
         }),
         BullModule.registerQueueAsync(...configs),
       ],
-      providers: [DefaultJob, EnhancedQueueService, QueueMonitoringService, QueueDashboardService],
-      exports: [DefaultJob, EnhancedQueueService, QueueMonitoringService, QueueDashboardService],
+      providers: [
+        DefaultJob,
+        EnhancedQueueService,
+        QueueMonitoringService,
+        QueueDashboardService,
+        QueueIntegrationService,
+      ],
+      exports: [
+        DefaultJob,
+        EnhancedQueueService,
+        QueueMonitoringService,
+        QueueDashboardService,
+        QueueIntegrationService,
+      ],
     };
   }
 }

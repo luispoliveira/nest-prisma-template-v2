@@ -1,5 +1,4 @@
-import { LoggedUser } from "@lib/auth";
-import { BaseAuthController } from "@lib/auth/controllers/base-auth.controller";
+import { BaseAuthController, LoggedUser, Public } from "@lib/auth";
 import { DefaultJob } from "@lib/queue";
 import { Controller, Get } from "@nestjs/common";
 import { ApiBearerAuth, ApiHeader } from "@nestjs/swagger";
@@ -21,13 +20,12 @@ export class AppController extends BaseAuthController {
     super();
   }
 
-  // @Public()
+  @Public()
   @Get()
   async getHello() {
-    // await this._defaultJob.addTestJob();
+    await this._defaultJob.addTestJob();
 
-    // wait 5 seconds
-    // await new Promise(resolve => setTimeout(resolve, 5000));
+    await new Promise(resolve => setTimeout(resolve, 5000));
 
     const user = this._clsService.get<LoggedUser>("user");
 

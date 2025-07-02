@@ -4,6 +4,7 @@ export * from "./queue.const";
 export * from "./queue.module";
 export * from "./services/enhanced-queue.service";
 export * from "./services/queue-dashboard.service";
+export * from "./services/queue-integration.service";
 export * from "./services/queue-monitoring.service";
 
 // Re-export specific interfaces to avoid naming conflicts

@@ -1,35 +1,22 @@
-import { InjectQueue } from "@nestjs/bull";
 import { Injectable } from "@nestjs/common";
-import { Queue } from "bull";
 import { EVENTS, QUEUES } from "../queue.const";
+import { EnhancedQueueService } from "../services/enhanced-queue.service";
 
 @Injectable()
 export class DefaultJob {
-  constructor(@InjectQueue(QUEUES.DEFAULT) private readonly _defaultQueue: Queue) {}
-
-  #defaultOptions = {
-    removeOnComplete: true,
-  };
+  constructor(private readonly enhancedQueueService: EnhancedQueueService) {}
 
   async addTestJob() {
-    const event = await this._defaultQueue.add(
-      EVENTS.TEST,
-      {},
-      {
-        ...this.#defaultOptions,
-      },
-    );
+    const event = await this.enhancedQueueService.addJob(QUEUES.DEFAULT, EVENTS.TEST, {
+      payload: {},
+    });
     return event;
   }
 
   async addAnotherTestJob() {
-    const event = await this._defaultQueue.add(
-      EVENTS.ANOTHER_TEST,
-      {},
-      {
-        ...this.#defaultOptions,
-      },
-    );
+    const event = await this.enhancedQueueService.addJob(QUEUES.DEFAULT, EVENTS.ANOTHER_TEST, {
+      payload: {},
+    });
     return event;
   }
 }

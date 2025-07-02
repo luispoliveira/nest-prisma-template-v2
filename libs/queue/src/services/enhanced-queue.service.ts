@@ -1,4 +1,4 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable, Logger, OnModuleDestroy } from "@nestjs/common";
 import { Job, JobStatus, Queue } from "bull";
 
 export interface QueueJobData {
@@ -62,10 +62,13 @@ export interface JobInfo {
 }
 
 @Injectable()
-export class EnhancedQueueService {
+export class EnhancedQueueService implements OnModuleDestroy {
   private readonly logger = new Logger(EnhancedQueueService.name);
   private queues = new Map<string, Queue>();
 
+  defaultOptions: QueueJobOptions = {
+    removeOnComplete: true,
+  };
   /**
    * Register a queue instance
    */
@@ -89,7 +92,7 @@ export class EnhancedQueueService {
     queueName: string,
     jobName: string,
     data: QueueJobData,
-    options: QueueJobOptions = {},
+    options: QueueJobOptions = this.defaultOptions,
   ): Promise<Job<T>> {
     const queue = this.getQueue(queueName);
     if (!queue) {
