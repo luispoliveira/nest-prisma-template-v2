@@ -39,7 +39,7 @@ export class LoggerInterceptor implements NestInterceptor {
       ip,
       method,
       url,
-      body: body,
+      body: this._blackListedMethods.includes(handlerName) ? undefined : body,
       query,
       params,
       username,

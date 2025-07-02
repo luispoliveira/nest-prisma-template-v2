@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import mongoose, { Model } from "mongoose";
+import { Model } from "mongoose";
 import { Log } from "../schemas/log.schema";
 @Injectable()
 export class LogService {
@@ -9,7 +9,6 @@ export class LogService {
   async create(log: Log): Promise<Log> {
     const createdLog = new this.LogModel({
       ...log,
-      _id: new mongoose.Types.ObjectId(),
     });
     return await createdLog.save();
   }

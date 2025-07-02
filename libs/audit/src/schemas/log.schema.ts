@@ -3,9 +3,9 @@ import mongoose, { HydratedDocument } from "mongoose";
 
 export type LogDocument = HydratedDocument<Log>;
 
-@Schema()
+@Schema({ timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" } })
 export class Log {
-  @Prop({ type: mongoose.Schema.Types.ObjectId })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, auto: true })
   _id?: string;
   @Prop()
   ip?: string;
