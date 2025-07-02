@@ -73,6 +73,10 @@ export class EnhancedQueueService implements OnModuleDestroy {
    * Register a queue instance
    */
   registerQueue(name: string, queue: Queue): void {
+    if (this.queues.has(name)) {
+      this.logger.warn(`Queue '${name}' is already registered. Skipping.`);
+      return;
+    }
     this.queues.set(name, queue);
     this.setupQueueListeners(name, queue);
     this.logger.log(`Queue '${name}' registered`);
@@ -146,23 +150,26 @@ export class EnhancedQueueService implements OnModuleDestroy {
       throw new Error(`Queue '${queueName}' not found`);
     }
 
-    const bulkJobs = jobs.map(({ name, data, options = {} }) => ({
-      name,
-      data,
-      opts: {
-        priority: data.metadata?.priority || options.priority || 0,
-        delay: data.metadata?.delayMs || options.delay,
-        attempts: data.metadata?.maxRetries || options.attempts || 3,
-        removeOnComplete: options.removeOnComplete ?? 10,
-        removeOnFail: options.removeOnFail ?? 50,
-        backoff: options.backoff || {
-          type: "exponential",
-          delay: 2000,
+    const bulkJobs = jobs.map(({ name, data, options }) => {
+      const jobOptions = { ...this.defaultOptions, ...options };
+      return {
+        name,
+        data,
+        opts: {
+          priority: data.metadata?.priority || jobOptions.priority || 0,
+          delay: data.metadata?.delayMs || jobOptions.delay,
+          attempts: data.metadata?.maxRetries || jobOptions.attempts || 3,
+          removeOnComplete: jobOptions.removeOnComplete ?? 10,
+          removeOnFail: jobOptions.removeOnFail ?? 50,
+          backoff: jobOptions.backoff || {
+            type: "exponential",
+            delay: 2000,
+          },
+          jobId: data.id || jobOptions.jobId,
+          ...jobOptions,
         },
-        jobId: data.id || options.jobId,
-        ...options,
-      },
-    }));
+      };
+    });
 
     try {
       const createdJobs = await queue.addBulk(bulkJobs);
@@ -407,6 +414,7 @@ export class EnhancedQueueService implements OnModuleDestroy {
    * Setup queue event listeners for monitoring
    */
   private setupQueueListeners(name: string, queue: Queue): void {
+    console.log(`Setting up listeners for queue: ${name}`);
     queue.on("completed", (job: Job, result: any) => {
       this.logger.debug(`Job ${job.id} completed in queue '${name}'`);
     });

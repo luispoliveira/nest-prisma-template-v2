@@ -271,9 +271,26 @@ export abstract class BaseRepository<T extends BaseEntity, CreateInput, UpdateIn
   /**
    * Find unique record
    */
-  async findUnique(where: any): Promise<T | null> {
-    return this.prisma.executeWithErrorHandling(() =>
+  async findUnique(where: any, includeDeleted = false): Promise<T | null> {
+    const record = (await this.prisma.executeWithErrorHandling(() =>
       (this.prisma as any)[this.modelName].findUnique({ where }),
-    );
+    )) as T | null;
+
+    if (!includeDeleted && record && record.deletedAt) {
+      return null;
+    }
+
+    return record;
+  }
+
+  /**
+   * Find unique record or throw error
+   */
+  async findUniqueOrThrow(where: any, includeDeleted = false): Promise<T> {
+    const record = await this.findUnique(where, includeDeleted);
+    if (!record) {
+      throw new Error(`${this.modelName} with where clause ${JSON.stringify(where)} not found`);
+    }
+    return record;
   }
 }

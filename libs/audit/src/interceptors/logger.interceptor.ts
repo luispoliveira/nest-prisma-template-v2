@@ -30,9 +30,11 @@ export class LoggerInterceptor implements NestInterceptor {
 
     const apiKeyHeader = request.get("api-key");
 
-    if (apiKeyHeader) username = `APIKEY:${apiKeyHeader}`;
-
-    if (request.user) username = request.user.email;
+    if (request.user) {
+      username = request.user.email;
+    } else if (apiKeyHeader) {
+      username = `APIKEY:${apiKeyHeader}`;
+    }
 
     const log = await this._logService.create({
       userAgent,
@@ -50,15 +52,19 @@ export class LoggerInterceptor implements NestInterceptor {
 
     return next.handle().pipe(
       tap(async res => {
-        await this._logService.update(log._id!, {
-          response: this._blackListedMethods.includes(handlerName) ? undefined : res,
-        });
+        if (log && log._id) {
+          await this._logService.update(log._id, {
+            response: this._blackListedMethods.includes(handlerName) ? undefined : res,
+          });
+        }
       }),
       catchError(async err => {
-        await this._logService.update(log._id!, {
-          response: this._blackListedMethods.includes(handlerName) ? undefined : err,
-          isError: true,
-        });
+        if (log && log._id) {
+          await this._logService.update(log._id, {
+            response: this._blackListedMethods.includes(handlerName) ? undefined : err,
+            isError: true,
+          });
+        }
         throw err;
       }),
     );
