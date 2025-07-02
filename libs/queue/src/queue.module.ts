@@ -1,5 +1,5 @@
 import { BullModule, BullModuleAsyncOptions } from "@nestjs/bull";
-import { DynamicModule, Module } from "@nestjs/common";
+import { DynamicModule, Global, Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { configuration } from "./config/configuration";
 import { validationSchema } from "./config/validation";
@@ -9,6 +9,7 @@ import { QueueDashboardService } from "./services/queue-dashboard.service";
 import { QueueIntegrationService } from "./services/queue-integration.service";
 import { QueueMonitoringService } from "./services/queue-monitoring.service";
 
+@Global()
 @Module({})
 export class QueueModule {
   static register(queuesName: string[]): DynamicModule {
@@ -32,6 +33,7 @@ export class QueueModule {
     QueueIntegrationService.setQueueNames(queuesName);
 
     return {
+      global: true,
       module: QueueModule,
       imports: [
         ConfigModule.forRoot({
@@ -54,6 +56,7 @@ export class QueueModule {
         QueueMonitoringService,
         QueueDashboardService,
         QueueIntegrationService,
+        BullModule, // Export BullModule to make queue instances available for injection
       ],
     };
   }
