@@ -4,6 +4,9 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { configuration } from "./config/configuration";
 import { validationSchema } from "./config/validation";
 import { DefaultJob } from "./jobs/default.job";
+import { EnhancedQueueService } from "./services/enhanced-queue.service";
+import { QueueDashboardService } from "./services/queue-dashboard.service";
+import { QueueMonitoringService } from "./services/queue-monitoring.service";
 
 @Module({})
 export class QueueModule {
@@ -34,8 +37,8 @@ export class QueueModule {
         }),
         BullModule.registerQueueAsync(...configs),
       ],
-      providers: [DefaultJob],
-      exports: [DefaultJob],
+      providers: [DefaultJob, EnhancedQueueService, QueueMonitoringService, QueueDashboardService],
+      exports: [DefaultJob, EnhancedQueueService, QueueMonitoringService, QueueDashboardService],
     };
   }
 }
