@@ -6,4 +6,27 @@ export const validationSchema = Joi.object({
     .default(EnvironmentEnum.DEVELOPMENT),
   DOCKER_POSTGRES_PATH: Joi.string().required(),
   DATABASE_URL: Joi.string().required(),
+  BACKUP_ENABLED: Joi.string().valid("true", "false").default("false"),
+  BACKUP_DIR: Joi.string().default("./backups"),
+  BACKUP_FTP_ENABLED: Joi.string().valid("true", "false").default("false"),
+  BACKUP_FTP_HOST: Joi.string().when("BACKUP_FTP_ENABLED", {
+    is: "true",
+    then: Joi.required(),
+    otherwise: Joi.optional(),
+  }),
+  BACKUP_FTP_PORT: Joi.string().when("BACKUP_FTP_ENABLED", {
+    is: "true",
+    then: Joi.required(),
+    otherwise: Joi.optional(),
+  }),
+  BACKUP_FTP_USER: Joi.string().when("BACKUP_FTP_ENABLED", {
+    is: "true",
+    then: Joi.required(),
+    otherwise: Joi.optional(),
+  }),
+  BACKUP_FTP_REMOTE_DIR: Joi.string().default("/").when("BACKUP_FTP_ENABLED", {
+    is: "true",
+    then: Joi.required(),
+    otherwise: Joi.optional(),
+  }),
 });

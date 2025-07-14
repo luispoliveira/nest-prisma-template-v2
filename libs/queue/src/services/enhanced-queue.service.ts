@@ -414,7 +414,6 @@ export class EnhancedQueueService implements OnModuleDestroy {
    * Setup queue event listeners for monitoring
    */
   private setupQueueListeners(name: string, queue: Queue): void {
-    console.log(`Setting up listeners for queue: ${name}`);
     queue.on("completed", (job: Job, result: any) => {
       this.logger.debug(`Job ${job.id} completed in queue '${name}'`);
     });

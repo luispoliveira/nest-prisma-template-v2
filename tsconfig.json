@@ -16,24 +16,64 @@
     "strictPropertyInitialization": false,
     "composite": false,
     "paths": {
-      "@lib/audit": ["libs/audit/src"],
-      "@lib/audit/*": ["libs/audit/src/*"],
-      "@lib/health": ["libs/health/src"],
-      "@lib/health/*": ["libs/health/src/*"],
-      "@gen/prisma-class-generator": ["generated/prisma-class-generator/index.ts"],
-      "@gen/prisma-client": ["generated/prisma-client"],
-      "@gen/prisma-client/runtime/library": ["generated/prisma-client/runtime/library"],
-      "@lib/auth": ["libs/auth/src"],
-      "@lib/auth/*": ["libs/auth/src/*"],
-      "@lib/common": ["libs/common/src/index.ts"],
-      "@lib/graphql": ["libs/graphql/src"],
-      "@lib/graphql/*": ["libs/graphql/src/*"],
-      "@lib/prisma": ["libs/prisma/src"],
-      "@lib/prisma/*": ["libs/prisma/src/*"],
-      "@lib/queue": ["libs/queue/src"],
-      "@lib/queue/*": ["libs/queue/src/*"]
+      "@gen/prisma-class-generator": [
+        "generated/prisma-class-generator/index.ts"
+      ],
+      "@gen/prisma-client": [
+        "generated/prisma-client"
+      ],
+      "@gen/prisma-client/runtime/library": [
+        "generated/prisma-client/runtime/library"
+      ],
+      "@lib/audit": [
+        "libs/audit/src"
+      ],
+      "@lib/audit/*": [
+        "libs/audit/src/*"
+      ],
+      "@lib/auth": [
+        "libs/auth/src"
+      ],
+      "@lib/auth/*": [
+        "libs/auth/src/*"
+      ],
+      "@lib/common": [
+        "libs/common/src/index.ts"
+      ],
+      "@lib/graphql": [
+        "libs/graphql/src"
+      ],
+      "@lib/graphql/*": [
+        "libs/graphql/src/*"
+      ],
+      "@lib/health": [
+        "libs/health/src"
+      ],
+      "@lib/health/*": [
+        "libs/health/src/*"
+      ],
+      "@lib/prisma": [
+        "libs/prisma/src"
+      ],
+      "@lib/prisma/*": [
+        "libs/prisma/src/*"
+      ],
+      "@lib/queue": [
+        "libs/queue/src"
+      ],
+      "@lib/queue/*": [
+        "libs/queue/src/*"
+      ]
     }
   },
-  "include": ["src/**/*.ts", "test/**/*.ts", "apps/**/*.ts", "libs/**/*.ts", "prisma/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "src/**/*.ts",
+    "test/**/*.ts",
+    "apps/**/*.ts",
+    "libs/**/*.ts",
+    "prisma/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
