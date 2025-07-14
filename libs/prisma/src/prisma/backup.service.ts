@@ -60,7 +60,7 @@ export class BackupService implements OnModuleInit {
     this.logger.log(`Backup created: ${gzFile}`);
 
     // FTP upload if enabled
-    if (this.configService.get("backup")!.ftp.enabled) await this.uploadToFtp(gzFile);
+    if (this.configService.get("backup")!.ftp.enabled) await this.#uploadToFtp(gzFile);
   }
 
   private getDbPassword(databaseUrl: string): string {
@@ -70,7 +70,7 @@ export class BackupService implements OnModuleInit {
     return match ? match[2] : "";
   }
 
-  private async uploadToFtp(filePath: string): Promise<void> {
+  async #uploadToFtp(filePath: string): Promise<void> {
     const client = new Client();
     try {
       await client.access({
