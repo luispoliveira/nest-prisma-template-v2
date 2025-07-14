@@ -1,39 +1,150 @@
-services:
-  # nest-api:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   container_name: nest-api
-  #   restart: always
-  #   ports:
-  #     - '3000:3000'
-  #   depends_on:
-  #     - nest-postgres
-  #   env_file:
-  #     - .env
+networks:
+  nest-network:
+    driver: bridge
 
+volumes:
+  postgres_data:
+  mongo_data:
+  redis_data:
+
+services:
   nest-postgres:
     image: postgres:17.5-alpine
     container_name: nest-postgres
-    restart: always
+    restart: unless-stopped
     ports:
       - "5432:5432"
     env_file:
       - ./docker/postgres.env
     volumes:
-      - ${DOCKER_POSTGRES_PATH}:/var/lib/postgresql/data
+      - ${DOCKER_POSTGRES_PATH:-postgres_data}:/var/lib/postgresql/data
+    networks:
+      - nest-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h localhost -p 5432 -U ${POSTGRES_USER:-nestjs}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
   nest-mongo:
     image: mongo:8.0.9
     container_name: nest-mongo
-    restart: always
+    restart: unless-stopped
     ports:
       - "27017:27017"
     env_file:
       - ./docker/mongo.env
     volumes:
-      - ${DOCKER_MONGO_PATH}:/data/db
+      - ${DOCKER_MONGO_PATH:-mongo_data}:/data/db
+    networks:
+      - nest-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.admin.command('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
   nest-redis:
+    image: redis:7.2.5-alpine
     container_name: nest-redis
-    image: redis:7.2.5
+    restart: unless-stopped
     ports:
       - "6379:6379"
+    volumes:
+      - ${DOCKER_REDIS_PATH:-redis_data}:/data
+    networks:
+      - nest-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+    command: redis-server --appendonly yes --save 60 1000
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # nest-api:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #     target: api
+  #   container_name: nest-api
+  #   restart: unless-stopped
+  #   ports:
+  #     - "3000:3000"
+  #   env_file:
+  #     - .env
+  #   networks:
+  #     - nest-network
+  #   depends_on:
+  #     nest-postgres:
+  #       condition: service_healthy
+  #     nest-mongo:
+  #       condition: service_healthy
+  #     nest-redis:
+  #       condition: service_healthy
+  #   healthcheck:
+  #     test:
+  #       [
+  #         "CMD",
+  #         "wget",
+  #         "--no-verbose",
+  #         "--tries=1",
+  #         "--spider",
+  #         "http://localhost:3000/health/liveness",
+  #       ]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+  #     start_period: 60s
+  #   logging:
+  #     driver: "json-file"
+  #     options:
+  #       max-size: "10m"
+  #       max-file: "3"
+
+  # nest-worker:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #     target: worker
+  #   container_name: nest-worker
+  #   restart: unless-stopped
+  #   env_file:
+  #     - .env
+  #   networks:
+  #     - nest-network
+  #   depends_on:
+  #     nest-postgres:
+  #       condition: service_healthy
+  #     nest-mongo:
+  #       condition: service_healthy
+  #     nest-redis:
+  #       condition: service_healthy
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "ps aux | grep '[n]ode dist/apps/worker/main' || exit 1"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+  #     start_period: 60s
+  #   logging:
+  #     driver: "json-file"
+  #     options:
+  #       max-size: "10m"
+  #       max-file: "3"
