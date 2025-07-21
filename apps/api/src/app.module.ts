@@ -44,7 +44,14 @@ import { UsersModule } from "./users/users.module";
       useFactory: (...args: unknown[]) => {
         const [prisma, cls] = args as [PrismaService, ClsService];
         return {
-          getEnhancedPrisma: () => enhance(prisma, { user: cls.get("user") }),
+          getEnhancedPrisma: () =>
+            enhance(
+              prisma,
+              { user: cls.get("user") },
+              {
+                kinds: ["policy", "validation", "delegate", "password", "omit", "encryption"],
+              },
+            ),
         };
       },
       inject: [PrismaService, ClsService],

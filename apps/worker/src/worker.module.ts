@@ -1,9 +1,12 @@
 import { HealthModule } from "@lib/health";
-import { PrismaModule } from "@lib/prisma";
+import { PrismaModule, PrismaService } from "@lib/prisma";
 import { ALL_QUEUES, QueueModule } from "@lib/queue";
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { ScheduleModule } from "@nestjs/schedule";
+import { enhance } from "@zenstackhq/runtime";
+import { ZenStackModule } from "@zenstackhq/server/nestjs";
+import { ClsService } from "nestjs-cls";
 import { configuration } from "./config/configuration";
 import { validationSchema } from "./config/validation";
 import { DefaultConsumer } from "./consumer/default.consumer";
@@ -25,6 +28,24 @@ import { WorkerService } from "./worker.service";
     PrismaModule,
     QueueModule.register(ALL_QUEUES),
     HealthModule,
+    ZenStackModule.registerAsync({
+      global: true,
+      useFactory: (...args: unknown[]) => {
+        const [prisma, cls] = args as [PrismaService, ClsService];
+        return {
+          getEnhancedPrisma: () =>
+            enhance(
+              prisma,
+              { user: cls.get("user") },
+              {
+                kinds: ["policy", "validation", "delegate", "password", "omit", "encryption"],
+              },
+            ),
+        };
+      },
+      inject: [PrismaService, ClsService],
+      extraProviders: [PrismaService],
+    }),
   ],
   controllers: [],
   providers: [
