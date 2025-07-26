@@ -8,7 +8,9 @@ import RoleSeeder from "./seeders/role.seeder";
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL,
 });
-const prisma = new PrismaClient({});
+const prisma = new PrismaClient({
+  adapter,
+});
 
 async function main() {
   console.log("Start seeding ...");

@@ -6,7 +6,6 @@ import { ConfigModule } from "@nestjs/config";
 import { ScheduleModule } from "@nestjs/schedule";
 import { enhance } from "@zenstackhq/runtime";
 import { ZenStackModule } from "@zenstackhq/server/nestjs";
-import { ClsService } from "nestjs-cls";
 import { configuration } from "./config/configuration";
 import { validationSchema } from "./config/validation";
 import { DefaultConsumer } from "./consumer/default.consumer";
@@ -31,19 +30,19 @@ import { WorkerService } from "./worker.service";
     ZenStackModule.registerAsync({
       global: true,
       useFactory: (...args: unknown[]) => {
-        const [prisma, cls] = args as [PrismaService, ClsService];
+        const [prisma] = args as [PrismaService];
         return {
           getEnhancedPrisma: () =>
             enhance(
               prisma,
-              { user: cls.get("user") },
+              {},
               {
-                kinds: ["policy", "validation", "delegate", "password", "omit", "encryption"],
+                kinds: ["validation", "delegate", "password", "omit", "encryption"],
               },
             ),
         };
       },
-      inject: [PrismaService, ClsService],
+      inject: [PrismaService],
       extraProviders: [PrismaService],
     }),
   ],
