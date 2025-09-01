@@ -2,8 +2,21 @@
 CREATE TYPE "OtpUseCaseEnum" AS ENUM ('LOGIN', 'D2FA', 'PHV');
 
 -- CreateTable
+CREATE TABLE "session" (
+    "sid" TEXT NOT NULL,
+    "sess" JSONB NOT NULL,
+    "expire" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "session_pkey" PRIMARY KEY ("sid")
+);
+
+-- CreateTable
 CREATE TABLE "user" (
     "id" SERIAL NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "createdBy" TEXT,
+    "updatedBy" TEXT,
     "email" TEXT NOT NULL,
     "password" TEXT,
     "isActive" BOOLEAN NOT NULL DEFAULT false,
@@ -16,10 +29,6 @@ CREATE TABLE "user" (
     "twoFAPhoneNumber" TEXT,
     "twoFAPPhoneVerified" BOOLEAN NOT NULL DEFAULT false,
     "roleId" INTEGER,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-    "createdBy" TEXT,
-    "updatedBy" TEXT,
     "activatedAt" TIMESTAMP(3),
     "activatedBy" TEXT,
     "deactivatedAt" TIMESTAMP(3),
@@ -31,13 +40,15 @@ CREATE TABLE "user" (
 -- CreateTable
 CREATE TABLE "api_key" (
     "id" SERIAL NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "createdBy" TEXT,
+    "updatedBy" TEXT,
     "name" TEXT NOT NULL,
     "description" TEXT,
     "key" TEXT NOT NULL,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
     "expiresAt" TIMESTAMP(3) NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "api_key_pkey" PRIMARY KEY ("id")
 );
@@ -45,11 +56,13 @@ CREATE TABLE "api_key" (
 -- CreateTable
 CREATE TABLE "otp" (
     "id" SERIAL NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "createdBy" TEXT,
+    "updatedBy" TEXT,
     "userId" INTEGER NOT NULL,
     "code" TEXT NOT NULL,
     "use" "OtpUseCaseEnum" NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
     "expiresAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "otp_pkey" PRIMARY KEY ("id")
@@ -58,12 +71,12 @@ CREATE TABLE "otp" (
 -- CreateTable
 CREATE TABLE "role" (
     "id" SERIAL NOT NULL,
-    "name" TEXT NOT NULL,
-    "isActive" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "createdBy" TEXT,
     "updatedBy" TEXT,
+    "name" TEXT NOT NULL,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
 
     CONSTRAINT "role_pkey" PRIMARY KEY ("id")
 );
@@ -71,11 +84,13 @@ CREATE TABLE "role" (
 -- CreateTable
 CREATE TABLE "permission" (
     "id" SERIAL NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "createdBy" TEXT,
+    "updatedBy" TEXT,
     "name" TEXT NOT NULL,
     "module" TEXT NOT NULL,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "permission_pkey" PRIMARY KEY ("id")
 );
@@ -83,13 +98,13 @@ CREATE TABLE "permission" (
 -- CreateTable
 CREATE TABLE "permission_2_role" (
     "id" SERIAL NOT NULL,
-    "permissionId" INTEGER NOT NULL,
-    "roleId" INTEGER NOT NULL,
-    "isActive" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "createdBy" TEXT,
     "updatedBy" TEXT,
+    "permissionId" INTEGER NOT NULL,
+    "roleId" INTEGER NOT NULL,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
 
     CONSTRAINT "permission_2_role_pkey" PRIMARY KEY ("id")
 );
@@ -97,16 +112,19 @@ CREATE TABLE "permission_2_role" (
 -- CreateTable
 CREATE TABLE "permission_2_user" (
     "id" SERIAL NOT NULL,
-    "permissionId" INTEGER NOT NULL,
-    "userId" INTEGER NOT NULL,
-    "isActive" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "createdBy" TEXT,
     "updatedBy" TEXT,
+    "permissionId" INTEGER NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
 
     CONSTRAINT "permission_2_user_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateIndex
+CREATE INDEX "session_expire_idx" ON "session"("expire");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "user_email_key" ON "user"("email");
