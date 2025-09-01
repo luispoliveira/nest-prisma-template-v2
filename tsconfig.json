@@ -3,6 +3,7 @@
   "compilerOptions": {
     "rootDir": ".",
     "outDir": "build",
+    "strict": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
@@ -71,7 +72,8 @@
     "test/**/*.ts",
     "apps/**/*.ts",
     "libs/**/*.ts",
-    "prisma/**/*.ts"
+    "prisma/**/*.ts",
+    "generated/**/*.ts"
   ],
   "exclude": [
     "node_modules"
