@@ -1,7 +1,7 @@
 # ==========================
 # 1. Builder Stage
 # ==========================
-FROM node:22-alpine AS builder
+FROM node:24-alpine AS builder
 
 # Install system dependencies for native modules
 RUN apk add --no-cache python3 make g++ libc6-compat postgresql-client
@@ -32,7 +32,7 @@ RUN yarn build:all
 # ==========================
 # 2. Production Base Stage (DRY)
 # ==========================
-FROM node:22-alpine AS production-base
+FROM node:24-alpine AS production-base
 
 WORKDIR /app
 
