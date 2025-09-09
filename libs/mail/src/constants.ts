@@ -1,0 +1,2 @@
+export const MAIL_MODULE_OPTIONS = "MAIL_MODULE_OPTIONS";
+export const MAIL_SERVICE = "MAIL_SERVICE";

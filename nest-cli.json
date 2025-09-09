@@ -77,6 +77,15 @@
         "tsConfigPath": "libs/health/tsconfig.lib.json"
       }
     },
+    "mail": {
+      "type": "library",
+      "root": "libs/mail",
+      "entryFile": "index",
+      "sourceRoot": "libs/mail/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/mail/tsconfig.lib.json"
+      }
+    },
     "prisma": {
       "type": "library",
       "root": "libs/prisma",

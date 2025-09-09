@@ -5,7 +5,7 @@ import { HealthModule } from "@lib/health";
 import { PrismaModule, PrismaService } from "@lib/prisma";
 import { ALL_QUEUES, QueueModule } from "@lib/queue";
 import { Module } from "@nestjs/common";
-import { ConfigModule } from "@nestjs/config";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 import { APP_GUARD } from "@nestjs/core";
 import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 import { enhance } from "@zenstackhq/runtime";
@@ -18,6 +18,7 @@ import { configuration } from "./config/configuration";
 import { validationSchema } from "./config/validation";
 import { PermissionsModule } from "./permissions/permissions.module";
 
+import { MailModule } from "@lib/mail";
 import { RolesModule } from "./roles/roles.module";
 import { UsersModule } from "./users/users.module";
 @Module({
@@ -59,6 +60,17 @@ import { UsersModule } from "./users/users.module";
     }),
     HealthModule,
     GraphqlModule.register(),
+    MailModule.forRootAsync({
+      useFactory: (config: ConfigService) => ({
+        provider: "brevo",
+        apiKey: config.get<string>("mail.brevoApiKey")!,
+        defaultFrom: {
+          email: config.get<string>("mail.defaultFromEmail")!,
+          name: config.get<string>("mail.defaultFromName")!,
+        },
+      }),
+      inject: [ConfigService],
+    }),
     RbacModule,
     QueueModule.register(ALL_QUEUES),
     AuthModule,

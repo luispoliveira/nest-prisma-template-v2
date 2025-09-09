@@ -53,6 +53,12 @@
       "@lib/health/*": [
         "libs/health/src/*"
       ],
+      "@lib/mail": [
+        "libs/mail/src"
+      ],
+      "@lib/mail/*": [
+        "libs/mail/src/*"
+      ],
       "@lib/prisma": [
         "libs/prisma/src"
       ],

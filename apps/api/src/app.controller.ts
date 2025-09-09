@@ -1,6 +1,7 @@
-import { BaseAuthController, LoggedUser, Public } from "@lib/auth";
+import { BaseAuthController, Public } from "@lib/auth";
+import { MAIL_SERVICE, SendEmailInterface } from "@lib/mail";
 import { DefaultJob } from "@lib/queue";
-import { Controller, Get } from "@nestjs/common";
+import { Controller, Get, Inject } from "@nestjs/common";
 import { ApiBearerAuth, ApiHeader } from "@nestjs/swagger";
 import { ClsService } from "nestjs-cls";
 import { AppService } from "./app.service";
@@ -16,6 +17,7 @@ export class AppController extends BaseAuthController {
     private readonly appService: AppService,
     private readonly _defaultJob: DefaultJob,
     private readonly _clsService: ClsService,
+    @Inject(MAIL_SERVICE) private mailService: SendEmailInterface,
   ) {
     super();
   }
@@ -23,13 +25,17 @@ export class AppController extends BaseAuthController {
   @Public()
   @Get()
   async getHello() {
-    await this._defaultJob.addTestJob();
-
-    await new Promise(resolve => setTimeout(resolve, 5000));
-
-    const user = this._clsService.get<LoggedUser>("user");
-
-    await this._defaultJob.addAnotherTestJob();
+    await this.mailService.sendEmail({
+      to: [{ email: "support@targx.com", name: "TargX Support" }],
+      subject: "Test Email from NestJS",
+      text: "This is a test email sent from the NestJS application using Brevo.",
+      templateId: 8,
+      params: {
+        NAME: "TargX",
+        MESSAGE: "This is a test email sent from the NestJS application using Brevo.",
+      },
+      // html: "<h1>This is a test email sent from the NestJS application using Brevo.</h1>",
+    });
 
     return this.appService.getHello();
   }

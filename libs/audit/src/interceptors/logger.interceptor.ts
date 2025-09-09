@@ -60,8 +60,18 @@ export class LoggerInterceptor implements NestInterceptor {
       }),
       catchError(async err => {
         if (log && log._id) {
+          let safeError = err;
+          if (err && err.isAxiosError) {
+            safeError = {
+              message: err.message,
+              code: err.code,
+              status: err.response?.status,
+              data: err.response?.data,
+              stack: err.stack,
+            };
+          }
           await this._logService.update(log._id, {
-            response: this._blackListedMethods.includes(handlerName) ? undefined : err,
+            response: this._blackListedMethods.includes(handlerName) ? undefined : safeError,
             isError: true,
           });
         }

@@ -45,11 +45,12 @@
     "@adminjs/express": "^6.1.1",
     "@adminjs/sql": "^2.2.6",
     "@apollo/server": "4.12.2",
+    "@getbrevo/brevo": "^3.0.1",
     "@nestjs/apollo": "13.1.0",
     "@nestjs/axios": "^4.0.1",
     "@nestjs/bull": "11.0.3",
     "@nestjs/common": "11.1.6",
-    "@nestjs/config": "4.0.2",
+    "@nestjs/config": "^4.0.2",
     "@nestjs/core": "11.1.6",
     "@nestjs/graphql": "13.1.0",
     "@nestjs/jwt": "11.0.0",
@@ -158,6 +159,7 @@
       "^@lib/common(|/.*)$": "<rootDir>/libs/common/src/$1",
       "^@lib/graphql(|/.*)$": "<rootDir>/libs/graphql/src/$1",
       "^@lib/health(|/.*)$": "<rootDir>/libs/health/src/$1",
+      "^@lib/mail(|/.*)$": "<rootDir>/libs/mail/src/$1",
       "^@lib/prisma(|/.*)$": "<rootDir>/libs/prisma/src/$1",
       "^@lib/queue(|/.*)$": "<rootDir>/libs/queue/src/$1"
     }
