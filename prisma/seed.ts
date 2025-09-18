@@ -27,8 +27,14 @@ async function main() {
 }
 
 async function ensureAdmin() {
-  const adminEmail = process.env.ADMIN_EMAIL!;
-  const adminPassword = process.env.ADMIN_PASSWORD!;
+  const adminEmail = process.env.ADMIN_EMAIL;
+  const adminPassword = process.env.ADMIN_PASSWORD;
+  if (!adminEmail || !adminPassword) {
+    console.warn(
+      'ADMIN_EMAIL or ADMIN_PASSWORD environment variables are not set. Skipping admin user creation.',
+    );
+    return;
+  }
 
   await prisma.user.upsert({
     where: { email: adminEmail },

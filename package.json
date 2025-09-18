@@ -39,7 +39,10 @@
     "prisma:migrate:reset": "npx prisma migrate reset",
     "prisma:studio": "npx prisma studio",
     "prisma:seed": "npx prisma db seed --schema=schema.prisma",
-    "generate": "zenstack generate && prisma generate"
+    "generate": "zenstack generate && prisma generate",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage"
   },
   "dependencies": {
     "@adminjs/express": "^6.1.1",
