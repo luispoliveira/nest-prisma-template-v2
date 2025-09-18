@@ -5,9 +5,9 @@ import {
   HttpException,
   HttpStatus,
   Logger,
-} from "@nestjs/common";
-import { Request, Response } from "express";
-import { BaseException } from "../exceptions/base.exception";
+} from '@nestjs/common';
+import { Request, Response } from 'express';
+import { BaseException } from '../exceptions/base.exception';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
@@ -30,9 +30,9 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       status = exception.getStatus();
       const exceptionResponse = exception.getResponse();
 
-      if (typeof exceptionResponse === "string") {
+      if (typeof exceptionResponse === 'string') {
         message = exceptionResponse;
-      } else if (typeof exceptionResponse === "object") {
+      } else if (typeof exceptionResponse === 'object') {
         message = (exceptionResponse as any).message || exception.message;
         details = exceptionResponse;
       } else {
@@ -40,19 +40,23 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       }
     } else if (exception instanceof Error) {
       status = HttpStatus.INTERNAL_SERVER_ERROR;
-      message = "Internal server error";
+      message = 'Internal server error';
 
       // Log the actual error for debugging
       this.logger.error(
         `Unhandled exception: ${exception.message}`,
         exception.stack,
-        "GlobalExceptionFilter",
+        'GlobalExceptionFilter',
       );
     } else {
       status = HttpStatus.INTERNAL_SERVER_ERROR;
-      message = "Internal server error";
+      message = 'Internal server error';
 
-      this.logger.error(`Unknown exception type: ${exception}`, undefined, "GlobalExceptionFilter");
+      this.logger.error(
+        `Unknown exception type: ${exception}`,
+        undefined,
+        'GlobalExceptionFilter',
+      );
     }
 
     const errorResponse = {
@@ -61,7 +65,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       path: request.url,
       method: request.method,
       timestamp: new Date().toISOString(),
-      correlationId: request.headers["x-correlation-id"] || "unknown",
+      correlationId: request.headers['x-correlation-id'] || 'unknown',
       ...details,
     };
 
@@ -70,13 +74,13 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       this.logger.error(
         `HTTP ${status} Error`,
         JSON.stringify(errorResponse),
-        "GlobalExceptionFilter",
+        'GlobalExceptionFilter',
       );
     } else if (status >= 400) {
       this.logger.warn(
         `HTTP ${status} Warning`,
         JSON.stringify(errorResponse),
-        "GlobalExceptionFilter",
+        'GlobalExceptionFilter',
       );
     }
 

@@ -1,11 +1,19 @@
-import { EnhancedQueueService, QueueDashboardService, QueueMonitoringService } from "@lib/queue";
-import { Injectable, Logger } from "@nestjs/common";
-import { HealthCheckError, HealthIndicator, HealthIndicatorResult } from "@nestjs/terminus";
+import {
+  EnhancedQueueService,
+  QueueDashboardService,
+  QueueMonitoringService,
+} from '@lib/queue';
+import { Injectable, Logger } from '@nestjs/common';
+import {
+  HealthCheckError,
+  HealthIndicator,
+  HealthIndicatorResult,
+} from '@nestjs/terminus';
 
 export interface QueueHealthDetails {
   queues: Array<{
     name: string;
-    status: "healthy" | "unhealthy" | "warning";
+    status: 'healthy' | 'unhealthy' | 'warning';
     stats: {
       waiting: number;
       active: number;
@@ -28,7 +36,7 @@ export interface QueueHealthDetails {
     }>;
     lastActivity?: Date;
   }>;
-  overallStatus: "healthy" | "unhealthy" | "warning";
+  overallStatus: 'healthy' | 'unhealthy' | 'warning';
   totalJobs: number;
   activeJobs: number;
   failedJobs: number;
@@ -50,14 +58,17 @@ export class QueueHealthIndicator extends HealthIndicator {
     super();
   }
 
-  async isHealthy(key: string, queueNames?: string[]): Promise<HealthIndicatorResult> {
+  async isHealthy(
+    key: string,
+    queueNames?: string[],
+  ): Promise<HealthIndicatorResult> {
     const startTime = Date.now();
 
     try {
       const details = await this.getQueueHealthDetails(queueNames);
       const duration = Date.now() - startTime;
 
-      const isHealthy = details.overallStatus === "healthy";
+      const isHealthy = details.overallStatus === 'healthy';
 
       const result = this.getStatus(key, isHealthy, {
         ...details,
@@ -78,15 +89,19 @@ export class QueueHealthIndicator extends HealthIndicator {
       }
     } catch (error) {
       const duration = Date.now() - startTime;
-      const errorMessage = error instanceof Error ? error.message : "Unknown error";
-      this.logger.error(`Queue health check failed after ${duration}ms:`, error);
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error(
+        `Queue health check failed after ${duration}ms:`,
+        error,
+      );
 
       if (error instanceof HealthCheckError) {
         throw error;
       }
 
       throw new HealthCheckError(
-        "Queue health check failed",
+        'Queue health check failed',
         this.getStatus(key, false, {
           message: errorMessage,
           responseTime: `${duration}ms`,
@@ -96,10 +111,12 @@ export class QueueHealthIndicator extends HealthIndicator {
     }
   }
 
-  private async getQueueHealthDetails(queueNames?: string[]): Promise<QueueHealthDetails> {
+  private async getQueueHealthDetails(
+    queueNames?: string[],
+  ): Promise<QueueHealthDetails> {
     const details: QueueHealthDetails = {
       queues: [],
-      overallStatus: "healthy",
+      overallStatus: 'healthy',
       totalJobs: 0,
       activeJobs: 0,
       failedJobs: 0,
@@ -110,14 +127,15 @@ export class QueueHealthIndicator extends HealthIndicator {
       const registeredQueues = queueNames || this.getRegisteredQueueNames();
 
       if (registeredQueues.length === 0) {
-        this.logger.warn("No queues registered for health check");
-        details.overallStatus = "warning";
+        this.logger.warn('No queues registered for health check');
+        details.overallStatus = 'warning';
         return details;
       }
 
       // Get real-time metrics from dashboard service
       try {
-        const realTimeMetrics = await this.queueDashboardService.getRealTimeMetrics();
+        const realTimeMetrics =
+          await this.queueDashboardService.getRealTimeMetrics();
         details.systemMetrics = {
           memoryUsage: realTimeMetrics.memoryUsage,
           averageProcessingTime: realTimeMetrics.averageProcessingTime,
@@ -125,7 +143,7 @@ export class QueueHealthIndicator extends HealthIndicator {
         details.totalJobs = realTimeMetrics.totalJobs;
         details.activeJobs = realTimeMetrics.activeJobs;
       } catch (metricsError) {
-        this.logger.warn("Could not fetch real-time metrics:", metricsError);
+        this.logger.warn('Could not fetch real-time metrics:', metricsError);
       }
 
       // Check health of each queue
@@ -142,18 +160,21 @@ export class QueueHealthIndicator extends HealthIndicator {
       // Determine overall status
       details.overallStatus = this.determineOverallStatus(details.queues);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Unknown error";
-      this.logger.error("Error getting queue health details:", errorMessage);
-      details.overallStatus = "unhealthy";
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error('Error getting queue health details:', errorMessage);
+      details.overallStatus = 'unhealthy';
     }
 
     return details;
   }
 
-  private async checkSingleQueue(queueName: string): Promise<QueueHealthDetails["queues"][0]> {
-    const queueHealth: QueueHealthDetails["queues"][0] = {
+  private async checkSingleQueue(
+    queueName: string,
+  ): Promise<QueueHealthDetails['queues'][0]> {
+    const queueHealth: QueueHealthDetails['queues'][0] = {
       name: queueName,
-      status: "healthy",
+      status: 'healthy',
       stats: {
         waiting: 0,
         active: 0,
@@ -167,9 +188,10 @@ export class QueueHealthIndicator extends HealthIndicator {
 
     try {
       // Check if queue is healthy (basic connectivity)
-      const isQueueHealthy = await this.enhancedQueueService.isQueueHealthy(queueName);
+      const isQueueHealthy =
+        await this.enhancedQueueService.isQueueHealthy(queueName);
       if (!isQueueHealthy) {
-        queueHealth.status = "unhealthy";
+        queueHealth.status = 'unhealthy';
         return queueHealth;
       }
 
@@ -180,14 +202,19 @@ export class QueueHealthIndicator extends HealthIndicator {
       // Get performance metrics from monitoring service
       try {
         const performanceMetrics =
-          await this.queueMonitoringService.getQueuePerformanceMetricsDetailed(queueName);
+          await this.queueMonitoringService.getQueuePerformanceMetricsDetailed(
+            queueName,
+          );
         queueHealth.performance = {
           averageProcessingTime: performanceMetrics.avgProcessingTime,
           throughput: performanceMetrics.throughput,
           errorRate: performanceMetrics.errorRate,
         };
       } catch (perfError) {
-        this.logger.debug(`Could not get performance metrics for queue ${queueName}:`, perfError);
+        this.logger.debug(
+          `Could not get performance metrics for queue ${queueName}:`,
+          perfError,
+        );
       }
 
       // Get alerts from monitoring service
@@ -200,28 +227,32 @@ export class QueueHealthIndicator extends HealthIndicator {
           timestamp: alert.timestamp,
         }));
       } catch (alertError) {
-        this.logger.debug(`Could not get alerts for queue ${queueName}:`, alertError);
+        this.logger.debug(
+          `Could not get alerts for queue ${queueName}:`,
+          alertError,
+        );
       }
 
       // Determine queue status based on metrics and alerts
       queueHealth.status = this.determineQueueStatus(queueHealth);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       this.logger.error(`Error checking queue ${queueName}:`, errorMessage);
-      queueHealth.status = "unhealthy";
+      queueHealth.status = 'unhealthy';
     }
 
     return queueHealth;
   }
 
   private determineQueueStatus(
-    queueHealth: QueueHealthDetails["queues"][0],
-  ): "healthy" | "unhealthy" | "warning" {
+    queueHealth: QueueHealthDetails['queues'][0],
+  ): 'healthy' | 'unhealthy' | 'warning' {
     const { stats, alerts, performance } = queueHealth;
 
     // Check for critical alerts
-    if (alerts && alerts.some(alert => alert.severity === "critical")) {
-      return "unhealthy";
+    if (alerts && alerts.some(alert => alert.severity === 'critical')) {
+      return 'unhealthy';
     }
 
     // Check for high failure rate
@@ -229,10 +260,10 @@ export class QueueHealthIndicator extends HealthIndicator {
       const failureRate = stats.failed / stats.total;
       if (failureRate > 0.1) {
         // More than 10% failure rate
-        return "unhealthy";
+        return 'unhealthy';
       } else if (failureRate > 0.05) {
         // More than 5% failure rate
-        return "warning";
+        return 'warning';
       }
     }
 
@@ -240,48 +271,51 @@ export class QueueHealthIndicator extends HealthIndicator {
     if (performance) {
       if (performance.errorRate > 0.1) {
         // More than 10% error rate
-        return "unhealthy";
+        return 'unhealthy';
       } else if (performance.errorRate > 0.05) {
         // More than 5% error rate
-        return "warning";
+        return 'warning';
       }
 
       // Check for slow processing (more than 30 seconds average)
       if (performance.averageProcessingTime > 30000) {
-        return "warning";
+        return 'warning';
       }
     }
 
     // Check for too many waiting jobs (more than 1000)
     if (stats.waiting > 1000) {
-      return "warning";
+      return 'warning';
     }
 
     // Check for medium/high severity alerts
-    if (alerts && alerts.some(alert => ["high", "medium"].includes(alert.severity))) {
-      return "warning";
+    if (
+      alerts &&
+      alerts.some(alert => ['high', 'medium'].includes(alert.severity))
+    ) {
+      return 'warning';
     }
 
-    return "healthy";
+    return 'healthy';
   }
 
   private determineOverallStatus(
-    queues: QueueHealthDetails["queues"],
-  ): "healthy" | "unhealthy" | "warning" {
+    queues: QueueHealthDetails['queues'],
+  ): 'healthy' | 'unhealthy' | 'warning' {
     if (queues.length === 0) {
-      return "warning";
+      return 'warning';
     }
 
-    const unhealthyCount = queues.filter(q => q.status === "unhealthy").length;
-    const warningCount = queues.filter(q => q.status === "warning").length;
+    const unhealthyCount = queues.filter(q => q.status === 'unhealthy').length;
+    const warningCount = queues.filter(q => q.status === 'warning').length;
 
     if (unhealthyCount > 0) {
-      return "unhealthy";
+      return 'unhealthy';
     } else if (warningCount > 0) {
-      return "warning";
+      return 'warning';
     }
 
-    return "healthy";
+    return 'healthy';
   }
 
   private getRegisteredQueueNames(): string[] {
@@ -300,8 +334,8 @@ export class QueueHealthIndicator extends HealthIndicator {
       unhealthyQueues: number;
       warningQueues: number;
     };
-    queues: QueueHealthDetails["queues"];
-    systemMetrics: QueueHealthDetails["systemMetrics"];
+    queues: QueueHealthDetails['queues'];
+    systemMetrics: QueueHealthDetails['systemMetrics'];
   }> {
     const details = await this.getQueueHealthDetails();
 
@@ -309,9 +343,12 @@ export class QueueHealthIndicator extends HealthIndicator {
       timestamp: new Date(),
       summary: {
         totalQueues: details.queues.length,
-        healthyQueues: details.queues.filter(q => q.status === "healthy").length,
-        unhealthyQueues: details.queues.filter(q => q.status === "unhealthy").length,
-        warningQueues: details.queues.filter(q => q.status === "warning").length,
+        healthyQueues: details.queues.filter(q => q.status === 'healthy')
+          .length,
+        unhealthyQueues: details.queues.filter(q => q.status === 'unhealthy')
+          .length,
+        warningQueues: details.queues.filter(q => q.status === 'warning')
+          .length,
       },
       queues: details.queues,
       systemMetrics: details.systemMetrics,

@@ -1,9 +1,9 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import mongoose, { HydratedDocument } from "mongoose";
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import mongoose, { HydratedDocument } from 'mongoose';
 
 export type LogDocument = HydratedDocument<Log>;
 
-@Schema({ timestamps: { createdAt: "createdAt", updatedAt: "updatedAt" } })
+@Schema({ timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' } })
 export class Log {
   @Prop({ type: mongoose.Schema.Types.ObjectId, auto: true })
   _id?: string;

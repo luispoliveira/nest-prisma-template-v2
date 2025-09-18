@@ -1,34 +1,42 @@
-import { ContextUtil } from "@lib/common";
-import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from "@nestjs/common";
-import { catchError, Observable, tap } from "rxjs";
-import { LogService } from "../log/log.service";
+import { ContextUtil } from '@lib/common';
+import {
+  CallHandler,
+  ExecutionContext,
+  Injectable,
+  NestInterceptor,
+} from '@nestjs/common';
+import { catchError, Observable, tap } from 'rxjs';
+import { LogService } from '../log/log.service';
 
 @Injectable()
 export class LoggerInterceptor implements NestInterceptor {
   private readonly _blackListedMethods = [
-    "signIn",
-    "login",
-    "register",
-    "verifyLogin",
-    "whoAmI",
-    "recoverPassword",
-    "activateAccount",
+    'signIn',
+    'login',
+    'register',
+    'verifyLogin',
+    'whoAmI',
+    'recoverPassword',
+    'activateAccount',
   ];
 
   constructor(private readonly _logService: LogService) {}
 
-  async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
+  async intercept(
+    context: ExecutionContext,
+    next: CallHandler,
+  ): Promise<Observable<any>> {
     const request = ContextUtil.getRequest(context);
 
-    const userAgent = request.get("user-agent") || "";
+    const userAgent = request.get('user-agent') || '';
     const { ip, method, url, body, query, params, headers } = request;
 
     const className = context.getClass().name;
     const handlerName = context.getHandler().name;
 
-    let username = "anonymous";
+    let username = 'anonymous';
 
-    const apiKeyHeader = request.get("api-key");
+    const apiKeyHeader = request.get('api-key');
 
     if (request.user) {
       username = request.user.email;
@@ -54,7 +62,9 @@ export class LoggerInterceptor implements NestInterceptor {
       tap(async res => {
         if (log && log._id) {
           await this._logService.update(log._id, {
-            response: this._blackListedMethods.includes(handlerName) ? undefined : res,
+            response: this._blackListedMethods.includes(handlerName)
+              ? undefined
+              : res,
           });
         }
       }),
@@ -71,7 +81,9 @@ export class LoggerInterceptor implements NestInterceptor {
             };
           }
           await this._logService.update(log._id, {
-            response: this._blackListedMethods.includes(handlerName) ? undefined : safeError,
+            response: this._blackListedMethods.includes(handlerName)
+              ? undefined
+              : safeError,
             isError: true,
           });
         }

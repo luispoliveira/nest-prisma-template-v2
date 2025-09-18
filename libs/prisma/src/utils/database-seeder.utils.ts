@@ -1,6 +1,6 @@
-import { Injectable, Logger } from "@nestjs/common";
-import { PrismaService } from "../prisma/prisma.service";
-import { PrismaTx } from "../types/tx-type";
+import { Injectable, Logger } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+import { PrismaTx } from '../types/tx-type';
 
 export interface SeederOptions {
   truncate?: boolean;
@@ -35,10 +35,11 @@ export class DatabaseSeeder {
         }
       });
 
-      this.logger.log("Database seeding completed successfully");
+      this.logger.log('Database seeding completed successfully');
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Unknown error";
-      this.logger.error("Database seeding failed", errorMessage);
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error('Database seeding failed', errorMessage);
       throw error;
     }
   }
@@ -50,7 +51,7 @@ export class DatabaseSeeder {
     tx: PrismaTx,
     modelName: string,
     data: any[],
-    verbose: boolean = false,
+    verbose = false,
   ): Promise<void> {
     if (!data || data.length === 0) {
       return;
@@ -83,7 +84,8 @@ export class DatabaseSeeder {
         this.logger.log(`Successfully seeded ${modelName}`);
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       this.logger.error(`Failed to seed ${modelName}`, errorMessage);
       throw error;
     }
@@ -92,9 +94,9 @@ export class DatabaseSeeder {
   /**
    * Truncate all tables (careful - this deletes all data!)
    */
-  async truncateDatabase(tx: PrismaTx, verbose: boolean = false): Promise<void> {
+  async truncateDatabase(tx: PrismaTx, verbose = false): Promise<void> {
     if (verbose) {
-      this.logger.warn("Truncating database...");
+      this.logger.warn('Truncating database...');
     }
 
     try {
@@ -119,11 +121,12 @@ export class DatabaseSeeder {
       }
 
       if (verbose) {
-        this.logger.log("Database truncation completed");
+        this.logger.log('Database truncation completed');
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Unknown error";
-      this.logger.error("Failed to truncate database", errorMessage);
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error('Failed to truncate database', errorMessage);
       throw error;
     }
   }
@@ -154,9 +157,9 @@ export class DatabaseSeeder {
 
         return result.map(row => row.table_name);
       } catch (mysqlError) {
-        this.logger.warn("Could not determine table names, using manual list");
+        this.logger.warn('Could not determine table names, using manual list');
         // Fallback to common table names - customize this for your schema
-        return ["User", "Post", "Profile", "Role", "Permission"];
+        return ['User', 'Post', 'Profile', 'Role', 'Permission'];
       }
     }
   }
@@ -164,7 +167,7 @@ export class DatabaseSeeder {
   /**
    * Clear specific models
    */
-  async clearModels(modelNames: string[], verbose: boolean = false): Promise<void> {
+  async clearModels(modelNames: string[], verbose = false): Promise<void> {
     try {
       await this.prisma.$transaction(async tx => {
         for (const modelName of modelNames) {
@@ -178,8 +181,9 @@ export class DatabaseSeeder {
         }
       });
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Unknown error";
-      this.logger.error("Failed to clear models", errorMessage);
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error('Failed to clear models', errorMessage);
       throw error;
     }
   }
@@ -187,7 +191,7 @@ export class DatabaseSeeder {
   /**
    * Check if database has been seeded
    */
-  async isSeeded(checkModel: string = "user"): Promise<boolean> {
+  async isSeeded(checkModel = 'user'): Promise<boolean> {
     try {
       const model = (this.prisma as any)[checkModel];
       if (!model) {
@@ -197,8 +201,11 @@ export class DatabaseSeeder {
       const count = await model.count();
       return count > 0;
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Unknown error";
-      this.logger.warn(`Could not check if database is seeded: ${errorMessage}`);
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      this.logger.warn(
+        `Could not check if database is seeded: ${errorMessage}`,
+      );
       return false;
     }
   }
@@ -206,27 +213,29 @@ export class DatabaseSeeder {
   /**
    * Generate sample data for testing
    */
-  generateSampleUsers(count: number = 10): any[] {
+  generateSampleUsers(count = 10): any[] {
     return Array.from({ length: count }, (_, i) => ({
       email: `user${i + 1}@example.com`,
       name: `User ${i + 1}`,
       isActive: Math.random() > 0.2, // 80% active
-      createdAt: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000), // Random date within last year
+      createdAt: new Date(
+        Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000,
+      ), // Random date within last year
     }));
   }
 
-  generateSamplePosts(userIds: number[], count: number = 20): any[] {
+  generateSamplePosts(userIds: number[], count = 20): any[] {
     const titles = [
-      "Getting Started with NestJS",
-      "Advanced Prisma Patterns",
-      "Building Scalable APIs",
-      "Database Design Best Practices",
-      "Testing Strategies in Node.js",
-      "GraphQL vs REST API",
-      "Microservices Architecture",
-      "Security in Web Applications",
-      "Performance Optimization Tips",
-      "Clean Code Principles",
+      'Getting Started with NestJS',
+      'Advanced Prisma Patterns',
+      'Building Scalable APIs',
+      'Database Design Best Practices',
+      'Testing Strategies in Node.js',
+      'GraphQL vs REST API',
+      'Microservices Architecture',
+      'Security in Web Applications',
+      'Performance Optimization Tips',
+      'Clean Code Principles',
     ];
 
     return Array.from({ length: count }, (_, i) => ({
@@ -234,7 +243,9 @@ export class DatabaseSeeder {
       content: `This is the content for post number ${i + 1}. Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
       published: Math.random() > 0.3, // 70% published
       authorId: userIds[Math.floor(Math.random() * userIds.length)],
-      createdAt: new Date(Date.now() - Math.random() * 180 * 24 * 60 * 60 * 1000), // Random date within last 6 months
+      createdAt: new Date(
+        Date.now() - Math.random() * 180 * 24 * 60 * 60 * 1000,
+      ), // Random date within last 6 months
     }));
   }
 
@@ -245,7 +256,7 @@ export class DatabaseSeeder {
     const users = this.generateSampleUsers(20);
 
     // First seed users
-    await this.seed([{ model: "user", data: users }], options);
+    await this.seed([{ model: 'user', data: users }], options);
 
     // Get created user IDs
     const createdUsers = await this.prisma.user.findMany({
@@ -255,8 +266,8 @@ export class DatabaseSeeder {
 
     // Then seed posts
     const posts = this.generateSamplePosts(userIds, 50);
-    await this.seed([{ model: "post", data: posts }]);
+    await this.seed([{ model: 'post', data: posts }]);
 
-    this.logger.log("Sample data seeding completed");
+    this.logger.log('Sample data seeding completed');
   }
 }

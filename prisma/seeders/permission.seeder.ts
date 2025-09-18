@@ -1,5 +1,5 @@
-import { PrismaClient } from "@gen/prisma-client";
-import { RBAC_ROLES } from "../../libs/common/src/types/rbac-permissions";
+import { PrismaClient } from '@gen/prisma-client';
+import { RBAC_ROLES } from '../../libs/common/src/types/rbac-permissions';
 export default class PermissionSeeder {
   private _prismaClient: PrismaClient;
 
@@ -8,7 +8,7 @@ export default class PermissionSeeder {
   }
 
   async createPermissions() {
-    console.debug("Creating permissions ...");
+    console.debug('Creating permissions ...');
 
     for (const role of Object.keys(RBAC_ROLES)) {
       const permissions = RBAC_ROLES[role as keyof typeof RBAC_ROLES];
@@ -18,7 +18,7 @@ export default class PermissionSeeder {
         },
       });
       for (const permission of permissions) {
-        const [permissionName, module] = permission.split(":");
+        const [permissionName, module] = permission.split(':');
         const permissionObject = await this._prismaClient.permission.upsert({
           where: {
             name: permission,
@@ -46,6 +46,6 @@ export default class PermissionSeeder {
       }
     }
 
-    console.debug("Permissions created.");
+    console.debug('Permissions created.');
   }
 }

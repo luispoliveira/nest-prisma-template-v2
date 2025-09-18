@@ -1,13 +1,13 @@
-import { EnvironmentEnum, LoggerUtil } from "@lib/common";
-import { ConfigService } from "@nestjs/config";
-import { NestFactory } from "@nestjs/core";
-import { CommandModule, CommandService } from "nestjs-command";
-import { AppModule } from "./app.module";
+import { EnvironmentEnum, LoggerUtil } from '@lib/common';
+import { ConfigService } from '@nestjs/config';
+import { NestFactory } from '@nestjs/core';
+import { CommandModule, CommandService } from 'nestjs-command';
+import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.createApplicationContext(AppModule);
   const configService = app.get(ConfigService);
-  const environment = configService.get<EnvironmentEnum>("environment")!;
+  const environment = configService.get<EnvironmentEnum>('environment')!;
 
   app.useLogger(LoggerUtil.getLogger(environment));
 

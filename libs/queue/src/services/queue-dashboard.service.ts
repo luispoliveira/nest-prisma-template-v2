@@ -1,9 +1,15 @@
-import { Injectable, Logger } from "@nestjs/common";
-import { JobMetrics, JobStatus } from "../interfaces/job.interface";
-import { QueueHealthStatus, SystemQueueHealth } from "../interfaces/queue-health.interface";
-import { ExtendedQueueStats, QueuePerformanceMetrics } from "../interfaces/queue-stats.interface";
-import { EnhancedQueueService } from "./enhanced-queue.service";
-import { QueueMonitoringService } from "./queue-monitoring.service";
+import { Injectable, Logger } from '@nestjs/common';
+import { JobMetrics, JobStatus } from '../interfaces/job.interface';
+import {
+  QueueHealthStatus,
+  SystemQueueHealth,
+} from '../interfaces/queue-health.interface';
+import {
+  ExtendedQueueStats,
+  QueuePerformanceMetrics,
+} from '../interfaces/queue-stats.interface';
+import { EnhancedQueueService } from './enhanced-queue.service';
+import { QueueMonitoringService } from './queue-monitoring.service';
 
 /**
  * Dashboard data aggregation interface
@@ -67,14 +73,19 @@ export class QueueDashboardService {
    */
   async getDashboardData(): Promise<DashboardData> {
     try {
-      const [systemHealth, queueStats, recentActivity, alerts, performanceTrends] =
-        await Promise.all([
-          this.monitoringService.getSystemHealth(),
-          this.getAllQueueStats(),
-          this.getRecentActivity(),
-          this.monitoringService.getActiveAlerts(),
-          this.getPerformanceTrends(),
-        ]);
+      const [
+        systemHealth,
+        queueStats,
+        recentActivity,
+        alerts,
+        performanceTrends,
+      ] = await Promise.all([
+        this.monitoringService.getSystemHealth(),
+        this.getAllQueueStats(),
+        this.getRecentActivity(),
+        this.monitoringService.getActiveAlerts(),
+        this.getPerformanceTrends(),
+      ]);
 
       const overview = this.calculateOverview(systemHealth, queueStats);
       const topPerformers = this.getTopPerformers(queueStats);
@@ -91,7 +102,7 @@ export class QueueDashboardService {
         problematicQueues,
       };
     } catch (error) {
-      this.logger.error("Failed to get dashboard data", error);
+      this.logger.error('Failed to get dashboard data', error);
       throw error;
     }
   }
@@ -104,7 +115,9 @@ export class QueueDashboardService {
     const statsPromises = queueNames.map(async queueName => {
       const stats = await this.queueService.getQueueStats(queueName);
       const performance =
-        await this.monitoringService.getQueuePerformanceMetricsDetailed(queueName);
+        await this.monitoringService.getQueuePerformanceMetricsDetailed(
+          queueName,
+        );
 
       return {
         ...stats,
@@ -126,7 +139,7 @@ export class QueueDashboardService {
   /**
    * Get recent job activity across all queues
    */
-  async getRecentActivity(limit: number = 50): Promise<JobMetrics[]> {
+  async getRecentActivity(limit = 50): Promise<JobMetrics[]> {
     const queueNames = this.queueService.getQueueNames();
     const activityPromises = queueNames.map(async queueName => {
       return this.monitoringService.getJobMetrics(queueName, limit);
@@ -145,7 +158,9 @@ export class QueueDashboardService {
   async getPerformanceTrends(): Promise<QueuePerformanceMetrics[]> {
     const queueNames = this.queueService.getQueueNames();
     const trendsPromises = queueNames.map(async queueName => {
-      return this.monitoringService.getQueuePerformanceMetricsDetailed(queueName);
+      return this.monitoringService.getQueuePerformanceMetricsDetailed(
+        queueName,
+      );
     });
 
     return Promise.all(trendsPromises);
@@ -154,7 +169,10 @@ export class QueueDashboardService {
   /**
    * Get job details by ID
    */
-  async getJobDetails(queueName: string, jobId: string | number): Promise<JobStatus | null> {
+  async getJobDetails(
+    queueName: string,
+    jobId: string | number,
+  ): Promise<JobStatus | null> {
     try {
       const job = await this.queueService.getJob(queueName, String(jobId));
       if (!job) return null;
@@ -175,7 +193,10 @@ export class QueueDashboardService {
         processedOn: job.processedOn,
       };
     } catch (error) {
-      this.logger.error(`Failed to get job details for ${jobId} in queue ${queueName}`, error);
+      this.logger.error(
+        `Failed to get job details for ${jobId} in queue ${queueName}`,
+        error,
+      );
       return null;
     }
   }
@@ -188,7 +209,10 @@ export class QueueDashboardService {
       await this.queueService.retryJob(queueName, String(jobId));
       return true;
     } catch (error) {
-      this.logger.error(`Failed to retry job ${jobId} in queue ${queueName}`, error);
+      this.logger.error(
+        `Failed to retry job ${jobId} in queue ${queueName}`,
+        error,
+      );
       return false;
     }
   }
@@ -201,7 +225,10 @@ export class QueueDashboardService {
       await this.queueService.removeJob(queueName, String(jobId));
       return true;
     } catch (error) {
-      this.logger.error(`Failed to remove job ${jobId} from queue ${queueName}`, error);
+      this.logger.error(
+        `Failed to remove job ${jobId} from queue ${queueName}`,
+        error,
+      );
       return false;
     }
   }
@@ -238,7 +265,7 @@ export class QueueDashboardService {
   async cleanQueue(
     queueName: string,
     grace: number,
-    status: "completed" | "active" | "failed",
+    status: 'completed' | 'active' | 'failed',
     limit?: number,
   ): Promise<boolean> {
     try {
@@ -288,8 +315,10 @@ export class QueueDashboardService {
     const totalJobs = queueStats.reduce((sum, stats) => sum + stats.total, 0);
     const activeJobs = queueStats.reduce((sum, stats) => sum + stats.active, 0);
     const averageProcessingTime =
-      queueStats.reduce((sum, stats) => sum + (stats.averageProcessingTime || 0), 0) /
-      queueStats.length;
+      queueStats.reduce(
+        (sum, stats) => sum + (stats.averageProcessingTime || 0),
+        0,
+      ) / queueStats.length;
 
     return {
       timestamp: currentTime,
@@ -305,11 +334,23 @@ export class QueueDashboardService {
   /**
    * Calculate overview statistics
    */
-  private calculateOverview(systemHealth: SystemQueueHealth, queueStats: ExtendedQueueStats[]) {
+  private calculateOverview(
+    systemHealth: SystemQueueHealth,
+    queueStats: ExtendedQueueStats[],
+  ) {
     const totalJobs = queueStats.reduce((sum, stats) => sum + stats.total, 0);
-    const totalActiveJobs = queueStats.reduce((sum, stats) => sum + stats.active, 0);
-    const totalCompletedJobs = queueStats.reduce((sum, stats) => sum + stats.completed, 0);
-    const totalFailedJobs = queueStats.reduce((sum, stats) => sum + stats.failed, 0);
+    const totalActiveJobs = queueStats.reduce(
+      (sum, stats) => sum + stats.active,
+      0,
+    );
+    const totalCompletedJobs = queueStats.reduce(
+      (sum, stats) => sum + stats.completed,
+      0,
+    );
+    const totalFailedJobs = queueStats.reduce(
+      (sum, stats) => sum + stats.failed,
+      0,
+    );
 
     return {
       totalQueues: systemHealth.systemMetrics.totalQueues,
@@ -363,10 +404,14 @@ export class QueueDashboardService {
    */
   private async calculateQueueHealthScore(queueName: string): Promise<number> {
     try {
-      const healthCheck = await this.monitoringService.performQueueHealthCheck(queueName);
+      const healthCheck =
+        await this.monitoringService.performQueueHealthCheck(queueName);
       return healthCheck.score;
     } catch (error) {
-      this.logger.error(`Failed to calculate health score for queue ${queueName}`, error);
+      this.logger.error(
+        `Failed to calculate health score for queue ${queueName}`,
+        error,
+      );
       return 0;
     }
   }

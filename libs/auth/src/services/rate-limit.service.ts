@@ -1,5 +1,5 @@
-import { Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 export interface RateLimitConfig {
   windowMs: number; // Time window in milliseconds

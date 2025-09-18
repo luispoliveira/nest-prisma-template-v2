@@ -1,12 +1,12 @@
-import { Injectable, Logger } from "@nestjs/common";
-import { PrismaService } from "../prisma/prisma.service";
-import { DatabaseConnectionMonitor } from "../utils/database-connection.utils";
-import { DatabaseMigrationHelper } from "../utils/database-migration.utils";
-import { DatabasePerformanceMonitor } from "../utils/database-performance.utils";
+import { Injectable, Logger } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+import { DatabaseConnectionMonitor } from '../utils/database-connection.utils';
+import { DatabaseMigrationHelper } from '../utils/database-migration.utils';
+import { DatabasePerformanceMonitor } from '../utils/database-performance.utils';
 
 export interface DatabaseHealthReport {
   overall: {
-    status: "healthy" | "warning" | "critical";
+    status: 'healthy' | 'warning' | 'critical';
     score: number; // 0-100
     lastChecked: Date;
   };
@@ -42,7 +42,7 @@ export interface DatabaseHealthReport {
   };
   alerts: Array<{
     type: string;
-    severity: "low" | "medium" | "high" | "critical";
+    severity: 'low' | 'medium' | 'high' | 'critical';
     message: string;
     timestamp: Date;
   }>;
@@ -107,13 +107,13 @@ export class DatabaseHealthService {
       const schemaData = this.getSettledValue(schemaInfo, {
         tableCount: 0,
         indexCount: 0,
-        integrityCheck: { isValid: false, issues: ["Health check failed"] },
+        integrityCheck: { isValid: false, issues: ['Health check failed'] },
       });
 
       const statsData = this.getSettledValue(databaseStats, {});
       const versionData = this.getSettledValue(dbVersion, {
-        version: "unknown",
-        engine: "unknown",
+        version: 'unknown',
+        engine: 'unknown',
       });
 
       // Calculate overall score and status
@@ -125,7 +125,12 @@ export class DatabaseHealthService {
       );
 
       // Collect all alerts
-      const alerts = this.collectAlerts(connectionData, performanceData, migrationData, schemaData);
+      const alerts = this.collectAlerts(
+        connectionData,
+        performanceData,
+        migrationData,
+        schemaData,
+      );
 
       // Generate recommendations
       const recommendations = this.generateRecommendations(
@@ -136,7 +141,9 @@ export class DatabaseHealthService {
       );
 
       const checkDuration = Date.now() - startTime;
-      this.logger.log(`Health check completed in ${checkDuration}ms with status: ${status}`);
+      this.logger.log(
+        `Health check completed in ${checkDuration}ms with status: ${status}`,
+      );
 
       return {
         overall: {
@@ -157,38 +164,46 @@ export class DatabaseHealthService {
         recommendations,
       };
     } catch (error) {
-      this.logger.error("Health check failed", error);
+      this.logger.error('Health check failed', error);
 
       return {
         overall: {
-          status: "critical",
+          status: 'critical',
           score: 0,
           lastChecked: new Date(),
         },
-        connection: { isConnected: false, poolMetrics: {}, connectionAlerts: [] },
+        connection: {
+          isConnected: false,
+          poolMetrics: {},
+          connectionAlerts: [],
+        },
         performance: {
           averageQueryTime: 0,
           slowQueryCount: 0,
           performanceScore: 0,
           recommendations: [],
         },
-        migrations: { isUpToDate: false, migrationCount: 0, hasUnappliedMigrations: true },
+        migrations: {
+          isUpToDate: false,
+          migrationCount: 0,
+          hasUnappliedMigrations: true,
+        },
         schema: {
           tableCount: 0,
           indexCount: 0,
-          integrityCheck: { isValid: false, issues: ["Health check failed"] },
+          integrityCheck: { isValid: false, issues: ['Health check failed'] },
         },
-        statistics: { version: "unknown", engine: "unknown" },
+        statistics: { version: 'unknown', engine: 'unknown' },
         alerts: [
           {
-            type: "health_check_failed",
-            severity: "critical",
-            message: `Health check failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+            type: 'health_check_failed',
+            severity: 'critical',
+            message: `Health check failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
             timestamp: new Date(),
           },
         ],
         recommendations: [
-          "Database health check failed - investigate connection and configuration",
+          'Database health check failed - investigate connection and configuration',
         ],
       };
     }
@@ -199,7 +214,7 @@ export class DatabaseHealthService {
    */
   async quickHealthCheck(): Promise<{
     isHealthy: boolean;
-    status: "healthy" | "warning" | "critical";
+    status: 'healthy' | 'warning' | 'critical';
     message: string;
     responseTime: number;
   }> {
@@ -210,19 +225,19 @@ export class DatabaseHealthService {
       await this.prisma.$queryRaw`SELECT 1`;
       const responseTime = Date.now() - startTime;
 
-      let status: "healthy" | "warning" | "critical" = "healthy";
-      let message = "Database is healthy";
+      let status: 'healthy' | 'warning' | 'critical' = 'healthy';
+      let message = 'Database is healthy';
 
       if (responseTime > 1000) {
-        status = "warning";
+        status = 'warning';
         message = `Database responding slowly (${responseTime}ms)`;
       } else if (responseTime > 5000) {
-        status = "critical";
+        status = 'critical';
         message = `Database response very slow (${responseTime}ms)`;
       }
 
       return {
-        isHealthy: status !== "critical",
+        isHealthy: status !== 'critical',
         status,
         message,
         responseTime,
@@ -232,8 +247,8 @@ export class DatabaseHealthService {
 
       return {
         isHealthy: false,
-        status: "critical",
-        message: `Database connection failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+        status: 'critical',
+        message: `Database connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
         responseTime,
       };
     }
@@ -295,8 +310,11 @@ export class DatabaseHealthService {
     return await this.migrationHelper.getDatabaseVersion();
   }
 
-  private getSettledValue<T>(settled: PromiseSettledResult<T>, defaultValue: T): T {
-    return settled.status === "fulfilled" ? settled.value : defaultValue;
+  private getSettledValue<T>(
+    settled: PromiseSettledResult<T>,
+    defaultValue: T,
+  ): T {
+    return settled.status === 'fulfilled' ? settled.value : defaultValue;
   }
 
   private calculateOverallHealth(
@@ -304,7 +322,7 @@ export class DatabaseHealthService {
     performance: any,
     migration: any,
     schema: any,
-  ): { status: "healthy" | "warning" | "critical"; score: number } {
+  ): { status: 'healthy' | 'warning' | 'critical'; score: number } {
     let score = 100;
 
     // Connection health (30% weight)
@@ -331,17 +349,22 @@ export class DatabaseHealthService {
 
     score = Math.max(0, Math.round(score));
 
-    let status: "healthy" | "warning" | "critical" = "healthy";
+    let status: 'healthy' | 'warning' | 'critical' = 'healthy';
     if (score < 50) {
-      status = "critical";
+      status = 'critical';
     } else if (score < 80) {
-      status = "warning";
+      status = 'warning';
     }
 
     return { status, score };
   }
 
-  private collectAlerts(connection: any, performance: any, migration: any, schema: any): any[] {
+  private collectAlerts(
+    connection: any,
+    performance: any,
+    migration: any,
+    schema: any,
+  ): any[] {
     const alerts: any[] = [];
 
     // Connection alerts
@@ -352,8 +375,8 @@ export class DatabaseHealthService {
     // Performance alerts
     if (performance.slowQueryCount > 0) {
       alerts.push({
-        type: "slow_queries",
-        severity: "medium",
+        type: 'slow_queries',
+        severity: 'medium',
         message: `${performance.slowQueryCount} slow queries detected`,
         timestamp: new Date(),
       });
@@ -362,9 +385,9 @@ export class DatabaseHealthService {
     // Migration alerts
     if (migration.hasUnappliedMigrations) {
       alerts.push({
-        type: "unapplied_migrations",
-        severity: "high",
-        message: "Database has unapplied migrations",
+        type: 'unapplied_migrations',
+        severity: 'high',
+        message: 'Database has unapplied migrations',
         timestamp: new Date(),
       });
     }
@@ -372,16 +395,23 @@ export class DatabaseHealthService {
     // Schema alerts
     if (!schema.integrityCheck.isValid) {
       alerts.push({
-        type: "schema_integrity",
-        severity: "high",
-        message: `Schema integrity issues: ${schema.integrityCheck.issues.join(", ")}`,
+        type: 'schema_integrity',
+        severity: 'high',
+        message: `Schema integrity issues: ${schema.integrityCheck.issues.join(', ')}`,
         timestamp: new Date(),
       });
     }
 
     return alerts.sort((a, b) => {
-      const severityOrder: Record<string, number> = { critical: 4, high: 3, medium: 2, low: 1 };
-      return (severityOrder[b.severity] || 0) - (severityOrder[a.severity] || 0);
+      const severityOrder: Record<string, number> = {
+        critical: 4,
+        high: 3,
+        medium: 2,
+        low: 1,
+      };
+      return (
+        (severityOrder[b.severity] || 0) - (severityOrder[a.severity] || 0)
+      );
     });
   }
 
@@ -394,25 +424,25 @@ export class DatabaseHealthService {
     const recommendations: string[] = [];
 
     if (!connection.isConnected) {
-      recommendations.push("Fix database connection issues");
+      recommendations.push('Fix database connection issues');
     } else if (connection.poolMetrics.connectionUtilization > 80) {
-      recommendations.push("Consider increasing connection pool size");
+      recommendations.push('Consider increasing connection pool size');
     }
 
     if (performance.performanceScore < 70) {
-      recommendations.push("Optimize slow queries and consider adding indexes");
+      recommendations.push('Optimize slow queries and consider adding indexes');
     }
 
     if (migration.hasUnappliedMigrations) {
-      recommendations.push("Apply pending database migrations");
+      recommendations.push('Apply pending database migrations');
     }
 
     if (!schema.integrityCheck.isValid) {
-      recommendations.push("Address schema integrity issues");
+      recommendations.push('Address schema integrity issues');
     }
 
     if (recommendations.length === 0) {
-      recommendations.push("Database is operating optimally");
+      recommendations.push('Database is operating optimally');
     }
 
     return recommendations;
@@ -421,11 +451,13 @@ export class DatabaseHealthService {
   /**
    * Start continuous health monitoring
    */
-  startContinuousMonitoring(intervalMs: number = 60000): void {
+  startContinuousMonitoring(intervalMs = 60000): void {
     this.performanceMonitor.startMonitoring();
     this.connectionMonitor.startMonitoring(intervalMs);
 
-    this.logger.log(`Continuous database monitoring started (interval: ${intervalMs}ms)`);
+    this.logger.log(
+      `Continuous database monitoring started (interval: ${intervalMs}ms)`,
+    );
   }
 
   /**
@@ -435,6 +467,6 @@ export class DatabaseHealthService {
     this.performanceMonitor.stopMonitoring();
     this.connectionMonitor.stopMonitoring();
 
-    this.logger.log("Continuous database monitoring stopped");
+    this.logger.log('Continuous database monitoring stopped');
   }
 }

@@ -1,5 +1,5 @@
-import { HttpStatus } from "@nestjs/common";
-import { BaseException } from "./base.exception";
+import { HttpStatus } from '@nestjs/common';
+import { BaseException } from './base.exception';
 
 export class BusinessException extends BaseException {
   constructor(message: string, context?: string, correlationId?: string) {
@@ -10,7 +10,12 @@ export class BusinessException extends BaseException {
 export class ValidationException extends BaseException {
   public readonly field?: string;
 
-  constructor(message: string, field?: string, context?: string, correlationId?: string) {
+  constructor(
+    message: string,
+    field?: string,
+    context?: string,
+    correlationId?: string,
+  ) {
     super(message, HttpStatus.UNPROCESSABLE_ENTITY, context, correlationId);
     this.field = field;
   }
@@ -55,13 +60,21 @@ export class ConflictException extends BaseException {
 }
 
 export class UnauthorizedException extends BaseException {
-  constructor(message: string = "Unauthorized access", context?: string, correlationId?: string) {
+  constructor(
+    message = 'Unauthorized access',
+    context?: string,
+    correlationId?: string,
+  ) {
     super(message, HttpStatus.UNAUTHORIZED, context, correlationId);
   }
 }
 
 export class ForbiddenException extends BaseException {
-  constructor(message: string = "Forbidden access", context?: string, correlationId?: string) {
+  constructor(
+    message = 'Forbidden access',
+    context?: string,
+    correlationId?: string,
+  ) {
     super(message, HttpStatus.FORBIDDEN, context, correlationId);
   }
 }
@@ -70,7 +83,7 @@ export class RateLimitException extends BaseException {
   public readonly retryAfter?: number;
 
   constructor(
-    message: string = "Rate limit exceeded",
+    message = 'Rate limit exceeded',
     retryAfter?: number,
     context?: string,
     correlationId?: string,

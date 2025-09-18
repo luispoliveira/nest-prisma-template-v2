@@ -1,8 +1,8 @@
-import { User } from "@gen/prisma-client";
-import { JwtPayloadType, PasswordUtil, TokenUtil } from "@lib/common";
-import { PrismaService } from "@lib/prisma";
-import { Inject, Injectable, UnauthorizedException } from "@nestjs/common";
-import { JwtService } from "@nestjs/jwt";
+import { User } from '@gen/prisma-client';
+import { JwtPayloadType, PasswordUtil, TokenUtil } from '@lib/common';
+import { PrismaService } from '@lib/prisma';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
@@ -17,14 +17,15 @@ export class AuthService {
         email,
       },
     });
-    if (!user) throw new UnauthorizedException("User not found");
+    if (!user) throw new UnauthorizedException('User not found');
 
-    if (!user.isActive) throw new UnauthorizedException("User is not active");
+    if (!user.isActive) throw new UnauthorizedException('User is not active');
 
-    if (!user.password) throw new UnauthorizedException("User with no active credentials");
+    if (!user.password)
+      throw new UnauthorizedException('User with no active credentials');
 
     if (!(await PasswordUtil.comparePassword(user.password, password)))
-      throw new UnauthorizedException("Invalid credentials");
+      throw new UnauthorizedException('Invalid credentials');
 
     /**
      * check if user is active
@@ -70,7 +71,7 @@ export class AuthService {
         email,
       },
     });
-    if (!user) throw new UnauthorizedException("User not found");
+    if (!user) throw new UnauthorizedException('User not found');
 
     const token = TokenUtil.generate();
 
@@ -82,7 +83,9 @@ export class AuthService {
         isActive: false,
         password: null,
         resetPasswordToken: token,
-        resetPasswordTokenExpiresAt: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+        resetPasswordTokenExpiresAt: new Date(
+          Date.now() + 3 * 24 * 60 * 60 * 1000,
+        ),
       },
     });
 
@@ -99,12 +102,13 @@ export class AuthService {
         resetPasswordToken: token,
       },
     });
-    if (!user) throw new UnauthorizedException("User not found");
+    if (!user) throw new UnauthorizedException('User not found');
 
-    if (!user.resetPasswordTokenExpiresAt) throw new UnauthorizedException("Token expired");
+    if (!user.resetPasswordTokenExpiresAt)
+      throw new UnauthorizedException('Token expired');
 
     if (user.resetPasswordTokenExpiresAt < new Date()) {
-      throw new UnauthorizedException("Token expired");
+      throw new UnauthorizedException('Token expired');
     }
 
     const hashedPassword = await PasswordUtil.hashPassword(password);

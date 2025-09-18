@@ -1,6 +1,6 @@
-import { Type } from "@nestjs/common";
-import { ApiProperty } from "@nestjs/swagger";
-import { PageMetaType } from "./page-meta.type";
+import { Type } from '@nestjs/common';
+import { ApiProperty } from '@nestjs/swagger';
+import { PageMetaType } from './page-meta.type';
 
 export function Paginated<T>(classRef: Type<T>) {
   abstract class PaginatedType<T> {
@@ -21,7 +21,7 @@ export function Paginated<T>(classRef: Type<T>) {
     }
   }
 
-  Object.defineProperty(PaginatedType, "name", {
+  Object.defineProperty(PaginatedType, 'name', {
     value: `${classRef.name}Paginated`,
   });
 

@@ -24,7 +24,7 @@ export class ApiResponseBuilder {
   static success<T>(data?: T, message?: string): ApiResponse<T> {
     return {
       success: true,
-      message: message || "Operation completed successfully",
+      message: message || 'Operation completed successfully',
       data,
       meta: {
         timestamp: new Date().toISOString(),
@@ -34,12 +34,12 @@ export class ApiResponseBuilder {
 
   static paginated<T>(
     items: T[],
-    pagination: PaginatedApiResponse<T>["pagination"],
+    pagination: PaginatedApiResponse<T>['pagination'],
     message?: string,
   ): PaginatedApiResponse<T> {
     return {
       success: true,
-      message: message || "Data retrieved successfully",
+      message: message || 'Data retrieved successfully',
       data: items,
       pagination,
       meta: {
@@ -48,7 +48,7 @@ export class ApiResponseBuilder {
     };
   }
 
-  static error(message: string): Omit<ApiResponse, "data"> {
+  static error(message: string): Omit<ApiResponse, 'data'> {
     return {
       success: false,
       message,

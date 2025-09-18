@@ -1,6 +1,6 @@
-import { Injectable, Logger } from "@nestjs/common";
-import { PrismaService } from "../prisma/prisma.service";
-import { PrismaTx } from "../types/tx-type";
+import { Injectable, Logger } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+import { PrismaTx } from '../types/tx-type';
 
 export interface BaseEntity {
   id: number | string;
@@ -13,7 +13,7 @@ export interface PaginationOptions {
   page?: number;
   limit?: number;
   orderBy?: string;
-  orderDirection?: "asc" | "desc";
+  orderDirection?: 'asc' | 'desc';
 }
 
 export interface PaginationResult<T> {
@@ -29,7 +29,11 @@ export interface PaginationResult<T> {
 }
 
 @Injectable()
-export abstract class BaseRepository<T extends BaseEntity, CreateInput, UpdateInput> {
+export abstract class BaseRepository<
+  T extends BaseEntity,
+  CreateInput,
+  UpdateInput,
+> {
   protected readonly logger = new Logger(this.constructor.name);
   protected abstract modelName: string;
 
@@ -48,7 +52,10 @@ export abstract class BaseRepository<T extends BaseEntity, CreateInput, UpdateIn
   /**
    * Find record by ID
    */
-  async findById(id: number | string, includeDeleted = false): Promise<T | null> {
+  async findById(
+    id: number | string,
+    includeDeleted = false,
+  ): Promise<T | null> {
     const where: any = { id };
     if (!includeDeleted) {
       where.deletedAt = null;
@@ -62,7 +69,10 @@ export abstract class BaseRepository<T extends BaseEntity, CreateInput, UpdateIn
   /**
    * Find record by ID or throw error
    */
-  async findByIdOrThrow(id: number | string, includeDeleted = false): Promise<T> {
+  async findByIdOrThrow(
+    id: number | string,
+    includeDeleted = false,
+  ): Promise<T> {
     const record = await this.findById(id, includeDeleted);
     if (!record) {
       throw new Error(`${this.modelName} with ID ${id} not found`);
@@ -78,7 +88,12 @@ export abstract class BaseRepository<T extends BaseEntity, CreateInput, UpdateIn
     options: PaginationOptions = {},
     includeDeleted = false,
   ): Promise<PaginationResult<T>> {
-    const { page = 1, limit = 10, orderBy = "createdAt", orderDirection = "desc" } = options;
+    const {
+      page = 1,
+      limit = 10,
+      orderBy = 'createdAt',
+      orderDirection = 'desc',
+    } = options;
 
     if (!includeDeleted) {
       where.deletedAt = null;
@@ -118,7 +133,11 @@ export abstract class BaseRepository<T extends BaseEntity, CreateInput, UpdateIn
   /**
    * Update record by ID
    */
-  async update(id: number | string, data: UpdateInput, tx?: PrismaTx): Promise<T> {
+  async update(
+    id: number | string,
+    data: UpdateInput,
+    tx?: PrismaTx,
+  ): Promise<T> {
     const client = tx || this.prisma;
     return this.prisma.executeWithErrorHandling(() =>
       (client as any)[this.modelName].update({
@@ -169,7 +188,12 @@ export abstract class BaseRepository<T extends BaseEntity, CreateInput, UpdateIn
   /**
    * Upsert record
    */
-  async upsert(where: any, create: CreateInput, update: UpdateInput, tx?: PrismaTx): Promise<T> {
+  async upsert(
+    where: any,
+    create: CreateInput,
+    update: UpdateInput,
+    tx?: PrismaTx,
+  ): Promise<T> {
     const client = tx || this.prisma;
     return this.prisma.executeWithErrorHandling(() =>
       (client as any)[this.modelName].upsert({
@@ -289,7 +313,9 @@ export abstract class BaseRepository<T extends BaseEntity, CreateInput, UpdateIn
   async findUniqueOrThrow(where: any, includeDeleted = false): Promise<T> {
     const record = await this.findUnique(where, includeDeleted);
     if (!record) {
-      throw new Error(`${this.modelName} with where clause ${JSON.stringify(where)} not found`);
+      throw new Error(
+        `${this.modelName} with where clause ${JSON.stringify(where)} not found`,
+      );
     }
     return record;
   }

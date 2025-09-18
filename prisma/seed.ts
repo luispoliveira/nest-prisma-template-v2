@@ -1,9 +1,9 @@
-import { PrismaClient } from "@gen/prisma-client";
-import { Role } from "@lib/common";
-import { PrismaPg } from "@prisma/adapter-pg";
-import { PasswordUtil } from "../libs/common/src";
-import PermissionSeeder from "./seeders/permission.seeder";
-import RoleSeeder from "./seeders/role.seeder";
+import { PrismaClient } from '@gen/prisma-client';
+import { Role } from '@lib/common';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { PasswordUtil } from '../libs/common/src';
+import PermissionSeeder from './seeders/permission.seeder';
+import RoleSeeder from './seeders/role.seeder';
 
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL,
@@ -13,7 +13,7 @@ const prisma = new PrismaClient({
 });
 
 async function main() {
-  console.log("Start seeding ...");
+  console.log('Start seeding ...');
 
   const roleSeeder = new RoleSeeder(prisma);
   const permissionSeeder = new PermissionSeeder(prisma);
@@ -23,7 +23,7 @@ async function main() {
 
   await ensureAdmin();
 
-  console.log("Seeding finished.");
+  console.log('Seeding finished.');
 }
 
 async function ensureAdmin() {
@@ -38,7 +38,7 @@ async function ensureAdmin() {
       password: await PasswordUtil.hashPassword(adminPassword),
       isActive: true,
       role: {
-        connect: { name: "admin" as Role },
+        connect: { name: 'admin' as Role },
       },
     },
   });

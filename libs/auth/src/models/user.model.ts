@@ -1,4 +1,4 @@
-import { Role } from "@lib/common";
+import { Role } from '@lib/common';
 
 export class LoggedUser {
   id: number;

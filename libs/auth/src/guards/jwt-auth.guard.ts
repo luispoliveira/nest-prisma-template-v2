@@ -1,14 +1,18 @@
-import { IS_PUBLIC_KEY } from "@lib/auth";
-import { ContextUtil } from "@lib/common";
-import { ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { Reflector } from "@nestjs/core";
-import { JwtService } from "@nestjs/jwt";
-import { AuthGuard } from "@nestjs/passport";
-import { Observable } from "rxjs";
+import { IS_PUBLIC_KEY } from '@lib/auth';
+import { ContextUtil } from '@lib/common';
+import {
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { Reflector } from '@nestjs/core';
+import { JwtService } from '@nestjs/jwt';
+import { AuthGuard } from '@nestjs/passport';
+import { Observable } from 'rxjs';
 
 @Injectable()
-export class JwtAuthGuard extends AuthGuard("jwt") {
+export class JwtAuthGuard extends AuthGuard('jwt') {
   constructor(
     private readonly _jwtService: JwtService,
     private readonly _configService: ConfigService,
@@ -17,7 +21,9 @@ export class JwtAuthGuard extends AuthGuard("jwt") {
     super();
   }
 
-  canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
+  canActivate(
+    context: ExecutionContext,
+  ): boolean | Promise<boolean> | Observable<boolean> {
     const isPublic = this._reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
@@ -43,7 +49,7 @@ export class JwtAuthGuard extends AuthGuard("jwt") {
     status?: unknown,
   ): TUser {
     if (err || !user) {
-      throw err || new UnauthorizedException("You are not logged in");
+      throw err || new UnauthorizedException('You are not logged in');
     }
 
     return user as TUser;

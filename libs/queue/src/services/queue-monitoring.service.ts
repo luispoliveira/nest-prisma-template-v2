@@ -1,12 +1,12 @@
-import { Injectable, Logger } from "@nestjs/common";
-import { JobMetrics } from "../interfaces/job.interface";
+import { Injectable, Logger } from '@nestjs/common';
+import { JobMetrics } from '../interfaces/job.interface';
 import {
   QueueHealthCheck,
   QueueHealthStatus,
   SystemQueueHealth,
-} from "../interfaces/queue-health.interface";
-import { QueuePerformanceMetrics } from "../interfaces/queue-stats.interface";
-import { EnhancedQueueService, QueueStats } from "./enhanced-queue.service";
+} from '../interfaces/queue-health.interface';
+import { QueuePerformanceMetrics } from '../interfaces/queue-stats.interface';
+import { EnhancedQueueService, QueueStats } from './enhanced-queue.service';
 
 export interface QueueHealthMetric {
   queueName: string;
@@ -23,12 +23,12 @@ export interface QueueHealthMetric {
 
 export interface QueueAlert {
   type:
-    | "high_queue_size"
-    | "high_error_rate"
-    | "stalled_jobs"
-    | "connection_error"
-    | "low_throughput";
-  severity: "low" | "medium" | "high" | "critical";
+    | 'high_queue_size'
+    | 'high_error_rate'
+    | 'stalled_jobs'
+    | 'connection_error'
+    | 'low_throughput';
+  severity: 'low' | 'medium' | 'high' | 'critical';
   message: string;
   timestamp: Date;
   queueName: string;
@@ -53,7 +53,7 @@ export interface QueueMonitoringReport {
     activeJobs: number;
     failedJobs: number;
     avgThroughput: number;
-    overallHealth: "healthy" | "warning" | "critical";
+    overallHealth: 'healthy' | 'warning' | 'critical';
   };
   queues: QueueHealthMetric[];
   recentAlerts: QueueAlert[];
@@ -76,9 +76,9 @@ export class QueueMonitoringService {
   /**
    * Start monitoring all queues
    */
-  startMonitoring(intervalMs: number = 30000): void {
+  startMonitoring(intervalMs = 30000): void {
     if (this.isMonitoring) {
-      this.logger.warn("Queue monitoring is already running");
+      this.logger.warn('Queue monitoring is already running');
       return;
     }
 
@@ -89,7 +89,7 @@ export class QueueMonitoringService {
       try {
         await this.performHealthChecks();
       } catch (error) {
-        this.logger.error("Error during queue monitoring", error);
+        this.logger.error('Error during queue monitoring', error);
       }
     }, intervalMs);
   }
@@ -104,7 +104,7 @@ export class QueueMonitoringService {
     }
 
     this.isMonitoring = false;
-    this.logger.log("Queue monitoring stopped");
+    this.logger.log('Queue monitoring stopped');
   }
 
   /**
@@ -115,7 +115,9 @@ export class QueueMonitoringService {
 
     // Keep only recent metrics
     if (this.performanceMetrics.length > this.maxMetricsHistory) {
-      this.performanceMetrics = this.performanceMetrics.slice(-this.maxMetricsHistory);
+      this.performanceMetrics = this.performanceMetrics.slice(
+        -this.maxMetricsHistory,
+      );
     }
 
     // Analyze for potential alerts
@@ -147,14 +149,20 @@ export class QueueMonitoringService {
           healthyQueues++;
         }
       } catch (error) {
-        this.logger.error(`Failed to get metrics for queue '${queueName}'`, error);
+        this.logger.error(
+          `Failed to get metrics for queue '${queueName}'`,
+          error,
+        );
       }
     }
 
     const avgThroughput = this.calculateAverageThroughput();
     const overallHealth = this.determineOverallHealth(queueMetrics);
     const recentAlerts = this.getRecentAlerts(10);
-    const recommendations = this.generateRecommendations(queueMetrics, recentAlerts);
+    const recommendations = this.generateRecommendations(
+      queueMetrics,
+      recentAlerts,
+    );
 
     return {
       summary: {
@@ -206,7 +214,7 @@ export class QueueMonitoringService {
   /**
    * Get recent alerts across all queues
    */
-  getRecentAlerts(limit: number = 20): QueueAlert[] {
+  getRecentAlerts(limit = 20): QueueAlert[] {
     return [...this.alerts]
       .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
       .slice(0, limit);
@@ -215,7 +223,7 @@ export class QueueMonitoringService {
   /**
    * Get alerts by severity
    */
-  getAlertsBySeverity(severity: QueueAlert["severity"]): QueueAlert[] {
+  getAlertsBySeverity(severity: QueueAlert['severity']): QueueAlert[] {
     return this.alerts.filter(alert => alert.severity === severity);
   }
 
@@ -228,14 +236,17 @@ export class QueueMonitoringService {
       this.logger.log(`Alerts cleared for queue '${queueName}'`);
     } else {
       this.alerts = [];
-      this.logger.log("All alerts cleared");
+      this.logger.log('All alerts cleared');
     }
   }
 
   /**
    * Get performance metrics for a queue
    */
-  getQueuePerformanceMetrics(queueName: string, hours: number = 24): QueuePerformanceMetric[] {
+  getQueuePerformanceMetrics(
+    queueName: string,
+    hours = 24,
+  ): QueuePerformanceMetric[] {
     const cutoff = new Date(Date.now() - hours * 60 * 60 * 1000);
 
     return this.performanceMetrics.filter(
@@ -254,7 +265,7 @@ export class QueueMonitoringService {
       this.logger.log(`Metrics cleared for queue '${queueName}'`);
     } else {
       this.performanceMetrics = [];
-      this.logger.log("All metrics cleared");
+      this.logger.log('All metrics cleared');
     }
   }
 
@@ -269,12 +280,14 @@ export class QueueMonitoringService {
         await this.checkQueueHealth(queueName);
       } catch (error) {
         this.addAlert({
-          type: "connection_error",
-          severity: "high",
-          message: `Health check failed for queue '${queueName}': ${error instanceof Error ? error.message : "Unknown error"}`,
+          type: 'connection_error',
+          severity: 'high',
+          message: `Health check failed for queue '${queueName}': ${error instanceof Error ? error.message : 'Unknown error'}`,
           timestamp: new Date(),
           queueName,
-          metadata: { error: error instanceof Error ? error.message : "Unknown error" },
+          metadata: {
+            error: error instanceof Error ? error.message : 'Unknown error',
+          },
         });
       }
     }
@@ -290,8 +303,8 @@ export class QueueMonitoringService {
     // Check for high queue size
     if (stats.waiting > 1000) {
       this.addAlert({
-        type: "high_queue_size",
-        severity: stats.waiting > 5000 ? "critical" : "high",
+        type: 'high_queue_size',
+        severity: stats.waiting > 5000 ? 'critical' : 'high',
         message: `High queue size detected: ${stats.waiting} waiting jobs`,
         timestamp: new Date(),
         queueName,
@@ -305,8 +318,8 @@ export class QueueMonitoringService {
       const errorRate = (stats.failed / totalProcessed) * 100;
       if (errorRate > 10) {
         this.addAlert({
-          type: "high_error_rate",
-          severity: errorRate > 25 ? "critical" : "medium",
+          type: 'high_error_rate',
+          severity: errorRate > 25 ? 'critical' : 'medium',
           message: `High error rate detected: ${errorRate.toFixed(1)}%`,
           timestamp: new Date(),
           queueName,
@@ -318,8 +331,8 @@ export class QueueMonitoringService {
     // Check connection health
     if (!isHealthy) {
       this.addAlert({
-        type: "connection_error",
-        severity: "critical",
+        type: 'connection_error',
+        severity: 'critical',
         message: `Queue connection unhealthy`,
         timestamp: new Date(),
         queueName,
@@ -330,12 +343,15 @@ export class QueueMonitoringService {
     const performance = this.calculateQueuePerformance(queueName);
     if (performance.throughput < 1 && stats.waiting > 10) {
       this.addAlert({
-        type: "low_throughput",
-        severity: "medium",
+        type: 'low_throughput',
+        severity: 'medium',
         message: `Low throughput detected: ${performance.throughput.toFixed(2)} jobs/min`,
         timestamp: new Date(),
         queueName,
-        metadata: { throughput: performance.throughput, waitingJobs: stats.waiting },
+        metadata: {
+          throughput: performance.throughput,
+          waitingJobs: stats.waiting,
+        },
       });
     }
   }
@@ -359,7 +375,8 @@ export class QueueMonitoringService {
     }
 
     const avgProcessingTime =
-      recentMetrics.reduce((sum, metric) => sum + metric.duration, 0) / recentMetrics.length;
+      recentMetrics.reduce((sum, metric) => sum + metric.duration, 0) /
+      recentMetrics.length;
     const throughput = recentMetrics.length / 60; // jobs per minute
     const failedJobs = recentMetrics.filter(metric => !metric.success).length;
     const errorRate = (failedJobs / recentMetrics.length) * 100;
@@ -391,22 +408,24 @@ export class QueueMonitoringService {
    */
   private determineOverallHealth(
     queueMetrics: QueueHealthMetric[],
-  ): "healthy" | "warning" | "critical" {
-    if (queueMetrics.length === 0) return "healthy";
+  ): 'healthy' | 'warning' | 'critical' {
+    if (queueMetrics.length === 0) return 'healthy';
 
-    const criticalAlerts = this.getAlertsBySeverity("critical").length;
-    const highAlerts = this.getAlertsBySeverity("high").length;
-    const unhealthyQueues = queueMetrics.filter(metric => !metric.isHealthy).length;
+    const criticalAlerts = this.getAlertsBySeverity('critical').length;
+    const highAlerts = this.getAlertsBySeverity('high').length;
+    const unhealthyQueues = queueMetrics.filter(
+      metric => !metric.isHealthy,
+    ).length;
 
     if (criticalAlerts > 0 || unhealthyQueues > queueMetrics.length * 0.5) {
-      return "critical";
+      return 'critical';
     }
 
     if (highAlerts > 0 || unhealthyQueues > 0) {
-      return "warning";
+      return 'warning';
     }
 
-    return "healthy";
+    return 'healthy';
   }
 
   /**
@@ -419,40 +438,53 @@ export class QueueMonitoringService {
     const recommendations: string[] = [];
 
     // High queue size recommendations
-    const highQueueSizeAlerts = recentAlerts.filter(alert => alert.type === "high_queue_size");
+    const highQueueSizeAlerts = recentAlerts.filter(
+      alert => alert.type === 'high_queue_size',
+    );
     if (highQueueSizeAlerts.length > 0) {
       recommendations.push(
-        "Consider increasing the number of workers or optimizing job processing",
+        'Consider increasing the number of workers or optimizing job processing',
       );
     }
 
     // High error rate recommendations
-    const highErrorRateAlerts = recentAlerts.filter(alert => alert.type === "high_error_rate");
+    const highErrorRateAlerts = recentAlerts.filter(
+      alert => alert.type === 'high_error_rate',
+    );
     if (highErrorRateAlerts.length > 0) {
-      recommendations.push("Investigate and fix recurring job failures");
+      recommendations.push('Investigate and fix recurring job failures');
     }
 
     // Connection error recommendations
-    const connectionErrors = recentAlerts.filter(alert => alert.type === "connection_error");
+    const connectionErrors = recentAlerts.filter(
+      alert => alert.type === 'connection_error',
+    );
     if (connectionErrors.length > 0) {
-      recommendations.push("Check Redis connection and configuration");
+      recommendations.push('Check Redis connection and configuration');
     }
 
     // Low throughput recommendations
-    const lowThroughputAlerts = recentAlerts.filter(alert => alert.type === "low_throughput");
+    const lowThroughputAlerts = recentAlerts.filter(
+      alert => alert.type === 'low_throughput',
+    );
     if (lowThroughputAlerts.length > 0) {
-      recommendations.push("Consider scaling workers or optimizing job processing time");
+      recommendations.push(
+        'Consider scaling workers or optimizing job processing time',
+      );
     }
 
     // General recommendations
     const avgWaitingJobs =
-      queueMetrics.reduce((sum, metric) => sum + metric.stats.waiting, 0) / queueMetrics.length;
+      queueMetrics.reduce((sum, metric) => sum + metric.stats.waiting, 0) /
+      queueMetrics.length;
     if (avgWaitingJobs > 100) {
-      recommendations.push("Monitor queue capacity and consider horizontal scaling");
+      recommendations.push(
+        'Monitor queue capacity and consider horizontal scaling',
+      );
     }
 
     if (recommendations.length === 0) {
-      recommendations.push("Queue system is operating normally");
+      recommendations.push('Queue system is operating normally');
     }
 
     return recommendations;
@@ -466,8 +498,8 @@ export class QueueMonitoringService {
     if (metric.duration > 30000) {
       // 30 seconds
       this.addAlert({
-        type: "stalled_jobs",
-        severity: metric.duration > 60000 ? "high" : "medium",
+        type: 'stalled_jobs',
+        severity: metric.duration > 60000 ? 'high' : 'medium',
         message: `Slow job detected: ${metric.jobName} took ${(metric.duration / 1000).toFixed(1)}s`,
         timestamp: new Date(),
         queueName: metric.queueName,
@@ -478,8 +510,8 @@ export class QueueMonitoringService {
     // Check for high retry count
     if (metric.attempts > 3) {
       this.addAlert({
-        type: "high_error_rate",
-        severity: "medium",
+        type: 'high_error_rate',
+        severity: 'medium',
         message: `Job with high retry count: ${metric.jobName} (${metric.attempts} attempts)`,
         timestamp: new Date(),
         queueName: metric.queueName,
@@ -502,16 +534,16 @@ export class QueueMonitoringService {
     // Log alert based on severity
     const logMessage = `[${alert.queueName}] ${alert.message}`;
     switch (alert.severity) {
-      case "critical":
+      case 'critical':
         this.logger.error(logMessage);
         break;
-      case "high":
+      case 'high':
         this.logger.warn(logMessage);
         break;
-      case "medium":
+      case 'medium':
         this.logger.log(logMessage);
         break;
-      case "low":
+      case 'low':
         this.logger.debug(logMessage);
         break;
     }
@@ -560,7 +592,10 @@ export class QueueMonitoringService {
         totalActiveJobs += stats.active;
         totalFailedJobs += stats.failed;
       } catch (error) {
-        this.logger.error(`Failed to get health check for queue ${queueName}`, error);
+        this.logger.error(
+          `Failed to get health check for queue ${queueName}`,
+          error,
+        );
         criticalQueues++;
       }
     }
@@ -583,7 +618,8 @@ export class QueueMonitoringService {
         systemMemoryUsage: 0, // TODO: Implement actual memory monitoring
         redisConnectionStatus: QueueHealthStatus.HEALTHY, // TODO: Check Redis connection
       },
-      systemRecommendations: this.generateSystemRecommendations(queueHealthChecks),
+      systemRecommendations:
+        this.generateSystemRecommendations(queueHealthChecks),
       timestamp: new Date(),
     };
   }
@@ -598,14 +634,14 @@ export class QueueMonitoringService {
   /**
    * Get job metrics for a specific queue
    */
-  getJobMetrics(queueName: string, limit: number = 50): JobMetrics[] {
+  getJobMetrics(queueName: string, limit = 50): JobMetrics[] {
     const queueMetrics = this.getQueuePerformanceMetrics(queueName, 24);
 
     return queueMetrics
       .map(metric => ({
         id: `${metric.queueName}-${metric.timestamp.getTime()}`,
         name: metric.jobName,
-        status: metric.success ? ("completed" as const) : ("failed" as const),
+        status: metric.success ? ('completed' as const) : ('failed' as const),
         processingTime: metric.duration,
         attempts: metric.attempts,
         timestamp: metric.timestamp,
@@ -617,19 +653,25 @@ export class QueueMonitoringService {
   /**
    * Get queue performance metrics in the new interface format
    */
-  async getQueuePerformanceMetricsDetailed(queueName: string): Promise<QueuePerformanceMetrics> {
+  async getQueuePerformanceMetricsDetailed(
+    queueName: string,
+  ): Promise<QueuePerformanceMetrics> {
     const metrics = this.getQueuePerformanceMetrics(queueName, 24);
     const stats = await this.queueService.getQueueStats(queueName);
 
     const totalProcessed = metrics.length;
     const totalFailed = metrics.filter(m => !m.success).length;
     const avgProcessingTime =
-      totalProcessed > 0 ? metrics.reduce((sum, m) => sum + m.duration, 0) / totalProcessed : 0;
+      totalProcessed > 0
+        ? metrics.reduce((sum, m) => sum + m.duration, 0) / totalProcessed
+        : 0;
 
-    const peakProcessingTime = totalProcessed > 0 ? Math.max(...metrics.map(m => m.duration)) : 0;
+    const peakProcessingTime =
+      totalProcessed > 0 ? Math.max(...metrics.map(m => m.duration)) : 0;
 
     const throughput = totalProcessed / 24; // jobs per hour
-    const errorRate = totalProcessed > 0 ? (totalFailed / totalProcessed) * 100 : 0;
+    const errorRate =
+      totalProcessed > 0 ? (totalFailed / totalProcessed) * 100 : 0;
 
     const now = new Date();
     const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
@@ -669,17 +711,22 @@ export class QueueMonitoringService {
     const performance = this.calculateQueuePerformance(queueName);
 
     // Calculate individual check statuses
-    const connectionStatus = isHealthy ? QueueHealthStatus.HEALTHY : QueueHealthStatus.CRITICAL;
+    const connectionStatus = isHealthy
+      ? QueueHealthStatus.HEALTHY
+      : QueueHealthStatus.CRITICAL;
 
     const processingStatus = this.determineProcessingStatus(stats, performance);
     const memoryStatus = QueueHealthStatus.HEALTHY; // TODO: Implement memory checks
-    const performanceStatus = this.determinePerformanceStatus(performance, stats);
+    const performanceStatus = this.determinePerformanceStatus(
+      performance,
+      stats,
+    );
 
     const checks = {
       connection: {
         status: connectionStatus,
         latency: 0, // TODO: Measure Redis latency
-        error: !isHealthy ? "Queue connection unhealthy" : undefined,
+        error: !isHealthy ? 'Queue connection unhealthy' : undefined,
       },
       processing: {
         status: processingStatus,
@@ -702,7 +749,11 @@ export class QueueMonitoringService {
 
     const score = this.calculateHealthScore(checks);
     const status = this.determineHealthStatus(score);
-    const recommendations = this.generateQueueRecommendations(stats, performance, checks);
+    const recommendations = this.generateQueueRecommendations(
+      stats,
+      performance,
+      checks,
+    );
 
     return {
       queueName,
@@ -717,10 +768,15 @@ export class QueueMonitoringService {
   /**
    * Calculate overall health score from queue health checks
    */
-  private calculateOverallHealthScore(healthChecks: QueueHealthCheck[]): number {
+  private calculateOverallHealthScore(
+    healthChecks: QueueHealthCheck[],
+  ): number {
     if (healthChecks.length === 0) return 100;
 
-    const totalScore = healthChecks.reduce((sum, check) => sum + check.score, 0);
+    const totalScore = healthChecks.reduce(
+      (sum, check) => sum + check.score,
+      0,
+    );
     return Math.round(totalScore / healthChecks.length);
   }
 
@@ -736,11 +792,17 @@ export class QueueMonitoringService {
   /**
    * Generate system-wide recommendations
    */
-  private generateSystemRecommendations(healthChecks: QueueHealthCheck[]): string[] {
+  private generateSystemRecommendations(
+    healthChecks: QueueHealthCheck[],
+  ): string[] {
     const recommendations: string[] = [];
 
-    const criticalQueues = healthChecks.filter(hc => hc.status === QueueHealthStatus.CRITICAL);
-    const warningQueues = healthChecks.filter(hc => hc.status === QueueHealthStatus.WARNING);
+    const criticalQueues = healthChecks.filter(
+      hc => hc.status === QueueHealthStatus.CRITICAL,
+    );
+    const warningQueues = healthChecks.filter(
+      hc => hc.status === QueueHealthStatus.WARNING,
+    );
 
     if (criticalQueues.length > 0) {
       recommendations.push(
@@ -749,11 +811,13 @@ export class QueueMonitoringService {
     }
 
     if (warningQueues.length > 0) {
-      recommendations.push(`${warningQueues.length} queue(s) showing warning signs`);
+      recommendations.push(
+        `${warningQueues.length} queue(s) showing warning signs`,
+      );
     }
 
     if (criticalQueues.length === 0 && warningQueues.length === 0) {
-      recommendations.push("All queues are operating normally");
+      recommendations.push('All queues are operating normally');
     }
 
     return recommendations;
@@ -762,7 +826,10 @@ export class QueueMonitoringService {
   /**
    * Determine processing status
    */
-  private determineProcessingStatus(stats: QueueStats, performance: any): QueueHealthStatus {
+  private determineProcessingStatus(
+    stats: QueueStats,
+    performance: any,
+  ): QueueHealthStatus {
     if (performance.errorRate > 25) return QueueHealthStatus.CRITICAL;
     if (performance.errorRate > 10) return QueueHealthStatus.WARNING;
     if (stats.waiting > 1000) return QueueHealthStatus.WARNING;
@@ -772,8 +839,12 @@ export class QueueMonitoringService {
   /**
    * Determine performance status
    */
-  private determinePerformanceStatus(performance: any, stats: QueueStats): QueueHealthStatus {
-    if (performance.throughput < 1 && stats.waiting > 100) return QueueHealthStatus.CRITICAL;
+  private determinePerformanceStatus(
+    performance: any,
+    stats: QueueStats,
+  ): QueueHealthStatus {
+    if (performance.throughput < 1 && stats.waiting > 100)
+      return QueueHealthStatus.CRITICAL;
     if (performance.avgProcessingTime > 30000) return QueueHealthStatus.WARNING;
     return QueueHealthStatus.HEALTHY;
   }
@@ -789,7 +860,9 @@ export class QueueMonitoringService {
       this.getStatusScore(checks.performance.status),
     ];
 
-    return Math.round(scores.reduce((sum, score) => sum + score, 0) / scores.length);
+    return Math.round(
+      scores.reduce((sum, score) => sum + score, 0) / scores.length,
+    );
   }
 
   /**
@@ -822,27 +895,31 @@ export class QueueMonitoringService {
   /**
    * Generate queue-specific recommendations
    */
-  private generateQueueRecommendations(stats: QueueStats, performance: any, checks: any): string[] {
+  private generateQueueRecommendations(
+    stats: QueueStats,
+    performance: any,
+    checks: any,
+  ): string[] {
     const recommendations: string[] = [];
 
     if (checks.connection.status !== QueueHealthStatus.HEALTHY) {
-      recommendations.push("Check Redis connection and configuration");
+      recommendations.push('Check Redis connection and configuration');
     }
 
     if (stats.waiting > 1000) {
-      recommendations.push("High queue size - consider increasing workers");
+      recommendations.push('High queue size - consider increasing workers');
     }
 
     if (performance.errorRate > 10) {
-      recommendations.push("High error rate - investigate job failures");
+      recommendations.push('High error rate - investigate job failures');
     }
 
     if (performance.throughput < 1 && stats.waiting > 10) {
-      recommendations.push("Low throughput - optimize job processing");
+      recommendations.push('Low throughput - optimize job processing');
     }
 
     if (recommendations.length === 0) {
-      recommendations.push("Queue is operating normally");
+      recommendations.push('Queue is operating normally');
     }
 
     return recommendations;

@@ -1,8 +1,8 @@
-import { Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import * as crypto from "crypto";
-import * as QRCode from "qrcode";
-import * as speakeasy from "speakeasy";
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import * as crypto from 'crypto';
+import * as QRCode from 'qrcode';
+import * as speakeasy from 'speakeasy';
 
 export interface TwoFactorSecret {
   secret: string;
@@ -28,7 +28,7 @@ export class TwoFactorService {
   >();
 
   constructor(private readonly configService: ConfigService) {
-    this.appName = this.configService.get("app.name") || "NestJS App";
+    this.appName = this.configService.get('app.name') || 'NestJS App';
   }
 
   /**
@@ -58,11 +58,15 @@ export class TwoFactorService {
   /**
    * Verify a 2FA token using speakeasy TOTP verification
    */
-  verifyToken(secret: string, token: string, backupCodes?: string[]): TwoFactorVerification {
+  verifyToken(
+    secret: string,
+    token: string,
+    backupCodes?: string[],
+  ): TwoFactorVerification {
     // First try to verify with TOTP using speakeasy
     const isValidToken = speakeasy.totp.verify({
       secret,
-      encoding: "base32",
+      encoding: 'base32',
       token,
       window: 2, // Allow some time drift (±2 intervals)
     });
@@ -85,12 +89,12 @@ export class TwoFactorService {
   /**
    * Generate backup codes for 2FA
    */
-  generateBackupCodes(count: number = 10): string[] {
+  generateBackupCodes(count = 10): string[] {
     const codes: string[] = [];
 
     for (let i = 0; i < count; i++) {
       // Generate 8-character alphanumeric codes
-      const code = crypto.randomBytes(4).toString("hex").toUpperCase();
+      const code = crypto.randomBytes(4).toString('hex').toUpperCase();
       codes.push(code);
     }
 
@@ -115,7 +119,10 @@ export class TwoFactorService {
   /**
    * Complete 2FA setup by verifying the initial token
    */
-  completePendingSetup(setupId: string, token: string): { isValid: boolean; secret?: string } {
+  completePendingSetup(
+    setupId: string,
+    token: string,
+  ): { isValid: boolean; secret?: string } {
     const pending = this.pendingVerifications.get(setupId);
 
     if (!pending || pending.expiresAt < new Date()) {
@@ -141,7 +148,7 @@ export class TwoFactorService {
       secret,
       label: userEmail,
       issuer: this.appName,
-      encoding: "base32",
+      encoding: 'base32',
     });
   }
 
@@ -194,7 +201,7 @@ export class TwoFactorService {
   generateCurrentToken(secret: string): string {
     return speakeasy.totp({
       secret,
-      encoding: "base32",
+      encoding: 'base32',
     });
   }
 
@@ -204,7 +211,7 @@ export class TwoFactorService {
   isValidBase32Secret(secret: string): boolean {
     try {
       // Try to generate a token with the secret
-      speakeasy.totp({ secret, encoding: "base32" });
+      speakeasy.totp({ secret, encoding: 'base32' });
       return true;
     } catch {
       return false;

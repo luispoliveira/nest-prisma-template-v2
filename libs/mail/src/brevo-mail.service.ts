@@ -2,15 +2,19 @@ import {
   SendSmtpEmail,
   TransactionalEmailsApi,
   TransactionalEmailsApiApiKeys,
-} from "@getbrevo/brevo";
-import { MailModuleOptions, SendEmailDto, SendEmailInterface } from "./interfaces";
+} from '@getbrevo/brevo';
+import {
+  MailModuleOptions,
+  SendEmailDto,
+  SendEmailInterface,
+} from './interfaces';
 
 export class BrevoMailService implements SendEmailInterface {
   #client: TransactionalEmailsApi;
 
   constructor(private opts: MailModuleOptions) {
     this.#client = new TransactionalEmailsApi();
-    if (!opts.apiKey) throw new Error("Brevo API key is required");
+    if (!opts.apiKey) throw new Error('Brevo API key is required');
 
     this.#client.setApiKey(TransactionalEmailsApiApiKeys.apiKey, opts.apiKey);
   }

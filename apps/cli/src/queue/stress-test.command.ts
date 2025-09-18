@@ -1,8 +1,8 @@
-import { EVENTS, QUEUES } from "@lib/queue";
-import { InjectQueue } from "@nestjs/bull";
-import { Injectable, Logger } from "@nestjs/common";
-import { Queue } from "bull";
-import { Command, Option } from "nestjs-command";
+import { EVENTS, QUEUES } from '@lib/queue';
+import { InjectQueue } from '@nestjs/bull';
+import { Injectable, Logger } from '@nestjs/common';
+import { Queue } from 'bull';
+import { Command, Option } from 'nestjs-command';
 
 @Injectable()
 export class QueueStressTestCommand {
@@ -11,32 +11,37 @@ export class QueueStressTestCommand {
   constructor(@InjectQueue(QUEUES.DEFAULT) private defaultQueue: Queue) {}
 
   @Command({
-    command: "queue:stress-test",
-    describe: "Stress test the default queue by adding many jobs quickly",
+    command: 'queue:stress-test',
+    describe: 'Stress test the default queue by adding many jobs quickly',
   })
   async stressTest(
     @Option({
-      name: "jobs",
-      describe: "Number of jobs to add (default: 1000)",
-      type: "number",
+      name: 'jobs',
+      describe: 'Number of jobs to add (default: 1000)',
+      type: 'number',
       required: false,
-      alias: "j",
+      alias: 'j',
     })
-    jobs: number = 1000,
+    jobs = 1000,
     @Option({
-      name: "concurrency",
-      describe: "Number of jobs to add in parallel (default: 50)",
-      type: "number",
+      name: 'concurrency',
+      describe: 'Number of jobs to add in parallel (default: 50)',
+      type: 'number',
       required: false,
-      alias: "c",
+      alias: 'c',
     })
-    concurrency: number = 50,
+    concurrency = 50,
   ) {
-    this.logger.log(`Starting stress test: adding ${jobs} jobs with concurrency ${concurrency}`);
+    this.logger.log(
+      `Starting stress test: adding ${jobs} jobs with concurrency ${concurrency}`,
+    );
     const start = Date.now();
     let added = 0;
     const addJob = async (i: number) => {
-      await this.defaultQueue.add(EVENTS.TEST, { i, timestamp: new Date().toISOString() });
+      await this.defaultQueue.add(EVENTS.TEST, {
+        i,
+        timestamp: new Date().toISOString(),
+      });
     };
     const promises = [];
     for (let i = 0; i < jobs; i += concurrency) {

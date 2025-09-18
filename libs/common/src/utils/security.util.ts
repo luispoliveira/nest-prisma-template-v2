@@ -1,11 +1,11 @@
-import * as crypto from "crypto";
+import * as crypto from 'crypto';
 
 export class SecurityUtil {
   /**
    * Generate a cryptographically secure random string
    */
-  static generateSecureToken(length: number = 32): string {
-    return crypto.randomBytes(length).toString("hex");
+  static generateSecureToken(length = 32): string {
+    return crypto.randomBytes(length).toString('hex');
   }
 
   /**
@@ -20,18 +20,18 @@ export class SecurityUtil {
    * Hash a sensitive value using SHA-256
    */
   static hashValue(value: string, salt?: string): string {
-    const actualSalt = salt || crypto.randomBytes(16).toString("hex");
-    const hash = crypto.createHash("sha256");
+    const actualSalt = salt || crypto.randomBytes(16).toString('hex');
+    const hash = crypto.createHash('sha256');
     hash.update(value + actualSalt);
-    return hash.digest("hex");
+    return hash.digest('hex');
   }
 
   /**
    * Generate a secure one-time password (OTP)
    */
-  static generateOTP(length: number = 6): string {
-    const digits = "0123456789";
-    let otp = "";
+  static generateOTP(length = 6): string {
+    const digits = '0123456789';
+    let otp = '';
 
     for (let i = 0; i < length; i++) {
       const randomIndex = crypto.randomInt(0, digits.length);
@@ -45,8 +45,8 @@ export class SecurityUtil {
    * Generate a time-based OTP that expires after specified minutes
    */
   static generateTimeBasedOTP(
-    length: number = 6,
-    expiryMinutes: number = 5,
+    length = 6,
+    expiryMinutes = 5,
   ): {
     otp: string;
     expiresAt: Date;
@@ -62,7 +62,11 @@ export class SecurityUtil {
   /**
    * Verify a time-based OTP
    */
-  static verifyTimeBasedOTP(inputOtp: string, storedHash: string, expiresAt: Date): boolean {
+  static verifyTimeBasedOTP(
+    inputOtp: string,
+    storedHash: string,
+    expiresAt: Date,
+  ): boolean {
     // Check if OTP has expired
     if (new Date() > expiresAt) {
       return false;
@@ -78,9 +82,9 @@ export class SecurityUtil {
    */
   static sanitizeInput(input: string): string {
     return input
-      .replace(/[<>]/g, "") // Remove < and > characters
-      .replace(/javascript:/gi, "") // Remove javascript: protocol
-      .replace(/on\w+\s*=/gi, "") // Remove event handlers
+      .replace(/[<>]/g, '') // Remove < and > characters
+      .replace(/javascript:/gi, '') // Remove javascript: protocol
+      .replace(/on\w+\s*=/gi, '') // Remove event handlers
       .trim();
   }
 
@@ -88,7 +92,8 @@ export class SecurityUtil {
    * Validate if a string is a valid UUID
    */
   static isValidUUID(uuid: string): boolean {
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    const uuidRegex =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     return uuidRegex.test(uuid);
   }
 
@@ -96,14 +101,14 @@ export class SecurityUtil {
    * Generate a secure session ID
    */
   static generateSessionId(): string {
-    return crypto.randomBytes(32).toString("base64url");
+    return crypto.randomBytes(32).toString('base64url');
   }
 
   /**
    * Create a HMAC signature for data integrity
    */
   static createHMAC(data: string, secret: string): string {
-    return crypto.createHmac("sha256", secret).update(data).digest("hex");
+    return crypto.createHmac('sha256', secret).update(data).digest('hex');
   }
 
   /**
@@ -112,22 +117,22 @@ export class SecurityUtil {
   static verifyHMAC(data: string, signature: string, secret: string): boolean {
     const expectedSignature = this.createHMAC(data, secret);
     return crypto.timingSafeEqual(
-      Buffer.from(signature, "hex"),
-      Buffer.from(expectedSignature, "hex"),
+      Buffer.from(signature, 'hex'),
+      Buffer.from(expectedSignature, 'hex'),
     );
   }
 
   /**
    * Generate a secure temporary password
    */
-  static generateTemporaryPassword(length: number = 12): string {
-    const uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    const lowercase = "abcdefghijklmnopqrstuvwxyz";
-    const numbers = "0123456789";
-    const symbols = "!@#$%^&*";
+  static generateTemporaryPassword(length = 12): string {
+    const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const lowercase = 'abcdefghijklmnopqrstuvwxyz';
+    const numbers = '0123456789';
+    const symbols = '!@#$%^&*';
 
     const allChars = uppercase + lowercase + numbers + symbols;
-    let password = "";
+    let password = '';
 
     // Ensure at least one character from each set
     password += uppercase[crypto.randomInt(0, uppercase.length)];
@@ -142,9 +147,9 @@ export class SecurityUtil {
 
     // Shuffle the password
     return password
-      .split("")
+      .split('')
       .sort(() => crypto.randomInt(-1, 2))
-      .join("");
+      .join('');
   }
 
   /**
@@ -154,7 +159,7 @@ export class SecurityUtil {
     lastAttempt: Date,
     maxAttempts: number,
     currentAttempts: number,
-    windowMinutes: number = 15,
+    windowMinutes = 15,
   ): { allowed: boolean; resetTime?: Date } {
     const now = new Date();
     const windowMs = windowMinutes * 60 * 1000;

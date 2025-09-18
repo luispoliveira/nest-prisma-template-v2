@@ -1,6 +1,6 @@
-import { PrismaService } from "@lib/prisma";
-import { Injectable, Logger } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
+import { PrismaService } from '@lib/prisma';
+import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import {
   DiskHealthIndicator,
   HealthCheckResult,
@@ -8,11 +8,15 @@ import {
   HttpHealthIndicator,
   MemoryHealthIndicator,
   PrismaHealthIndicator,
-} from "@nestjs/terminus";
-import { MongoHealthIndicator } from "./indicators/mongo-health.indicator";
-import { RedisHealthIndicator } from "./indicators/redis-health.indicator";
-import { SystemHealthIndicator } from "./indicators/system-health.indicator";
-import { HealthStatus, LivenessResponse, ReadinessResponse } from "./interfaces/health.interface";
+} from '@nestjs/terminus';
+import { MongoHealthIndicator } from './indicators/mongo-health.indicator';
+import { RedisHealthIndicator } from './indicators/redis-health.indicator';
+import { SystemHealthIndicator } from './indicators/system-health.indicator';
+import {
+  HealthStatus,
+  LivenessResponse,
+  ReadinessResponse,
+} from './interfaces/health.interface';
 
 @Injectable()
 export class HealthService {
@@ -35,45 +39,45 @@ export class HealthService {
     const checks = [];
 
     // Database check
-    if (this.configService.get("healthChecks.database.enabled")) {
+    if (this.configService.get('healthChecks.database.enabled')) {
       checks.push(() => this.checkDatabase());
     }
 
     // Redis check
     if (
-      this.configService.get("healthChecks.redis.enabled") &&
-      this.configService.get("healthChecks.redis.host")
+      this.configService.get('healthChecks.redis.enabled') &&
+      this.configService.get('healthChecks.redis.host')
     ) {
       checks.push(() => this.checkRedis());
     }
 
     // MongoDB check
     if (
-      this.configService.get("healthChecks.mongodb.enabled") &&
-      this.configService.get("healthChecks.mongodb.url")
+      this.configService.get('healthChecks.mongodb.enabled') &&
+      this.configService.get('healthChecks.mongodb.url')
     ) {
       checks.push(() => this.checkMongoDB());
     }
 
     // Memory check
-    if (this.configService.get("healthChecks.memory.enabled")) {
+    if (this.configService.get('healthChecks.memory.enabled')) {
       checks.push(() => this.checkMemory());
     }
 
     // Disk check
-    if (this.configService.get("healthChecks.disk.enabled")) {
+    if (this.configService.get('healthChecks.disk.enabled')) {
       checks.push(() => this.checkDisk());
     }
 
     // External services check
-    if (this.configService.get("healthChecks.external.enabled")) {
+    if (this.configService.get('healthChecks.external.enabled')) {
       checks.push(() => this.checkExternalServices());
     }
 
     try {
       return await this.healthCheckService.check(checks);
     } catch (error) {
-      this.logger.error("Health check failed", error);
+      this.logger.error('Health check failed', error);
       throw error;
     }
   }
@@ -87,7 +91,7 @@ export class HealthService {
         const details: Record<string, any> = {};
         Object.keys(data || {}).forEach(key => {
           details[key] = {
-            status: data[key]?.status === "up" ? "up" : "down",
+            status: data[key]?.status === 'up' ? 'up' : 'down',
             timestamp: new Date().toISOString(),
             ...data[key],
           };
@@ -96,17 +100,19 @@ export class HealthService {
       };
 
       return {
-        status: "ok",
+        status: 'ok',
         info: convertToDetails(result.info),
         error: convertToDetails(result.error),
         details: convertToDetails(result.details),
       };
     } catch (error) {
-      this.logger.error("Detailed health check failed", error);
+      this.logger.error('Detailed health check failed', error);
       const errorCauses =
-        error && typeof error === "object" && "causes" in error ? error.causes : {};
+        error && typeof error === 'object' && 'causes' in error
+          ? error.causes
+          : {};
       return {
-        status: "error",
+        status: 'error',
         info: {},
         error: (errorCauses as Record<string, any>) || {},
         details: (errorCauses as Record<string, any>) || {},
@@ -116,7 +122,7 @@ export class HealthService {
 
   getLiveness(): LivenessResponse {
     return {
-      status: "ok",
+      status: 'ok',
       timestamp: new Date().toISOString(),
       uptime: Math.round(process.uptime()),
       version: process.env.npm_package_version,
@@ -128,26 +134,26 @@ export class HealthService {
 
     try {
       // Quick essential checks for readiness
-      if (this.configService.get("healthChecks.database.enabled")) {
+      if (this.configService.get('healthChecks.database.enabled')) {
         checks.database = await this.checkDatabase();
       }
 
       if (
-        this.configService.get("healthChecks.redis.enabled") &&
-        this.configService.get("healthChecks.redis.host")
+        this.configService.get('healthChecks.redis.enabled') &&
+        this.configService.get('healthChecks.redis.host')
       ) {
         checks.redis = await this.checkRedis();
       }
 
       return {
-        status: "ready",
+        status: 'ready',
         timestamp: new Date().toISOString(),
         checks,
       };
     } catch (error) {
-      this.logger.warn("Readiness check failed", error);
+      this.logger.warn('Readiness check failed', error);
       return {
-        status: "not_ready",
+        status: 'not_ready',
         timestamp: new Date().toISOString(),
         checks,
       };
@@ -160,23 +166,27 @@ export class HealthService {
 
   private async checkDatabase() {
     try {
-      const timeout = this.configService.get("healthChecks.database.timeout");
+      const timeout = this.configService.get('healthChecks.database.timeout');
       return await Promise.race([
-        this.prismaIndicator.pingCheck("database", this.prismaService),
+        this.prismaIndicator.pingCheck('database', this.prismaService),
         new Promise((_, reject) =>
-          setTimeout(() => reject(new Error("Database check timeout")), timeout),
+          setTimeout(
+            () => reject(new Error('Database check timeout')),
+            timeout,
+          ),
         ),
       ]);
     } catch (error) {
-      this.logger.error("Database health check failed", error);
-      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      this.logger.error('Database health check failed', error);
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
       throw new Error(`Database health check failed: ${errorMessage}`);
     }
   }
 
   private async checkRedis() {
-    const config = this.configService.get("healthChecks.redis");
-    return this.redisIndicator.isHealthy("redis", {
+    const config = this.configService.get('healthChecks.redis');
+    return this.redisIndicator.isHealthy('redis', {
       host: config.host,
       port: config.port,
       timeout: config.timeout,
@@ -184,42 +194,46 @@ export class HealthService {
   }
 
   private async checkMongoDB() {
-    const config = this.configService.get("healthChecks.mongodb");
-    return this.mongoIndicator.isHealthy("mongodb", {
+    const config = this.configService.get('healthChecks.mongodb');
+    return this.mongoIndicator.isHealthy('mongodb', {
       url: config.url,
       timeout: config.timeout,
     });
   }
 
   private checkMemory() {
-    const config = this.configService.get("healthChecks.memory");
-    return this.systemIndicator.checkMemoryUsage("memory", {
+    const config = this.configService.get('healthChecks.memory');
+    return this.systemIndicator.checkMemoryUsage('memory', {
       heapThreshold: config.heapThresholdBytes,
       rssThreshold: config.rssThresholdBytes,
     });
   }
 
   private checkDisk() {
-    const config = this.configService.get("healthChecks.disk");
-    return this.diskIndicator.checkStorage("disk", {
+    const config = this.configService.get('healthChecks.disk');
+    return this.diskIndicator.checkStorage('disk', {
       path: config.path,
       thresholdPercent: config.thresholdPercent,
     });
   }
 
   private async checkExternalServices() {
-    const config = this.configService.get("healthChecks.external");
+    const config = this.configService.get('healthChecks.external');
     const promises = config.urls.map((url: string) =>
-      this.httpIndicator.pingCheck(`external_${url.replace(/[^a-zA-Z0-9]/g, "_")}`, url, {
-        timeout: config.timeout,
-      }),
+      this.httpIndicator.pingCheck(
+        `external_${url.replace(/[^a-zA-Z0-9]/g, '_')}`,
+        url,
+        {
+          timeout: config.timeout,
+        },
+      ),
     );
 
     const results = await Promise.allSettled(promises);
-    const successful = results.filter(result => result.status === "fulfilled");
+    const successful = results.filter(result => result.status === 'fulfilled');
 
     if (successful.length === 0) {
-      throw new Error("All external service checks failed");
+      throw new Error('All external service checks failed');
     }
 
     // Return the first successful result

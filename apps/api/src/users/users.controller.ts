@@ -1,20 +1,31 @@
-import { Prisma } from "@gen/prisma-client";
-import { BaseAuthController, CurrentUser, LoggedUser } from "@lib/auth";
-import { PasswordUtil, TokenUtil } from "@lib/common";
-import { PrismaErrorHandler, PrismaService } from "@lib/prisma";
-import { Body, Controller, Get, Inject, Param, ParseIntPipe, Patch, Post } from "@nestjs/common";
-import { ApiTags } from "@nestjs/swagger";
-import { ENHANCED_PRISMA } from "@zenstackhq/server/nestjs";
-import { CreateUserDto, UpdateUserDto } from "./dto/user.dto";
+import { Prisma } from '@gen/prisma-client';
+import { BaseAuthController, CurrentUser, LoggedUser } from '@lib/auth';
+import { PasswordUtil, TokenUtil } from '@lib/common';
+import { PrismaErrorHandler, PrismaService } from '@lib/prisma';
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+} from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+import { ENHANCED_PRISMA } from '@zenstackhq/server/nestjs';
+import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
 
-@Controller("users")
-@ApiTags("Users")
+@Controller('users')
+@ApiTags('Users')
 export class UsersController extends BaseAuthController {
-  constructor(@Inject(ENHANCED_PRISMA) private readonly _prismaService: PrismaService) {
+  constructor(
+    @Inject(ENHANCED_PRISMA) private readonly _prismaService: PrismaService,
+  ) {
     super();
   }
 
-  @Get("")
+  @Get('')
   async findAll() {
     return await this._prismaService.user.findMany({
       include: {
@@ -23,8 +34,8 @@ export class UsersController extends BaseAuthController {
     });
   }
 
-  @Get(":id")
-  async findOne(@Param("id", ParseIntPipe) id: number) {
+  @Get(':id')
+  async findOne(@Param('id', ParseIntPipe) id: number) {
     return await this._prismaService.user.findUnique({
       where: { id },
       include: {
@@ -33,7 +44,7 @@ export class UsersController extends BaseAuthController {
     });
   }
 
-  @Post("")
+  @Post('')
   async create(@Body() body: CreateUserDto) {
     try {
       return await this._prismaService.user.create({
@@ -44,8 +55,11 @@ export class UsersController extends BaseAuthController {
     }
   }
 
-  @Patch(":id")
-  async update(@Param("id", ParseIntPipe) id: number, @Body() body: UpdateUserDto) {
+  @Patch(':id')
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: UpdateUserDto,
+  ) {
     try {
       const { password, ...rest } = body;
 
@@ -64,8 +78,11 @@ export class UsersController extends BaseAuthController {
     }
   }
 
-  @Patch(":id/reset-password")
-  async resetPassword(@Param("id", ParseIntPipe) id: number, @CurrentUser() user: LoggedUser) {
+  @Patch(':id/reset-password')
+  async resetPassword(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() user: LoggedUser,
+  ) {
     try {
       const token = TokenUtil.generate();
 
@@ -73,7 +90,9 @@ export class UsersController extends BaseAuthController {
         where: { id },
         data: {
           resetPasswordToken: token,
-          resetPasswordTokenExpiresAt: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days,
+          resetPasswordTokenExpiresAt: new Date(
+            Date.now() + 3 * 24 * 60 * 60 * 1000,
+          ), // 3 days,
           isActive: false,
         },
       });
@@ -87,26 +106,40 @@ export class UsersController extends BaseAuthController {
     }
   }
 
-  @Patch(":id/activate")
-  async activate(@Param("id", ParseIntPipe) id: number, @CurrentUser() user: LoggedUser) {
+  @Patch(':id/activate')
+  async activate(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() user: LoggedUser,
+  ) {
     return await this._prismaService.user.update({
       where: { id },
-      data: { isActive: true, activatedAt: new Date(), activatedBy: user.email },
+      data: {
+        isActive: true,
+        activatedAt: new Date(),
+        activatedBy: user.email,
+      },
     });
   }
 
-  @Patch(":id/deactivate")
-  async deactivate(@Param("id", ParseIntPipe) id: number, @CurrentUser() user: LoggedUser) {
+  @Patch(':id/deactivate')
+  async deactivate(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() user: LoggedUser,
+  ) {
     return await this._prismaService.user.update({
       where: { id },
-      data: { isActive: false, deactivatedAt: new Date(), deactivatedBy: user.email },
+      data: {
+        isActive: false,
+        deactivatedAt: new Date(),
+        deactivatedBy: user.email,
+      },
     });
   }
 
-  @Patch(":id/role")
+  @Patch(':id/role')
   async alterRole(
-    @Param("id", ParseIntPipe) id: number,
-    @Body("role", ParseIntPipe) roleId: number,
+    @Param('id', ParseIntPipe) id: number,
+    @Body('role', ParseIntPipe) roleId: number,
     @CurrentUser() user: LoggedUser,
   ) {
     try {

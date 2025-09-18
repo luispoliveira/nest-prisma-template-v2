@@ -1,4 +1,4 @@
-export type MailProvider = "brevo";
+export type MailProvider = 'brevo';
 
 export interface MailModuleOptions {
   provider: MailProvider;

@@ -1,16 +1,19 @@
-import { ApiKeyUtil } from "@lib/common";
-import { PrismaService } from "@lib/prisma";
-import { Injectable, UnauthorizedException } from "@nestjs/common";
-import { PassportStrategy } from "@nestjs/passport";
-import { HeaderAPIKeyStrategy } from "passport-headerapikey";
+import { ApiKeyUtil } from '@lib/common';
+import { PrismaService } from '@lib/prisma';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { PassportStrategy } from '@nestjs/passport';
+import { HeaderAPIKeyStrategy } from 'passport-headerapikey';
 
 @Injectable()
-export class ApiKeyStrategy extends PassportStrategy(HeaderAPIKeyStrategy, "api-key") {
+export class ApiKeyStrategy extends PassportStrategy(
+  HeaderAPIKeyStrategy,
+  'api-key',
+) {
   constructor(private readonly _prismaService: PrismaService) {
     super(
       {
-        header: "api-key",
-        prefix: "",
+        header: 'api-key',
+        prefix: '',
       },
       true,
     );

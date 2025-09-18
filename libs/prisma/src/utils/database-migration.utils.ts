@@ -1,5 +1,5 @@
-import { Injectable, Logger } from "@nestjs/common";
-import { PrismaService } from "../prisma/prisma.service";
+import { Injectable, Logger } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
 
 export interface MigrationInfo {
   id: string;
@@ -35,7 +35,9 @@ export class DatabaseMigrationHelper {
       `;
 
       const hasUnappliedMigrations = migrations.some(m => !m.finished_at);
-      const hasPendingMigrations = migrations.some(m => m.finished_at && !m.rolled_back_at);
+      const hasPendingMigrations = migrations.some(
+        m => m.finished_at && !m.rolled_back_at,
+      );
 
       return {
         hasUnappliedMigrations,
@@ -43,7 +45,7 @@ export class DatabaseMigrationHelper {
         migrations,
       };
     } catch (error) {
-      this.logger.error("Failed to get migration status", error);
+      this.logger.error('Failed to get migration status', error);
       throw error;
     }
   }
@@ -56,7 +58,7 @@ export class DatabaseMigrationHelper {
       const status = await this.getMigrationStatus();
       return !status.hasUnappliedMigrations;
     } catch (error) {
-      this.logger.warn("Could not check migration status", error);
+      this.logger.warn('Could not check migration status', error);
       return false;
     }
   }
@@ -74,7 +76,7 @@ export class DatabaseMigrationHelper {
       if (pgResult.length > 0) {
         return {
           version: pgResult[0].version,
-          engine: "postgresql",
+          engine: 'postgresql',
         };
       }
     } catch (error) {
@@ -87,31 +89,33 @@ export class DatabaseMigrationHelper {
         if (mysqlResult.length > 0) {
           return {
             version: mysqlResult[0].version,
-            engine: "mysql",
+            engine: 'mysql',
           };
         }
       } catch (mysqlError) {
         // Try SQLite
         try {
-          const sqliteResult = await this.prisma.$queryRaw<{ version: string }[]>`
+          const sqliteResult = await this.prisma.$queryRaw<
+            { version: string }[]
+          >`
             SELECT sqlite_version() as version
           `;
 
           if (sqliteResult.length > 0) {
             return {
               version: sqliteResult[0].version,
-              engine: "sqlite",
+              engine: 'sqlite',
             };
           }
         } catch (sqliteError) {
-          this.logger.warn("Could not determine database version");
+          this.logger.warn('Could not determine database version');
         }
       }
     }
 
     return {
-      version: "unknown",
-      engine: "unknown",
+      version: 'unknown',
+      engine: 'unknown',
     };
   }
 
@@ -126,15 +130,15 @@ export class DatabaseMigrationHelper {
     try {
       const dbVersion = await this.getDatabaseVersion();
 
-      if (dbVersion.engine === "postgresql") {
+      if (dbVersion.engine === 'postgresql') {
         return this.getPostgreSQLSchemaInfo();
-      } else if (dbVersion.engine === "mysql") {
+      } else if (dbVersion.engine === 'mysql') {
         return this.getMySQLSchemaInfo();
       } else {
         throw new Error(`Schema info not supported for ${dbVersion.engine}`);
       }
     } catch (error) {
-      this.logger.error("Failed to get schema info", error);
+      this.logger.error('Failed to get schema info', error);
       throw error;
     }
   }
@@ -236,12 +240,14 @@ export class DatabaseMigrationHelper {
       `;
 
       // Store backup with timestamp
-      const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-      this.logger.log(`Migration backup created: migration-backup-${timestamp}.json`);
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      this.logger.log(
+        `Migration backup created: migration-backup-${timestamp}.json`,
+      );
 
       return migrations;
     } catch (error) {
-      this.logger.error("Failed to backup migration state", error);
+      this.logger.error('Failed to backup migration state', error);
       throw error;
     }
   }
@@ -260,13 +266,13 @@ export class DatabaseMigrationHelper {
       try {
         await this.prisma.$queryRaw`SELECT 1 FROM _prisma_migrations LIMIT 1`;
       } catch (error) {
-        issues.push("_prisma_migrations table not found");
+        issues.push('_prisma_migrations table not found');
       }
 
       // Check for orphaned records (basic check)
       const dbVersion = await this.getDatabaseVersion();
 
-      if (dbVersion.engine === "postgresql" || dbVersion.engine === "mysql") {
+      if (dbVersion.engine === 'postgresql' || dbVersion.engine === 'mysql') {
         // Add specific integrity checks based on your schema
         // Example: Check for foreign key constraint violations
         try {
@@ -277,10 +283,12 @@ export class DatabaseMigrationHelper {
           `;
 
           if (result[0]?.count === 0) {
-            issues.push("No foreign key constraints found - schema might be incomplete");
+            issues.push(
+              'No foreign key constraints found - schema might be incomplete',
+            );
           }
         } catch (error) {
-          issues.push("Could not validate foreign key constraints");
+          issues.push('Could not validate foreign key constraints');
         }
       }
 
@@ -289,11 +297,12 @@ export class DatabaseMigrationHelper {
         issues,
       };
     } catch (error) {
-      this.logger.error("Failed to validate schema integrity", error);
+      this.logger.error('Failed to validate schema integrity', error);
       return {
         isValid: false,
         issues: [
-          "Schema validation failed: " + (error instanceof Error ? error.message : "Unknown error"),
+          'Schema validation failed: ' +
+            (error instanceof Error ? error.message : 'Unknown error'),
         ],
       };
     }
@@ -318,12 +327,12 @@ export class DatabaseMigrationHelper {
       try {
         const dbVersion = await this.getDatabaseVersion();
 
-        if (dbVersion.engine === "postgresql") {
+        if (dbVersion.engine === 'postgresql') {
           const sizeResult = await this.prisma.$queryRaw<{ size: string }[]>`
             SELECT pg_size_pretty(pg_database_size(current_database())) as size
           `;
           databaseSize = sizeResult[0]?.size;
-        } else if (dbVersion.engine === "mysql") {
+        } else if (dbVersion.engine === 'mysql') {
           const sizeResult = await this.prisma.$queryRaw<{ size: number }[]>`
             SELECT ROUND(SUM(data_length + index_length) / 1024 / 1024, 1) AS size
             FROM information_schema.tables 
@@ -332,7 +341,7 @@ export class DatabaseMigrationHelper {
           databaseSize = `${sizeResult[0]?.size || 0} MB`;
         }
       } catch (error) {
-        this.logger.warn("Could not get database size", error);
+        this.logger.warn('Could not get database size', error);
       }
 
       return {
@@ -343,7 +352,7 @@ export class DatabaseMigrationHelper {
         databaseSize,
       };
     } catch (error) {
-      this.logger.error("Failed to get database statistics", error);
+      this.logger.error('Failed to get database statistics', error);
       throw error;
     }
   }

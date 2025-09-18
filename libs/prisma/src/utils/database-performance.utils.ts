@@ -1,5 +1,5 @@
-import { Injectable, Logger } from "@nestjs/common";
-import { PrismaService } from "../prisma/prisma.service";
+import { Injectable, Logger } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
 
 export interface QueryPerformanceMetric {
   query: string;
@@ -44,7 +44,7 @@ export class DatabasePerformanceMonitor {
     // Clear existing metrics
     this.queryMetrics = [];
 
-    this.logger.log("Performance monitoring started");
+    this.logger.log('Performance monitoring started');
   }
 
   /**
@@ -54,7 +54,7 @@ export class DatabasePerformanceMonitor {
     const report = this.generateReport();
     this.queryMetrics = [];
 
-    this.logger.log("Performance monitoring stopped");
+    this.logger.log('Performance monitoring stopped');
     return report;
   }
 
@@ -71,7 +71,9 @@ export class DatabasePerformanceMonitor {
 
     // Log slow queries
     if (metric.duration > this.slowQueryThreshold) {
-      this.logger.warn(`Slow query detected: ${metric.duration}ms - ${metric.query}`);
+      this.logger.warn(
+        `Slow query detected: ${metric.duration}ms - ${metric.query}`,
+      );
     }
   }
 
@@ -86,12 +88,15 @@ export class DatabasePerformanceMonitor {
         slowestQueries: [],
         queryDistribution: {},
         performanceScore: 100,
-        recommendations: ["No queries recorded"],
+        recommendations: ['No queries recorded'],
       };
     }
 
     const totalQueries = this.queryMetrics.length;
-    const totalTime = this.queryMetrics.reduce((sum, metric) => sum + metric.duration, 0);
+    const totalTime = this.queryMetrics.reduce(
+      (sum, metric) => sum + metric.duration,
+      0,
+    );
     const averageQueryTime = totalTime / totalQueries;
 
     // Get slowest queries
@@ -102,7 +107,7 @@ export class DatabasePerformanceMonitor {
     // Query distribution by operation
     const queryDistribution: Record<string, number> = {};
     this.queryMetrics.forEach(metric => {
-      const operation = metric.operation || "unknown";
+      const operation = metric.operation || 'unknown';
       queryDistribution[operation] = (queryDistribution[operation] || 0) + 1;
     });
 
@@ -129,8 +134,11 @@ export class DatabasePerformanceMonitor {
     if (this.queryMetrics.length === 0) return 100;
 
     const averageTime =
-      this.queryMetrics.reduce((sum, m) => sum + m.duration, 0) / this.queryMetrics.length;
-    const slowQueries = this.queryMetrics.filter(m => m.duration > this.slowQueryThreshold).length;
+      this.queryMetrics.reduce((sum, m) => sum + m.duration, 0) /
+      this.queryMetrics.length;
+    const slowQueries = this.queryMetrics.filter(
+      m => m.duration > this.slowQueryThreshold,
+    ).length;
     const slowQueryRatio = slowQueries / this.queryMetrics.length;
 
     // Base score
@@ -152,15 +160,20 @@ export class DatabasePerformanceMonitor {
     const recommendations: string[] = [];
 
     if (this.queryMetrics.length === 0) {
-      return ["No data available for recommendations"];
+      return ['No data available for recommendations'];
     }
 
     const averageTime =
-      this.queryMetrics.reduce((sum, m) => sum + m.duration, 0) / this.queryMetrics.length;
-    const slowQueries = this.queryMetrics.filter(m => m.duration > this.slowQueryThreshold);
+      this.queryMetrics.reduce((sum, m) => sum + m.duration, 0) /
+      this.queryMetrics.length;
+    const slowQueries = this.queryMetrics.filter(
+      m => m.duration > this.slowQueryThreshold,
+    );
 
     if (averageTime > 200) {
-      recommendations.push("Average query time is high. Consider adding database indexes.");
+      recommendations.push(
+        'Average query time is high. Consider adding database indexes.',
+      );
     }
 
     if (slowQueries.length > 0) {
@@ -170,23 +183,27 @@ export class DatabasePerformanceMonitor {
     }
 
     const selectQueries = this.queryMetrics.filter(
-      m => m.operation === "findMany" || m.operation === "findFirst",
+      m => m.operation === 'findMany' || m.operation === 'findFirst',
     );
     if (selectQueries.length > this.queryMetrics.length * 0.8) {
-      recommendations.push("High ratio of SELECT queries. Consider implementing caching.");
+      recommendations.push(
+        'High ratio of SELECT queries. Consider implementing caching.',
+      );
     }
 
     const updateQueries = this.queryMetrics.filter(
-      m => m.operation === "update" || m.operation === "updateMany",
+      m => m.operation === 'update' || m.operation === 'updateMany',
     );
     if (updateQueries.some(q => q.duration > 500)) {
       recommendations.push(
-        "Slow UPDATE queries detected. Consider optimizing WHERE clauses and indexes.",
+        'Slow UPDATE queries detected. Consider optimizing WHERE clauses and indexes.',
       );
     }
 
     if (recommendations.length === 0) {
-      recommendations.push("Database performance is good. Continue monitoring.");
+      recommendations.push(
+        'Database performance is good. Continue monitoring.',
+      );
     }
 
     return recommendations;
@@ -202,15 +219,15 @@ export class DatabasePerformanceMonitor {
       // Try to get database-specific stats
       const dbVersion = await this.getDatabaseEngine();
 
-      if (dbVersion === "postgresql") {
+      if (dbVersion === 'postgresql') {
         await this.getPostgreSQLStats(stats);
-      } else if (dbVersion === "mysql") {
+      } else if (dbVersion === 'mysql') {
         await this.getMySQLStats(stats);
       }
 
       return stats;
     } catch (error) {
-      this.logger.error("Failed to get database stats", error);
+      this.logger.error('Failed to get database stats', error);
       return {};
     }
   }
@@ -218,18 +235,20 @@ export class DatabasePerformanceMonitor {
   private async getDatabaseEngine(): Promise<string> {
     try {
       await this.prisma.$queryRaw`SELECT version()`;
-      return "postgresql";
+      return 'postgresql';
     } catch (error) {
       try {
         await this.prisma.$queryRaw`SELECT VERSION()`;
-        return "mysql";
+        return 'mysql';
       } catch (mysqlError) {
-        return "unknown";
+        return 'unknown';
       }
     }
   }
 
-  private async getPostgreSQLStats(stats: DatabasePerformanceStats): Promise<void> {
+  private async getPostgreSQLStats(
+    stats: DatabasePerformanceStats,
+  ): Promise<void> {
     try {
       // Connection count
       const connections = await this.prisma.$queryRaw<{ count: number }[]>`
@@ -272,17 +291,19 @@ export class DatabasePerformanceMonitor {
       `;
       stats.tableStats = tableStats;
     } catch (error) {
-      this.logger.warn("Could not get PostgreSQL stats", error);
+      this.logger.warn('Could not get PostgreSQL stats', error);
     }
   }
 
   private async getMySQLStats(stats: DatabasePerformanceStats): Promise<void> {
     try {
       // Connection count
-      const connections = await this.prisma.$queryRaw<{ Variable_name: string; Value: string }[]>`
+      const connections = await this.prisma.$queryRaw<
+        { Variable_name: string; Value: string }[]
+      >`
         SHOW STATUS LIKE 'Threads_connected'
       `;
-      stats.connectionCount = parseInt(connections[0]?.Value || "0");
+      stats.connectionCount = parseInt(connections[0]?.Value || '0');
 
       // Active queries
       const processlist = await this.prisma.$queryRaw<any[]>`
@@ -304,14 +325,14 @@ export class DatabasePerformanceMonitor {
       `;
       stats.indexUsage = indexStats;
     } catch (error) {
-      this.logger.warn("Could not get MySQL stats", error);
+      this.logger.warn('Could not get MySQL stats', error);
     }
   }
 
   /**
    * Get slow query log
    */
-  async getSlowQueries(limit: number = 10): Promise<QueryPerformanceMetric[]> {
+  async getSlowQueries(limit = 10): Promise<QueryPerformanceMetric[]> {
     return [...this.queryMetrics]
       .filter(metric => metric.duration > this.slowQueryThreshold)
       .sort((a, b) => b.duration - a.duration)
@@ -323,7 +344,7 @@ export class DatabasePerformanceMonitor {
    */
   clearMetrics(): void {
     this.queryMetrics = [];
-    this.logger.log("Performance metrics cleared");
+    this.logger.log('Performance metrics cleared');
   }
 
   /**
@@ -341,7 +362,8 @@ export class DatabasePerformanceMonitor {
     ).length;
     const averageQueryTime =
       this.queryMetrics.length > 0
-        ? this.queryMetrics.reduce((sum, m) => sum + m.duration, 0) / this.queryMetrics.length
+        ? this.queryMetrics.reduce((sum, m) => sum + m.duration, 0) /
+          this.queryMetrics.length
         : 0;
 
     return {
@@ -366,7 +388,7 @@ export class DatabasePerformanceMonitor {
       const duration = Date.now() - startTime;
 
       const metric: QueryPerformanceMetric = {
-        query: context.operation || "function_execution",
+        query: context.operation || 'function_execution',
         duration,
         timestamp: new Date(),
         operation: context.operation,
@@ -380,7 +402,7 @@ export class DatabasePerformanceMonitor {
       const duration = Date.now() - startTime;
 
       const metric: QueryPerformanceMetric = {
-        query: `${context.operation || "function_execution"}_ERROR`,
+        query: `${context.operation || 'function_execution'}_ERROR`,
         duration,
         timestamp: new Date(),
         operation: context.operation,

@@ -1,5 +1,5 @@
-import { Field, Int, ObjectType } from "@nestjs/graphql";
-import { ApiProperty } from "@nestjs/swagger";
+import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { ApiProperty } from '@nestjs/swagger';
 
 @ObjectType()
 export class Login {
