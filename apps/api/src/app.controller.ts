@@ -33,6 +33,7 @@ export class AppController extends BaseAuthController {
       params: {
         NAME: "TargX",
         MESSAGE: "This is a test email sent from the NestJS application using Brevo.",
+        ARRAY: ["one", "two", "three"],
       },
       // html: "<h1>This is a test email sent from the NestJS application using Brevo.</h1>",
     });
