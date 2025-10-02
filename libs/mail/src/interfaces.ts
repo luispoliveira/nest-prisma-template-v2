@@ -23,5 +23,5 @@ export interface SendEmailDto {
 }
 
 export interface SendEmailInterface {
-  sendEmail(payload: SendEmailDto): Promise<any>;
+  sendEmail(_payload: SendEmailDto): Promise<any>;
 }

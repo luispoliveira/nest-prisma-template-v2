@@ -51,9 +51,9 @@ export class QueueHealthIndicator extends HealthIndicator {
   private readonly logger = new Logger(QueueHealthIndicator.name);
 
   constructor(
-    private readonly enhancedQueueService: EnhancedQueueService,
-    private readonly queueMonitoringService: QueueMonitoringService,
-    private readonly queueDashboardService: QueueDashboardService,
+    private readonly _enhancedQueueService: EnhancedQueueService,
+    private readonly _queueMonitoringService: QueueMonitoringService,
+    private readonly _queueDashboardService: QueueDashboardService,
   ) {
     super();
   }
@@ -135,7 +135,7 @@ export class QueueHealthIndicator extends HealthIndicator {
       // Get real-time metrics from dashboard service
       try {
         const realTimeMetrics =
-          await this.queueDashboardService.getRealTimeMetrics();
+          await this._queueDashboardService.getRealTimeMetrics();
         details.systemMetrics = {
           memoryUsage: realTimeMetrics.memoryUsage,
           averageProcessingTime: realTimeMetrics.averageProcessingTime,
@@ -189,20 +189,20 @@ export class QueueHealthIndicator extends HealthIndicator {
     try {
       // Check if queue is healthy (basic connectivity)
       const isQueueHealthy =
-        await this.enhancedQueueService.isQueueHealthy(queueName);
+        await this._enhancedQueueService.isQueueHealthy(queueName);
       if (!isQueueHealthy) {
         queueHealth.status = 'unhealthy';
         return queueHealth;
       }
 
       // Get queue statistics
-      const stats = await this.enhancedQueueService.getQueueStats(queueName);
+      const stats = await this._enhancedQueueService.getQueueStats(queueName);
       queueHealth.stats = stats;
 
       // Get performance metrics from monitoring service
       try {
         const performanceMetrics =
-          await this.queueMonitoringService.getQueuePerformanceMetricsDetailed(
+          await this._queueMonitoringService.getQueuePerformanceMetricsDetailed(
             queueName,
           );
         queueHealth.performance = {
@@ -219,7 +219,7 @@ export class QueueHealthIndicator extends HealthIndicator {
 
       // Get alerts from monitoring service
       try {
-        const alerts = this.queueMonitoringService.getQueueAlerts(queueName);
+        const alerts = this._queueMonitoringService.getQueueAlerts(queueName);
         queueHealth.alerts = alerts.map(alert => ({
           type: alert.type,
           severity: alert.severity,

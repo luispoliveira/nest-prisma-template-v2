@@ -23,59 +23,59 @@ export class HealthService {
   private readonly logger = new Logger(HealthService.name);
 
   constructor(
-    private readonly healthCheckService: HealthCheckService,
-    private readonly httpIndicator: HttpHealthIndicator,
-    private readonly diskIndicator: DiskHealthIndicator,
-    private readonly memoryIndicator: MemoryHealthIndicator,
-    private readonly prismaIndicator: PrismaHealthIndicator,
-    private readonly redisIndicator: RedisHealthIndicator,
-    private readonly mongoIndicator: MongoHealthIndicator,
-    private readonly systemIndicator: SystemHealthIndicator,
-    private readonly prismaService: PrismaService,
-    private readonly configService: ConfigService,
+    private readonly _healthCheckService: HealthCheckService,
+    private readonly _httpIndicator: HttpHealthIndicator,
+    private readonly _diskIndicator: DiskHealthIndicator,
+    private readonly _memoryIndicator: MemoryHealthIndicator,
+    private readonly _prismaIndicator: PrismaHealthIndicator,
+    private readonly _redisIndicator: RedisHealthIndicator,
+    private readonly _mongoIndicator: MongoHealthIndicator,
+    private readonly _systemIndicator: SystemHealthIndicator,
+    private readonly _prismaService: PrismaService,
+    private readonly _configService: ConfigService,
   ) {}
 
   async checkHealth(): Promise<HealthCheckResult> {
     const checks = [];
 
     // Database check
-    if (this.configService.get('healthChecks.database.enabled')) {
+    if (this._configService.get('healthChecks.database.enabled')) {
       checks.push(() => this.checkDatabase());
     }
 
     // Redis check
     if (
-      this.configService.get('healthChecks.redis.enabled') &&
-      this.configService.get('healthChecks.redis.host')
+      this._configService.get('healthChecks.redis.enabled') &&
+      this._configService.get('healthChecks.redis.host')
     ) {
       checks.push(() => this.checkRedis());
     }
 
     // MongoDB check
     if (
-      this.configService.get('healthChecks.mongodb.enabled') &&
-      this.configService.get('healthChecks.mongodb.url')
+      this._configService.get('healthChecks.mongodb.enabled') &&
+      this._configService.get('healthChecks.mongodb.url')
     ) {
       checks.push(() => this.checkMongoDB());
     }
 
     // Memory check
-    if (this.configService.get('healthChecks.memory.enabled')) {
+    if (this._configService.get('healthChecks.memory.enabled')) {
       checks.push(() => this.checkMemory());
     }
 
     // Disk check
-    if (this.configService.get('healthChecks.disk.enabled')) {
+    if (this._configService.get('healthChecks.disk.enabled')) {
       checks.push(() => this.checkDisk());
     }
 
     // External services check
-    if (this.configService.get('healthChecks.external.enabled')) {
+    if (this._configService.get('healthChecks.external.enabled')) {
       checks.push(() => this.checkExternalServices());
     }
 
     try {
-      return await this.healthCheckService.check(checks);
+      return await this._healthCheckService.check(checks);
     } catch (error) {
       this.logger.error('Health check failed', error);
       throw error;
@@ -134,13 +134,13 @@ export class HealthService {
 
     try {
       // Quick essential checks for readiness
-      if (this.configService.get('healthChecks.database.enabled')) {
+      if (this._configService.get('healthChecks.database.enabled')) {
         checks.database = await this.checkDatabase();
       }
 
       if (
-        this.configService.get('healthChecks.redis.enabled') &&
-        this.configService.get('healthChecks.redis.host')
+        this._configService.get('healthChecks.redis.enabled') &&
+        this._configService.get('healthChecks.redis.host')
       ) {
         checks.redis = await this.checkRedis();
       }
@@ -161,14 +161,14 @@ export class HealthService {
   }
 
   getSystemInfo() {
-    return this.systemIndicator.getSystemInfo();
+    return this._systemIndicator.getSystemInfo();
   }
 
   private async checkDatabase() {
     try {
-      const timeout = this.configService.get('healthChecks.database.timeout');
+      const timeout = this._configService.get('healthChecks.database.timeout');
       return await Promise.race([
-        this.prismaIndicator.pingCheck('database', this.prismaService),
+        this._prismaIndicator.pingCheck('database', this._prismaService),
         new Promise((_, reject) =>
           setTimeout(
             () => reject(new Error('Database check timeout')),
@@ -185,8 +185,8 @@ export class HealthService {
   }
 
   private async checkRedis() {
-    const config = this.configService.get('healthChecks.redis');
-    return this.redisIndicator.isHealthy('redis', {
+    const config = this._configService.get('healthChecks.redis');
+    return this._redisIndicator.isHealthy('redis', {
       host: config.host,
       port: config.port,
       timeout: config.timeout,
@@ -194,33 +194,33 @@ export class HealthService {
   }
 
   private async checkMongoDB() {
-    const config = this.configService.get('healthChecks.mongodb');
-    return this.mongoIndicator.isHealthy('mongodb', {
+    const config = this._configService.get('healthChecks.mongodb');
+    return this._mongoIndicator.isHealthy('mongodb', {
       url: config.url,
       timeout: config.timeout,
     });
   }
 
   private checkMemory() {
-    const config = this.configService.get('healthChecks.memory');
-    return this.systemIndicator.checkMemoryUsage('memory', {
+    const config = this._configService.get('healthChecks.memory');
+    return this._systemIndicator.checkMemoryUsage('memory', {
       heapThreshold: config.heapThresholdBytes,
       rssThreshold: config.rssThresholdBytes,
     });
   }
 
   private checkDisk() {
-    const config = this.configService.get('healthChecks.disk');
-    return this.diskIndicator.checkStorage('disk', {
+    const config = this._configService.get('healthChecks.disk');
+    return this._diskIndicator.checkStorage('disk', {
       path: config.path,
       thresholdPercent: config.thresholdPercent,
     });
   }
 
   private async checkExternalServices() {
-    const config = this.configService.get('healthChecks.external');
+    const config = this._configService.get('healthChecks.external');
     const promises = config.urls.map((url: string) =>
-      this.httpIndicator.pingCheck(
+      this._httpIndicator.pingCheck(
         `external_${url.replace(/[^a-zA-Z0-9]/g, '_')}`,
         url,
         {

@@ -37,14 +37,14 @@ export abstract class BaseRepository<
   protected readonly logger = new Logger(this.constructor.name);
   protected abstract modelName: string;
 
-  constructor(protected readonly prisma: PrismaService) {}
+  constructor(protected readonly _prisma: PrismaService) {}
 
   /**
    * Create a new record
    */
   async create(data: CreateInput, tx?: PrismaTx): Promise<T> {
-    const client = tx || this.prisma;
-    return this.prisma.executeWithErrorHandling(() =>
+    const client = tx || this._prisma;
+    return this._prisma.executeWithErrorHandling(() =>
       (client as any)[this.modelName].create({ data }),
     );
   }
@@ -61,8 +61,8 @@ export abstract class BaseRepository<
       where.deletedAt = null;
     }
 
-    return this.prisma.executeWithErrorHandling(() =>
-      (this.prisma as any)[this.modelName].findFirst({ where }),
+    return this._prisma.executeWithErrorHandling(() =>
+      (this._prisma as any)[this.modelName].findFirst({ where }),
     );
   }
 
@@ -102,16 +102,16 @@ export abstract class BaseRepository<
     const skip = (page - 1) * limit;
 
     const [data, total] = await Promise.all([
-      this.prisma.executeWithErrorHandling(() =>
-        (this.prisma as any)[this.modelName].findMany({
+      this._prisma.executeWithErrorHandling(() =>
+        (this._prisma as any)[this.modelName].findMany({
           where,
           skip,
           take: limit,
           orderBy: { [orderBy]: orderDirection },
         }),
       ) as Promise<T[]>,
-      this.prisma.executeWithErrorHandling(() =>
-        (this.prisma as any)[this.modelName].count({ where }),
+      this._prisma.executeWithErrorHandling(() =>
+        (this._prisma as any)[this.modelName].count({ where }),
       ) as Promise<number>,
     ]);
 
@@ -138,8 +138,8 @@ export abstract class BaseRepository<
     data: UpdateInput,
     tx?: PrismaTx,
   ): Promise<T> {
-    const client = tx || this.prisma;
-    return this.prisma.executeWithErrorHandling(() =>
+    const client = tx || this._prisma;
+    return this._prisma.executeWithErrorHandling(() =>
       (client as any)[this.modelName].update({
         where: { id },
         data,
@@ -151,8 +151,8 @@ export abstract class BaseRepository<
    * Soft delete record by ID
    */
   async softDelete(id: number | string, tx?: PrismaTx): Promise<T> {
-    const client = tx || this.prisma;
-    return this.prisma.executeWithErrorHandling(() =>
+    const client = tx || this._prisma;
+    return this._prisma.executeWithErrorHandling(() =>
       (client as any)[this.modelName].update({
         where: { id },
         data: { deletedAt: new Date() },
@@ -164,8 +164,8 @@ export abstract class BaseRepository<
    * Hard delete record by ID
    */
   async delete(id: number | string, tx?: PrismaTx): Promise<T> {
-    const client = tx || this.prisma;
-    return this.prisma.executeWithErrorHandling(() =>
+    const client = tx || this._prisma;
+    return this._prisma.executeWithErrorHandling(() =>
       (client as any)[this.modelName].delete({
         where: { id },
       }),
@@ -176,8 +176,8 @@ export abstract class BaseRepository<
    * Restore soft-deleted record
    */
   async restore(id: number | string, tx?: PrismaTx): Promise<T> {
-    const client = tx || this.prisma;
-    return this.prisma.executeWithErrorHandling(() =>
+    const client = tx || this._prisma;
+    return this._prisma.executeWithErrorHandling(() =>
       (client as any)[this.modelName].update({
         where: { id },
         data: { deletedAt: null },
@@ -194,8 +194,8 @@ export abstract class BaseRepository<
     update: UpdateInput,
     tx?: PrismaTx,
   ): Promise<T> {
-    const client = tx || this.prisma;
-    return this.prisma.executeWithErrorHandling(() =>
+    const client = tx || this._prisma;
+    return this._prisma.executeWithErrorHandling(() =>
       (client as any)[this.modelName].upsert({
         where,
         create,
@@ -212,8 +212,8 @@ export abstract class BaseRepository<
       where.deletedAt = null;
     }
 
-    return this.prisma.executeWithErrorHandling(() =>
-      (this.prisma as any)[this.modelName].count({ where }),
+    return this._prisma.executeWithErrorHandling(() =>
+      (this._prisma as any)[this.modelName].count({ where }),
     );
   }
 
@@ -225,8 +225,8 @@ export abstract class BaseRepository<
       where.deletedAt = null;
     }
 
-    const count = (await this.prisma.executeWithErrorHandling(() =>
-      (this.prisma as any)[this.modelName].count({ where }),
+    const count = (await this._prisma.executeWithErrorHandling(() =>
+      (this._prisma as any)[this.modelName].count({ where }),
     )) as number;
 
     return count > 0;
@@ -240,8 +240,8 @@ export abstract class BaseRepository<
     skipDuplicates = false,
     tx?: PrismaTx,
   ): Promise<{ count: number }> {
-    const client = tx || this.prisma;
-    return this.prisma.executeWithErrorHandling(() =>
+    const client = tx || this._prisma;
+    return this._prisma.executeWithErrorHandling(() =>
       (client as any)[this.modelName].createMany({
         data,
         skipDuplicates,
@@ -257,8 +257,8 @@ export abstract class BaseRepository<
     data: Partial<UpdateInput>,
     tx?: PrismaTx,
   ): Promise<{ count: number }> {
-    const client = tx || this.prisma;
-    return this.prisma.executeWithErrorHandling(() =>
+    const client = tx || this._prisma;
+    return this._prisma.executeWithErrorHandling(() =>
       (client as any)[this.modelName].updateMany({
         where,
         data,
@@ -270,8 +270,8 @@ export abstract class BaseRepository<
    * Bulk soft delete records
    */
   async softDeleteMany(where: any, tx?: PrismaTx): Promise<{ count: number }> {
-    const client = tx || this.prisma;
-    return this.prisma.executeWithErrorHandling(() =>
+    const client = tx || this._prisma;
+    return this._prisma.executeWithErrorHandling(() =>
       (client as any)[this.modelName].updateMany({
         where,
         data: { deletedAt: new Date() },
@@ -287,8 +287,8 @@ export abstract class BaseRepository<
       where.deletedAt = null;
     }
 
-    return this.prisma.executeWithErrorHandling(() =>
-      (this.prisma as any)[this.modelName].findFirst({ where }),
+    return this._prisma.executeWithErrorHandling(() =>
+      (this._prisma as any)[this.modelName].findFirst({ where }),
     );
   }
 
@@ -296,8 +296,8 @@ export abstract class BaseRepository<
    * Find unique record
    */
   async findUnique(where: any, includeDeleted = false): Promise<T | null> {
-    const record = (await this.prisma.executeWithErrorHandling(() =>
-      (this.prisma as any)[this.modelName].findUnique({ where }),
+    const record = (await this._prisma.executeWithErrorHandling(() =>
+      (this._prisma as any)[this.modelName].findUnique({ where }),
     )) as T | null;
 
     if (!includeDeleted && record && record.deletedAt) {

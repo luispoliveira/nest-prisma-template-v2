@@ -17,9 +17,9 @@ export class EnhancedHealthController {
   private readonly logger = new Logger(EnhancedHealthController.name);
 
   constructor(
-    private readonly healthCheckService: HealthCheckService,
-    private readonly healthService: HealthService,
-    private readonly enhancedHealthService: EnhancedHealthService,
+    private readonly _healthCheckService: HealthCheckService,
+    private readonly _healthService: HealthService,
+    private readonly _enhancedHealthService: EnhancedHealthService,
   ) {}
 
   @Get()
@@ -28,7 +28,7 @@ export class EnhancedHealthController {
   @ApiResponse({ status: 200, description: 'Application is healthy' })
   @ApiResponse({ status: 503, description: 'Application is unhealthy' })
   async check(): Promise<HealthCheckResult> {
-    return this.healthService.checkHealth();
+    return this._healthService.checkHealth();
   }
 
   @Get('enhanced')
@@ -38,7 +38,7 @@ export class EnhancedHealthController {
   async checkEnhanced(): Promise<EnhancedHealthCheckResult> {
     const startTime = Date.now();
     try {
-      const result = await this.enhancedHealthService.checkHealth();
+      const result = await this._enhancedHealthService.checkHealth();
       const duration = Date.now() - startTime;
       this.logger.debug(`Enhanced health check completed in ${duration}ms`);
       return result;
@@ -60,7 +60,8 @@ export class EnhancedHealthController {
   async getDetailedReport() {
     const startTime = Date.now();
     try {
-      const report = await this.enhancedHealthService.getDetailedHealthReport();
+      const report =
+        await this._enhancedHealthService.getDetailedHealthReport();
       const duration = Date.now() - startTime;
       this.logger.debug(`Detailed health report generated in ${duration}ms`);
       return report;
@@ -78,7 +79,7 @@ export class EnhancedHealthController {
   @ApiOperation({ summary: 'Kubernetes liveness probe' })
   @ApiResponse({ status: 200, description: 'Application is alive' })
   async checkLiveness() {
-    return this.enhancedHealthService.checkLiveness();
+    return this._enhancedHealthService.checkLiveness();
   }
 
   @Get('readiness')
@@ -86,7 +87,7 @@ export class EnhancedHealthController {
   @ApiResponse({ status: 200, description: 'Application is ready' })
   @ApiResponse({ status: 503, description: 'Application is not ready' })
   async checkReadiness() {
-    const result = await this.enhancedHealthService.checkReadiness();
+    const result = await this._enhancedHealthService.checkReadiness();
 
     if (result.status === 'not_ready') {
       // Return 503 status for not ready
@@ -102,14 +103,14 @@ export class EnhancedHealthController {
   @ApiOperation({ summary: 'Get health metrics' })
   @ApiResponse({ status: 200, description: 'Health metrics' })
   async getMetrics() {
-    return this.enhancedHealthService.getHealthMetrics();
+    return this._enhancedHealthService.getHealthMetrics();
   }
 
   @Get('system')
   @ApiOperation({ summary: 'Get system information' })
   @ApiResponse({ status: 200, description: 'System information' })
   async getSystemInfo() {
-    return this.healthService.getSystemInfo();
+    return this._healthService.getSystemInfo();
   }
 
   @Get('database')
@@ -121,11 +122,12 @@ export class EnhancedHealthController {
     type: Boolean,
     description: 'Include connection pool statistics',
   })
-  async getDatabaseHealth(@Query('includeStats') includeStats?: boolean) {
+  async getDatabaseHealth(@Query('includeStats') _includeStats?: boolean) {
     const startTime = Date.now();
     try {
       // Get database health from the detailed report
-      const report = await this.enhancedHealthService.getDetailedHealthReport();
+      const report =
+        await this._enhancedHealthService.getDetailedHealthReport();
       const duration = Date.now() - startTime;
 
       return {
@@ -156,14 +158,15 @@ export class EnhancedHealthController {
     const startTime = Date.now();
     try {
       // Parse queue names if provided
-      let queues: string[] | undefined;
+      let _queues: string[] | undefined;
       if (queueNames) {
-        queues = Array.isArray(queueNames) ? queueNames : [queueNames];
+        _queues = Array.isArray(queueNames) ? queueNames : [queueNames];
       }
 
       // This endpoint would specifically check queue health
       // We can create a specific method for this or use the detailed report
-      const report = await this.enhancedHealthService.getDetailedHealthReport();
+      const report =
+        await this._enhancedHealthService.getDetailedHealthReport();
       const duration = Date.now() - startTime;
 
       return {
@@ -193,7 +196,7 @@ export class EnhancedHealthController {
   async getAlerts(
     @Query('severity') severity?: 'low' | 'medium' | 'high' | 'critical',
   ) {
-    const report = await this.enhancedHealthService.getDetailedHealthReport();
+    const report = await this._enhancedHealthService.getDetailedHealthReport();
 
     let alerts = report.alerts || [];
 
@@ -212,8 +215,8 @@ export class EnhancedHealthController {
   @ApiOperation({ summary: 'Get performance metrics' })
   @ApiResponse({ status: 200, description: 'Performance metrics' })
   async getPerformanceMetrics() {
-    const metrics = await this.enhancedHealthService.getHealthMetrics();
-    const report = await this.enhancedHealthService.getDetailedHealthReport();
+    const metrics = await this._enhancedHealthService.getHealthMetrics();
+    const report = await this._enhancedHealthService.getDetailedHealthReport();
 
     return {
       system: metrics,
