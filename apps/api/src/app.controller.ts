@@ -14,10 +14,10 @@ import { AppService } from './app.service';
 @Controller()
 export class AppController extends BaseAuthController {
   constructor(
-    private readonly appService: AppService,
+    private readonly _appService: AppService,
     private readonly _defaultJob: DefaultJob,
     private readonly _clsService: ClsService,
-    @Inject(MAIL_SERVICE) private mailService: SendEmailInterface,
+    @Inject(MAIL_SERVICE) private _mailService: SendEmailInterface,
   ) {
     super();
   }
@@ -25,7 +25,7 @@ export class AppController extends BaseAuthController {
   @Public()
   @Get()
   async getHello() {
-    await this.mailService.sendEmail({
+    await this._mailService.sendEmail({
       to: [{ email: 'support@targx.com', name: 'TargX Support' }],
       subject: 'Test Email from NestJS',
       text: 'This is a test email sent from the NestJS application using Brevo.',
@@ -39,6 +39,6 @@ export class AppController extends BaseAuthController {
       // html: "<h1>This is a test email sent from the NestJS application using Brevo.</h1>",
     });
 
-    return this.appService.getHello();
+    return this._appService.getHello();
   }
 }

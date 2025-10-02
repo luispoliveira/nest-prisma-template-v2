@@ -35,7 +35,7 @@ export class DatabasePerformanceMonitor {
   private readonly maxMetricsHistory = 1000;
   private readonly slowQueryThreshold = 1000; // ms
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly _prisma: PrismaService) {}
 
   /**
    * Start monitoring query performance
@@ -234,13 +234,13 @@ export class DatabasePerformanceMonitor {
 
   private async getDatabaseEngine(): Promise<string> {
     try {
-      await this.prisma.$queryRaw`SELECT version()`;
+      await this._prisma.$queryRaw`SELECT version()`;
       return 'postgresql';
-    } catch (error) {
+    } catch {
       try {
-        await this.prisma.$queryRaw`SELECT VERSION()`;
+        await this._prisma.$queryRaw`SELECT VERSION()`;
         return 'mysql';
-      } catch (mysqlError) {
+      } catch {
         return 'unknown';
       }
     }
@@ -251,19 +251,19 @@ export class DatabasePerformanceMonitor {
   ): Promise<void> {
     try {
       // Connection count
-      const connections = await this.prisma.$queryRaw<{ count: number }[]>`
+      const connections = await this._prisma.$queryRaw<{ count: number }[]>`
         SELECT count(*) as count FROM pg_stat_activity
       `;
       stats.connectionCount = connections[0]?.count || 0;
 
       // Active queries
-      const activeQueries = await this.prisma.$queryRaw<{ count: number }[]>`
+      const activeQueries = await this._prisma.$queryRaw<{ count: number }[]>`
         SELECT count(*) as count FROM pg_stat_activity WHERE state = 'active'
       `;
       stats.activeQueries = activeQueries[0]?.count || 0;
 
       // Index usage stats
-      const indexStats = await this.prisma.$queryRaw<any[]>`
+      const indexStats = await this._prisma.$queryRaw<any[]>`
         SELECT 
           schemaname,
           tablename,
@@ -277,7 +277,7 @@ export class DatabasePerformanceMonitor {
       stats.indexUsage = indexStats;
 
       // Table stats
-      const tableStats = await this.prisma.$queryRaw<any[]>`
+      const tableStats = await this._prisma.$queryRaw<any[]>`
         SELECT 
           schemaname,
           tablename,
@@ -298,7 +298,7 @@ export class DatabasePerformanceMonitor {
   private async getMySQLStats(stats: DatabasePerformanceStats): Promise<void> {
     try {
       // Connection count
-      const connections = await this.prisma.$queryRaw<
+      const connections = await this._prisma.$queryRaw<
         { Variable_name: string; Value: string }[]
       >`
         SHOW STATUS LIKE 'Threads_connected'
@@ -306,13 +306,13 @@ export class DatabasePerformanceMonitor {
       stats.connectionCount = parseInt(connections[0]?.Value || '0');
 
       // Active queries
-      const processlist = await this.prisma.$queryRaw<any[]>`
+      const processlist = await this._prisma.$queryRaw<any[]>`
         SELECT COUNT(*) as count FROM INFORMATION_SCHEMA.PROCESSLIST WHERE COMMAND != 'Sleep'
       `;
       stats.activeQueries = processlist[0]?.count || 0;
 
       // Index usage (simplified)
-      const indexStats = await this.prisma.$queryRaw<any[]>`
+      const indexStats = await this._prisma.$queryRaw<any[]>`
         SELECT 
           TABLE_SCHEMA,
           TABLE_NAME,

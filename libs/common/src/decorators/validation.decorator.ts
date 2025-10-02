@@ -16,7 +16,7 @@ export function IsStrongPassword(validationOptions?: ValidationOptions) {
         ...validationOptions,
       },
       validator: {
-        validate(value: any, args: ValidationArguments) {
+        validate(value: any, _args: ValidationArguments) {
           if (typeof value !== 'string') return false;
 
           const hasMinLength = value.length >= 8;
@@ -50,7 +50,7 @@ export function IsValidSlug(validationOptions?: ValidationOptions) {
         ...validationOptions,
       },
       validator: {
-        validate(value: any, args: ValidationArguments) {
+        validate(value: any, _args: ValidationArguments) {
           if (typeof value !== 'string') return false;
           return /^[a-z0-9-]+$/.test(value);
         },
@@ -70,7 +70,7 @@ export function IsValidHexColor(validationOptions?: ValidationOptions) {
         ...validationOptions,
       },
       validator: {
-        validate(value: any, args: ValidationArguments) {
+        validate(value: any, _args: ValidationArguments) {
           if (typeof value !== 'string') return false;
           return /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(value);
         },
@@ -90,7 +90,7 @@ export function IsNotBlank(validationOptions?: ValidationOptions) {
         ...validationOptions,
       },
       validator: {
-        validate(value: any, args: ValidationArguments) {
+        validate(value: any, _args: ValidationArguments) {
           if (typeof value !== 'string') return false;
           return value.trim().length > 0;
         },
@@ -110,7 +110,7 @@ export function IsValidJSON(validationOptions?: ValidationOptions) {
         ...validationOptions,
       },
       validator: {
-        validate(value: any, args: ValidationArguments) {
+        validate(value: any, _args: ValidationArguments) {
           if (typeof value !== 'string') return false;
           try {
             JSON.parse(value);

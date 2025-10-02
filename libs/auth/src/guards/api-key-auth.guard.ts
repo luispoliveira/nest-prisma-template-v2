@@ -35,12 +35,9 @@ export class ApiKeyAuthGuard extends AuthGuard('api-key') {
   override handleRequest<TUser = unknown>(
     err: unknown,
     user: unknown,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    info: unknown,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    context: ExecutionContext,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    status?: unknown,
+    _info: unknown,
+    _context: ExecutionContext,
+    _status?: unknown,
   ): TUser {
     if (err || !user) {
       throw err || new UnauthorizedException('User not found');

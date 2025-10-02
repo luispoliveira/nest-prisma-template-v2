@@ -16,7 +16,7 @@ export interface SeedData {
 export class DatabaseSeeder {
   private readonly logger = new Logger(DatabaseSeeder.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly _prisma: PrismaService) {}
 
   /**
    * Seed the database with provided data
@@ -25,7 +25,7 @@ export class DatabaseSeeder {
     const { truncate = false, verbose = false } = options;
 
     try {
-      await this.prisma.$transaction(async tx => {
+      await this._prisma.$transaction(async tx => {
         if (truncate) {
           await this.truncateDatabase(tx, verbose);
         }
@@ -137,7 +137,7 @@ export class DatabaseSeeder {
   private async getTableNames(): Promise<string[]> {
     try {
       // Try PostgreSQL first
-      const result = await this.prisma.$queryRaw<{ tablename: string }[]>`
+      const result = await this._prisma.$queryRaw<{ tablename: string }[]>`
         SELECT tablename 
         FROM pg_tables 
         WHERE schemaname = 'public'
@@ -145,10 +145,10 @@ export class DatabaseSeeder {
       `;
 
       return result.map(row => row.tablename);
-    } catch (error) {
+    } catch {
       // Fallback for MySQL/MariaDB
       try {
-        const result = await this.prisma.$queryRaw<{ table_name: string }[]>`
+        const result = await this._prisma.$queryRaw<{ table_name: string }[]>`
           SELECT table_name 
           FROM information_schema.tables 
           WHERE table_schema = DATABASE()
@@ -156,7 +156,7 @@ export class DatabaseSeeder {
         `;
 
         return result.map(row => row.table_name);
-      } catch (mysqlError) {
+      } catch {
         this.logger.warn('Could not determine table names, using manual list');
         // Fallback to common table names - customize this for your schema
         return ['User', 'Post', 'Profile', 'Role', 'Permission'];
@@ -169,7 +169,7 @@ export class DatabaseSeeder {
    */
   async clearModels(modelNames: string[], verbose = false): Promise<void> {
     try {
-      await this.prisma.$transaction(async tx => {
+      await this._prisma.$transaction(async tx => {
         for (const modelName of modelNames) {
           const model = (tx as any)[modelName];
           if (model) {
@@ -193,7 +193,7 @@ export class DatabaseSeeder {
    */
   async isSeeded(checkModel = 'user'): Promise<boolean> {
     try {
-      const model = (this.prisma as any)[checkModel];
+      const model = (this._prisma as any)[checkModel];
       if (!model) {
         return false;
       }
@@ -231,7 +231,6 @@ export class DatabaseSeeder {
       'Building Scalable APIs',
       'Database Design Best Practices',
       'Testing Strategies in Node.js',
-      'GraphQL vs REST API',
       'Microservices Architecture',
       'Security in Web Applications',
       'Performance Optimization Tips',
@@ -259,7 +258,7 @@ export class DatabaseSeeder {
     await this.seed([{ model: 'user', data: users }], options);
 
     // Get created user IDs
-    const createdUsers = await this.prisma.user.findMany({
+    const createdUsers = await this._prisma.user.findMany({
       select: { id: true },
     });
     const userIds = createdUsers.map(u => u.id);

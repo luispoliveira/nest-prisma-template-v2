@@ -4,7 +4,7 @@ export class ConfigUtil {
   static getRequiredConfig<T = string>(
     configService: ConfigService,
     key: string,
-    transform?: (value: string) => T,
+    transform?: (_value: string) => T,
   ): T {
     const value = configService.get<string>(key);
 
@@ -21,7 +21,7 @@ export class ConfigUtil {
     configService: ConfigService,
     key: string,
     defaultValue: T,
-    transform?: (value: string) => T,
+    transform?: (_value: string) => T,
   ): T {
     const value = configService.get<string>(key);
 
@@ -76,7 +76,7 @@ export class ConfigUtil {
     key: string,
     separator = ',',
     defaultValue?: T[],
-    transform?: (value: string) => T,
+    transform?: (_value: string) => T,
   ): T[] {
     const value = configService.get<string>(key);
 

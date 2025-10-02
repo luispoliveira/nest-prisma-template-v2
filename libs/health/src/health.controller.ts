@@ -11,21 +11,21 @@ import {
 @ApiTags('Health')
 @Controller('health')
 export class HealthController {
-  constructor(private readonly healthService: HealthService) {}
+  constructor(private readonly _healthService: HealthService) {}
 
   @Get()
   @ApiOperation({ summary: 'Complete health check endpoint' })
   @ApiResponse({ status: 200, description: 'Health check passed' })
   @ApiResponse({ status: 503, description: 'Health check failed' })
   check(): Promise<HealthCheckResult> {
-    return this.healthService.checkHealth();
+    return this._healthService.checkHealth();
   }
 
   @Get('detailed')
   @ApiOperation({ summary: 'Detailed health check with custom format' })
   @ApiResponse({ status: 200, description: 'Detailed health status' })
   detailedCheck(): Promise<HealthStatus> {
-    return this.healthService.getDetailedHealth();
+    return this._healthService.getDetailedHealth();
   }
 
   @Get('liveness')
@@ -34,7 +34,7 @@ export class HealthController {
   })
   @ApiResponse({ status: 200, description: 'Application is alive' })
   liveness(): LivenessResponse {
-    return this.healthService.getLiveness();
+    return this._healthService.getLiveness();
   }
 
   @Get('readiness')
@@ -45,13 +45,13 @@ export class HealthController {
   @ApiResponse({ status: 200, description: 'Application is ready' })
   @ApiResponse({ status: 503, description: 'Application is not ready' })
   readiness(): Promise<ReadinessResponse> {
-    return this.healthService.getReadiness();
+    return this._healthService.getReadiness();
   }
 
   @Get('system')
   @ApiOperation({ summary: 'System information and metrics' })
   @ApiResponse({ status: 200, description: 'System information' })
   systemInfo() {
-    return this.healthService.getSystemInfo();
+    return this._healthService.getSystemInfo();
   }
 }

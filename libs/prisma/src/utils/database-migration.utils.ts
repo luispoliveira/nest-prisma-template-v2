@@ -23,14 +23,14 @@ export interface MigrationStatus {
 export class DatabaseMigrationHelper {
   private readonly logger = new Logger(DatabaseMigrationHelper.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly _prisma: PrismaService) {}
 
   /**
    * Get migration status
    */
   async getMigrationStatus(): Promise<MigrationStatus> {
     try {
-      const migrations = await this.prisma.$queryRaw<MigrationInfo[]>`
+      const migrations = await this._prisma.$queryRaw<MigrationInfo[]>`
         SELECT * FROM _prisma_migrations ORDER BY started_at DESC
       `;
 
@@ -69,7 +69,7 @@ export class DatabaseMigrationHelper {
   async getDatabaseVersion(): Promise<{ version: string; engine: string }> {
     try {
       // Try PostgreSQL first
-      const pgResult = await this.prisma.$queryRaw<{ version: string }[]>`
+      const pgResult = await this._prisma.$queryRaw<{ version: string }[]>`
         SELECT version() as version
       `;
 
@@ -79,10 +79,10 @@ export class DatabaseMigrationHelper {
           engine: 'postgresql',
         };
       }
-    } catch (error) {
+    } catch {
       // Try MySQL
       try {
-        const mysqlResult = await this.prisma.$queryRaw<{ version: string }[]>`
+        const mysqlResult = await this._prisma.$queryRaw<{ version: string }[]>`
           SELECT VERSION() as version
         `;
 
@@ -92,10 +92,10 @@ export class DatabaseMigrationHelper {
             engine: 'mysql',
           };
         }
-      } catch (mysqlError) {
+      } catch {
         // Try SQLite
         try {
-          const sqliteResult = await this.prisma.$queryRaw<
+          const sqliteResult = await this._prisma.$queryRaw<
             { version: string }[]
           >`
             SELECT sqlite_version() as version
@@ -107,7 +107,7 @@ export class DatabaseMigrationHelper {
               engine: 'sqlite',
             };
           }
-        } catch (sqliteError) {
+        } catch {
           this.logger.warn('Could not determine database version');
         }
       }
@@ -148,13 +148,13 @@ export class DatabaseMigrationHelper {
     indexes: any[];
     constraints: any[];
   }> {
-    const tables = await this.prisma.$queryRaw<{ tablename: string }[]>`
+    const tables = await this._prisma.$queryRaw<{ tablename: string }[]>`
       SELECT tablename 
       FROM pg_tables 
       WHERE schemaname = 'public'
     `;
 
-    const indexes = await this.prisma.$queryRaw<any[]>`
+    const indexes = await this._prisma.$queryRaw<any[]>`
       SELECT 
         schemaname,
         tablename,
@@ -164,7 +164,7 @@ export class DatabaseMigrationHelper {
       WHERE schemaname = 'public'
     `;
 
-    const constraints = await this.prisma.$queryRaw<any[]>`
+    const constraints = await this._prisma.$queryRaw<any[]>`
       SELECT 
         tc.table_name,
         tc.constraint_name,
@@ -194,13 +194,13 @@ export class DatabaseMigrationHelper {
     indexes: any[];
     constraints: any[];
   }> {
-    const tables = await this.prisma.$queryRaw<{ table_name: string }[]>`
+    const tables = await this._prisma.$queryRaw<{ table_name: string }[]>`
       SELECT table_name 
       FROM information_schema.tables 
       WHERE table_schema = DATABASE()
     `;
 
-    const indexes = await this.prisma.$queryRaw<any[]>`
+    const indexes = await this._prisma.$queryRaw<any[]>`
       SELECT 
         table_name,
         index_name,
@@ -210,7 +210,7 @@ export class DatabaseMigrationHelper {
       WHERE table_schema = DATABASE()
     `;
 
-    const constraints = await this.prisma.$queryRaw<any[]>`
+    const constraints = await this._prisma.$queryRaw<any[]>`
       SELECT 
         table_name,
         constraint_name,
@@ -235,7 +235,7 @@ export class DatabaseMigrationHelper {
    */
   async backupMigrationState(): Promise<MigrationInfo[]> {
     try {
-      const migrations = await this.prisma.$queryRaw<MigrationInfo[]>`
+      const migrations = await this._prisma.$queryRaw<MigrationInfo[]>`
         SELECT * FROM _prisma_migrations
       `;
 
@@ -264,8 +264,8 @@ export class DatabaseMigrationHelper {
     try {
       // Check if _prisma_migrations table exists
       try {
-        await this.prisma.$queryRaw`SELECT 1 FROM _prisma_migrations LIMIT 1`;
-      } catch (error) {
+        await this._prisma.$queryRaw`SELECT 1 FROM _prisma_migrations LIMIT 1`;
+      } catch {
         issues.push('_prisma_migrations table not found');
       }
 
@@ -276,7 +276,7 @@ export class DatabaseMigrationHelper {
         // Add specific integrity checks based on your schema
         // Example: Check for foreign key constraint violations
         try {
-          const result = await this.prisma.$queryRaw<{ count: number }[]>`
+          const result = await this._prisma.$queryRaw<{ count: number }[]>`
             SELECT COUNT(*) as count 
             FROM information_schema.table_constraints 
             WHERE constraint_type = 'FOREIGN KEY'
@@ -287,7 +287,7 @@ export class DatabaseMigrationHelper {
               'No foreign key constraints found - schema might be incomplete',
             );
           }
-        } catch (error) {
+        } catch {
           issues.push('Could not validate foreign key constraints');
         }
       }
@@ -328,12 +328,12 @@ export class DatabaseMigrationHelper {
         const dbVersion = await this.getDatabaseVersion();
 
         if (dbVersion.engine === 'postgresql') {
-          const sizeResult = await this.prisma.$queryRaw<{ size: string }[]>`
+          const sizeResult = await this._prisma.$queryRaw<{ size: string }[]>`
             SELECT pg_size_pretty(pg_database_size(current_database())) as size
           `;
           databaseSize = sizeResult[0]?.size;
         } else if (dbVersion.engine === 'mysql') {
-          const sizeResult = await this.prisma.$queryRaw<{ size: number }[]>`
+          const sizeResult = await this._prisma.$queryRaw<{ size: number }[]>`
             SELECT ROUND(SUM(data_length + index_length) / 1024 / 1024, 1) AS size
             FROM information_schema.tables 
             WHERE table_schema = DATABASE()

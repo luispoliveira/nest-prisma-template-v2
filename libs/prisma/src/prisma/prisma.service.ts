@@ -23,8 +23,11 @@ export class PrismaService
       connectionString: _configService.get('databaseUrl'),
     });
 
-    const environment = _configService.get<EnvironmentEnum>('environment')!;
-    const logPrisma = _configService.get<boolean>('logPrisma')!;
+    const environment = _configService.get<EnvironmentEnum>(
+      'environment',
+      EnvironmentEnum._DEVELOPMENT,
+    );
+    const logPrisma = _configService.get<boolean>('logPrisma', false);
 
     super({
       adapter,
@@ -54,7 +57,7 @@ export class PrismaService
    * @param options Transaction options
    */
   async runTransaction<T>(
-    fn: (tx: PrismaTx) => Promise<T>,
+    fn: (_tx: PrismaTx) => Promise<T>,
     options?: {
       timeout?: number;
       isolationLevel?:

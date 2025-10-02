@@ -7,18 +7,18 @@ import { QueueDashboardService } from './services/queue-dashboard.service';
 @Controller('queue')
 export class QueueController {
   constructor(
-    private readonly queueService: EnhancedQueueService,
-    private readonly dashboardService: QueueDashboardService,
+    private readonly _queueService: EnhancedQueueService,
+    private readonly _dashboardService: QueueDashboardService,
   ) {}
 
   @Get('status')
   async getStatus(@Query('queue') queue = 'default') {
-    return this.queueService.getQueueStats(queue);
+    return this._queueService.getQueueStats(queue);
   }
 
   @Get('dashboard')
   async getDashboard() {
-    return this.dashboardService.getDashboardData();
+    return this._dashboardService.getDashboardData();
   }
 
   @Post('job')
@@ -26,6 +26,6 @@ export class QueueController {
     @Body() body: { queue?: string; name: string; data: any; options?: any },
   ) {
     const queue = body.queue || 'default';
-    return this.queueService.addJob(queue, body.name, body.data, body.options);
+    return this._queueService.addJob(queue, body.name, body.data, body.options);
   }
 }

@@ -222,7 +222,7 @@ export class EnhancedQueueService implements OnModuleDestroy {
         const jobLogs = await (queue as any).getJobLogs(jobId);
         logs = jobLogs.logs || [];
       }
-    } catch (error) {
+    } catch {
       // Logs might not be available
       logs = [];
     }
@@ -434,7 +434,7 @@ export class EnhancedQueueService implements OnModuleDestroy {
    * Setup queue event listeners for monitoring
    */
   private setupQueueListeners(name: string, queue: Queue): void {
-    queue.on('completed', (job: Job, result: any) => {
+    queue.on('completed', (job: Job, _result: any) => {
       this.logger.debug(`Job ${job.id} completed in queue '${name}'`);
     });
 

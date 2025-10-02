@@ -1,6 +1,5 @@
 import { AuditModule } from '@lib/audit';
 import { RbacModule } from '@lib/auth';
-import { GraphqlModule } from '@lib/graphql';
 import { HealthModule } from '@lib/health';
 import { PrismaModule, PrismaService } from '@lib/prisma';
 import { ALL_QUEUES, QueueModule } from '@lib/queue';
@@ -66,14 +65,13 @@ import { UsersModule } from './users/users.module';
       extraProviders: [PrismaService],
     }),
     HealthModule,
-    GraphqlModule.register(),
     MailModule.forRootAsync({
       useFactory: (config: ConfigService) => ({
         provider: 'brevo',
-        apiKey: config.get<string>('mail.brevoApiKey')!,
+        apiKey: config.get<string>('mail.brevoApiKey', ''),
         defaultFrom: {
-          email: config.get<string>('mail.defaultFromEmail')!,
-          name: config.get<string>('mail.defaultFromName')!,
+          email: config.get<string>('mail.defaultFromEmail', ''),
+          name: config.get<string>('mail.defaultFromName', ''),
         },
       }),
       inject: [ConfigService],

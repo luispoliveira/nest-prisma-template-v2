@@ -34,7 +34,7 @@ export class ResponseInterceptor<T>
 
         // Wrap the data in the standard response format
         const response = ApiResponseBuilder.success(data);
-        response.meta!.correlationId = correlationId;
+        if (response.meta) response.meta.correlationId = correlationId;
 
         return response;
       }),

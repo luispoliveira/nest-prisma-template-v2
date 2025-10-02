@@ -16,15 +16,16 @@ import { RateLimitService } from '../services/rate-limit.service';
 @Injectable()
 export class RateLimitGuard implements CanActivate {
   constructor(
-    private readonly reflector: Reflector,
-    private readonly rateLimitService: RateLimitService,
+    private readonly _reflector: Reflector,
+    private readonly _rateLimitService: RateLimitService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const rateLimitOptions = this.reflector.getAllAndOverride<RateLimitOptions>(
-      RATE_LIMIT_KEY,
-      [context.getHandler(), context.getClass()],
-    );
+    const rateLimitOptions =
+      this._reflector.getAllAndOverride<RateLimitOptions>(RATE_LIMIT_KEY, [
+        context.getHandler(),
+        context.getClass(),
+      ]);
 
     if (!rateLimitOptions) {
       return true;
@@ -37,7 +38,7 @@ export class RateLimitGuard implements CanActivate {
       ? rateLimitOptions.keyGenerator(request)
       : this.getDefaultKey(request);
 
-    const result = this.rateLimitService.checkRateLimit(key, rateLimitOptions);
+    const result = this._rateLimitService.checkRateLimit(key, rateLimitOptions);
 
     if (!result.allowed) {
       const response = context.switchToHttp().getResponse();

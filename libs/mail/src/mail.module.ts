@@ -11,7 +11,7 @@ import { MailModuleOptions } from './interfaces';
 export class MailModule {
   static forRootAsync(opts: {
     useFactory: (
-      ...args: any[]
+      ..._args: any[]
     ) => Promise<MailModuleOptions> | MailModuleOptions;
     inject?: any[];
   }): DynamicModule {

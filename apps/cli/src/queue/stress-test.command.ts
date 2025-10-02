@@ -8,7 +8,7 @@ import { Command, Option } from 'nestjs-command';
 export class QueueStressTestCommand {
   private readonly logger = new Logger(QueueStressTestCommand.name);
 
-  constructor(@InjectQueue(QUEUES.DEFAULT) private defaultQueue: Queue) {}
+  constructor(@InjectQueue(QUEUES.DEFAULT) private _defaultQueue: Queue) {}
 
   @Command({
     command: 'queue:stress-test',
@@ -38,12 +38,12 @@ export class QueueStressTestCommand {
     const start = Date.now();
     let added = 0;
     const addJob = async (i: number) => {
-      await this.defaultQueue.add(EVENTS.TEST, {
+      await this._defaultQueue.add(EVENTS.TEST, {
         i,
         timestamp: new Date().toISOString(),
       });
     };
-    const promises = [];
+    const _promises = [];
     for (let i = 0; i < jobs; i += concurrency) {
       const batch = [];
       for (let j = 0; j < concurrency && i + j < jobs; j++) {

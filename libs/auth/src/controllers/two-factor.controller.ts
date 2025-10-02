@@ -20,8 +20,8 @@ import { TwoFactorService } from '../services/two-factor.service';
 @ApiBearerAuth()
 export class TwoFactorController {
   constructor(
-    private readonly authService: AuthService,
-    private readonly twoFactorService: TwoFactorService,
+    private readonly _authService: AuthService,
+    private readonly _twoFactorService: TwoFactorService,
   ) {}
 
   @Post('setup')
@@ -33,7 +33,7 @@ export class TwoFactorController {
     blockDurationMs: 30 * 60 * 1000, // 30 minutes
   })
   async setup2FA(@CurrentUser() user: LoggedUser) {
-    const setup = await this.authService.setup2FA(user.id);
+    const setup = await this._authService.setup2FA(user.id);
 
     return {
       setupId: setup.setupId,
@@ -57,7 +57,7 @@ export class TwoFactorController {
     blockDurationMs: 15 * 60 * 1000, // 15 minutes
   })
   async verifySetup(@Body() body: { setupId: string; token: string }) {
-    const result = await this.authService.verify2FASetup(
+    const result = await this._authService.verify2FASetup(
       body.setupId,
       body.token,
     );
@@ -87,7 +87,7 @@ export class TwoFactorController {
     @CurrentUser() user: LoggedUser,
     @Body() body: { token: string },
   ) {
-    const result = await this.authService.disable2FA(user.id, body.token);
+    const _result = await this._authService.disable2FA(user.id, body.token);
 
     return {
       message: '2FA has been disabled for your account',
@@ -105,7 +105,7 @@ export class TwoFactorController {
     @CurrentUser() user: LoggedUser,
     @Body() body: { token: string },
   ) {
-    const result = await this.authService.generateNewBackupCodes(
+    const result = await this._authService.generateNewBackupCodes(
       user.id,
       body.token,
     );
@@ -138,7 +138,7 @@ export class TwoFactorController {
       return { message: 'Not available in production' };
     }
 
-    const verification = this.twoFactorService.verifyToken(
+    const verification = this._twoFactorService.verifyToken(
       body.secret,
       body.token,
     );
@@ -146,7 +146,7 @@ export class TwoFactorController {
     return {
       valid: verification.isValid,
       usedBackupCode: verification.usedBackupCode,
-      currentToken: this.twoFactorService.generateCurrentToken(body.secret),
+      currentToken: this._twoFactorService.generateCurrentToken(body.secret),
     };
   }
 }

@@ -10,10 +10,10 @@ import { REQUIRE_2FA_KEY } from '../decorators/require-2fa.decorator';
 
 @Injectable()
 export class TwoFactorGuard implements CanActivate {
-  constructor(private readonly reflector: Reflector) {}
+  constructor(private readonly _reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const require2FA = this.reflector.getAllAndOverride<boolean>(
+    const require2FA = this._reflector.getAllAndOverride<boolean>(
       REQUIRE_2FA_KEY,
       [context.getHandler(), context.getClass()],
     );

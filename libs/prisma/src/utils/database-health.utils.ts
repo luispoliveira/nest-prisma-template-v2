@@ -54,10 +54,10 @@ export class DatabaseHealthService {
   private readonly logger = new Logger(DatabaseHealthService.name);
 
   constructor(
-    private readonly prisma: PrismaService,
-    private readonly performanceMonitor: DatabasePerformanceMonitor,
-    private readonly connectionMonitor: DatabaseConnectionMonitor,
-    private readonly migrationHelper: DatabaseMigrationHelper,
+    private readonly _prisma: PrismaService,
+    private readonly _performanceMonitor: DatabasePerformanceMonitor,
+    private readonly _connectionMonitor: DatabaseConnectionMonitor,
+    private readonly _migrationHelper: DatabaseMigrationHelper,
   ) {}
 
   /**
@@ -222,7 +222,7 @@ export class DatabaseHealthService {
 
     try {
       // Simple connection test
-      await this.prisma.$queryRaw`SELECT 1`;
+      await this._prisma.$queryRaw`SELECT 1`;
       const responseTime = Date.now() - startTime;
 
       let status: 'healthy' | 'warning' | 'critical' = 'healthy';
@@ -255,9 +255,9 @@ export class DatabaseHealthService {
   }
 
   private async getConnectionHealth(): Promise<any> {
-    const isConnected = await this.prisma.isHealthy();
-    const poolMetrics = await this.connectionMonitor.getConnectionMetrics();
-    const connectionAlerts = this.connectionMonitor.getAlerts(5);
+    const isConnected = await this._prisma.isHealthy();
+    const poolMetrics = await this._connectionMonitor.getConnectionMetrics();
+    const connectionAlerts = this._connectionMonitor.getAlerts(5);
 
     return {
       isConnected,
@@ -267,9 +267,9 @@ export class DatabaseHealthService {
   }
 
   private async getPerformanceHealth(): Promise<any> {
-    const currentMetrics = this.performanceMonitor.getCurrentMetrics();
-    const slowQueries = await this.performanceMonitor.getSlowQueries(5);
-    const report = this.performanceMonitor.generateReport();
+    const currentMetrics = this._performanceMonitor.getCurrentMetrics();
+    const slowQueries = await this._performanceMonitor.getSlowQueries(5);
+    const report = this._performanceMonitor.generateReport();
 
     return {
       averageQueryTime: currentMetrics.averageQueryTime,
@@ -281,8 +281,8 @@ export class DatabaseHealthService {
   }
 
   private async getMigrationHealth(): Promise<any> {
-    const migrationStatus = await this.migrationHelper.getMigrationStatus();
-    const isUpToDate = await this.migrationHelper.areMigrationsUpToDate();
+    const migrationStatus = await this._migrationHelper.getMigrationStatus();
+    const isUpToDate = await this._migrationHelper.areMigrationsUpToDate();
 
     return {
       isUpToDate,
@@ -292,8 +292,9 @@ export class DatabaseHealthService {
   }
 
   private async getSchemaHealth(): Promise<any> {
-    const schemaInfo = await this.migrationHelper.getSchemaInfo();
-    const integrityCheck = await this.migrationHelper.validateSchemaIntegrity();
+    const schemaInfo = await this._migrationHelper.getSchemaInfo();
+    const integrityCheck =
+      await this._migrationHelper.validateSchemaIntegrity();
 
     return {
       tableCount: schemaInfo.tables.length,
@@ -303,11 +304,11 @@ export class DatabaseHealthService {
   }
 
   private async getDatabaseStatistics(): Promise<any> {
-    return await this.migrationHelper.getDatabaseStatistics();
+    return await this._migrationHelper.getDatabaseStatistics();
   }
 
   private async getDatabaseVersion(): Promise<any> {
-    return await this.migrationHelper.getDatabaseVersion();
+    return await this._migrationHelper.getDatabaseVersion();
   }
 
   private getSettledValue<T>(
@@ -452,8 +453,8 @@ export class DatabaseHealthService {
    * Start continuous health monitoring
    */
   startContinuousMonitoring(intervalMs = 60000): void {
-    this.performanceMonitor.startMonitoring();
-    this.connectionMonitor.startMonitoring(intervalMs);
+    this._performanceMonitor.startMonitoring();
+    this._connectionMonitor.startMonitoring(intervalMs);
 
     this.logger.log(
       `Continuous database monitoring started (interval: ${intervalMs}ms)`,
@@ -464,8 +465,8 @@ export class DatabaseHealthService {
    * Stop continuous monitoring
    */
   stopContinuousMonitoring(): void {
-    this.performanceMonitor.stopMonitoring();
-    this.connectionMonitor.stopMonitoring();
+    this._performanceMonitor.stopMonitoring();
+    this._connectionMonitor.stopMonitoring();
 
     this.logger.log('Continuous database monitoring stopped');
   }

@@ -27,8 +27,8 @@ export class TwoFactorService {
     }
   >();
 
-  constructor(private readonly configService: ConfigService) {
-    this.appName = this.configService.get('app.name') || 'NestJS App';
+  constructor(private readonly _configService: ConfigService) {
+    this.appName = this._configService.get('app.name') || 'NestJS App';
   }
 
   /**
@@ -45,11 +45,14 @@ export class TwoFactorService {
     const backupCodes = this.generateBackupCodes();
 
     // Generate QR code data URL
-    const qrCodeDataUrl = await QRCode.toDataURL(secret.otpauth_url!);
+    if (!secret.otpauth_url) {
+      throw new Error('Failed to generate OTP auth URL');
+    }
+    const qrCodeDataUrl = await QRCode.toDataURL(secret.otpauth_url);
 
     return {
-      secret: secret.base32!,
-      qrCode: secret.otpauth_url!,
+      secret: secret.base32,
+      qrCode: secret.otpauth_url,
       qrCodeDataUrl,
       backupCodes,
     };
@@ -192,7 +195,7 @@ export class TwoFactorService {
   private generateBase32Secret(): string {
     // Use speakeasy to generate a proper base32 secret
     const secret = speakeasy.generateSecret({ length: 32 });
-    return secret.base32!;
+    return secret.base32;
   }
 
   /**

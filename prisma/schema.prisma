@@ -10,7 +10,6 @@ datasource db {
 
 generator client {
   provider               = "prisma-client-js"
-  previewFeatures        = ["queryCompiler", "driverAdapters"]
   output                 = "../generated/prisma-client"
   runtime                = "nodejs"
   moduleFormat           = "esm"

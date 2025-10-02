@@ -37,11 +37,11 @@ export interface RegisterData {
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly prismaService: PrismaService,
-    private readonly passwordService: PasswordService,
-    private readonly tokenService: TokenService,
-    private readonly twoFactorService: TwoFactorService,
-    private readonly rateLimitService: RateLimitService,
+    private readonly _prismaService: PrismaService,
+    private readonly _passwordService: PasswordService,
+    private readonly _tokenService: TokenService,
+    private readonly _twoFactorService: TwoFactorService,
+    private readonly _rateLimitService: RateLimitService,
   ) {}
 
   /**
@@ -51,8 +51,8 @@ export class AuthService {
     const { email, password, twoFactorToken, deviceInfo } = credentials;
 
     // Rate limiting for login attempts
-    const rateLimitConfig = this.rateLimitService.getDefaultConfigs().login;
-    const rateLimitResult = this.rateLimitService.checkRateLimit(
+    const rateLimitConfig = this._rateLimitService.getDefaultConfigs().login;
+    const rateLimitResult = this._rateLimitService.checkRateLimit(
       `login:${email}`,
       rateLimitConfig,
     );
@@ -64,7 +64,7 @@ export class AuthService {
     }
 
     // Find user
-    const user = await this.prismaService.user.findUnique({
+    const user = await this._prismaService.user.findUnique({
       where: { email: email.toLowerCase() },
       include: { role: true },
     });
@@ -78,7 +78,7 @@ export class AuthService {
     }
 
     // Verify password
-    const isPasswordValid = await this.passwordService.verifyPassword(
+    const isPasswordValid = await this._passwordService.verifyPassword(
       password,
       user.password || '',
     );
@@ -106,7 +106,7 @@ export class AuthService {
       }
 
       // Verify 2FA token (placeholder - implement when 2FA fields are added)
-      // const twoFactorVerification = this.twoFactorService.verifyToken(
+      // const twoFactorVerification = this._twoFactorService.verifyToken(
       //   user.twoFactorSecret,
       //   twoFactorToken,
       //   user.twoFactorBackupCodes ? JSON.parse(user.twoFactorBackupCodes) : undefined,
@@ -118,20 +118,20 @@ export class AuthService {
     }
 
     // Update last login
-    await this.prismaService.user.update({
+    await this._prismaService.user.update({
       where: { id: user.id },
       data: { lastLogin: new Date() },
     });
 
     // Generate tokens
     const loggedUser = this.mapToLoggedUser(user);
-    const tokens = await this.tokenService.generateTokenPair(
+    const tokens = await this._tokenService.generateTokenPair(
       loggedUser,
       deviceInfo,
     );
 
     // Reset rate limit on successful login
-    this.rateLimitService.resetRateLimit(`login:${email}`);
+    this._rateLimitService.resetRateLimit(`login:${email}`);
 
     return {
       user: loggedUser,
@@ -148,7 +148,7 @@ export class AuthService {
     const { email, password } = data;
 
     // Check if user already exists
-    const existingUser = await this.prismaService.user.findUnique({
+    const existingUser = await this._prismaService.user.findUnique({
       where: { email: email.toLowerCase() },
     });
 
@@ -157,7 +157,7 @@ export class AuthService {
     }
 
     // Validate password
-    const passwordValidation = this.passwordService.validatePassword(password);
+    const passwordValidation = this._passwordService.validatePassword(password);
     if (!passwordValidation.isValid) {
       throw new BadRequestException({
         message: 'Password does not meet requirements',
@@ -166,10 +166,10 @@ export class AuthService {
     }
 
     // Hash password
-    const hashedPassword = await this.passwordService.hashPassword(password);
+    const hashedPassword = await this._passwordService.hashPassword(password);
 
     // Create user
-    const user = await this.prismaService.user.create({
+    const user = await this._prismaService.user.create({
       data: {
         email: email.toLowerCase(),
         password: hashedPassword,
@@ -192,7 +192,7 @@ export class AuthService {
     refreshToken: string,
   ): Promise<Omit<LoginResult, 'user'> | null> {
     const userProvider = async (userId: number): Promise<LoggedUser | null> => {
-      const user = await this.prismaService.user.findUnique({
+      const user = await this._prismaService.user.findUnique({
         where: { id: userId, isActive: true },
         include: { role: true },
       });
@@ -200,7 +200,7 @@ export class AuthService {
       return user ? this.mapToLoggedUser(user) : null;
     };
 
-    const tokens = await this.tokenService.refreshAccessToken(
+    const tokens = await this._tokenService.refreshAccessToken(
       refreshToken,
       userProvider,
     );
@@ -211,14 +211,14 @@ export class AuthService {
    * Logout user
    */
   async logout(sessionId: string): Promise<void> {
-    await this.tokenService.revokeSession(sessionId);
+    await this._tokenService.revokeSession(sessionId);
   }
 
   /**
    * Logout from all devices
    */
   async logoutAll(userId: number): Promise<void> {
-    await this.tokenService.revokeAllUserSessions(userId);
+    await this._tokenService.revokeAllUserSessions(userId);
   }
 
   /**
@@ -253,7 +253,7 @@ export class AuthService {
     qrCodeDataUrl: string;
     backupCodes: string[];
   }> {
-    const user = await this.prismaService.user.findUnique({
+    const user = await this._prismaService.user.findUnique({
       where: { id: userId },
     });
 
@@ -262,10 +262,10 @@ export class AuthService {
     }
 
     // Generate 2FA secret
-    const secret = await this.twoFactorService.generateSecret(user.email);
+    const secret = await this._twoFactorService.generateSecret(user.email);
 
     // Start pending setup
-    const setupId = this.twoFactorService.startPendingSetup(
+    const setupId = this._twoFactorService.startPendingSetup(
       userId,
       secret.secret,
     );
@@ -285,7 +285,7 @@ export class AuthService {
     setupId: string,
     token: string,
   ): Promise<{ success: boolean; backupCodes?: string[] }> {
-    const result = this.twoFactorService.completePendingSetup(setupId, token);
+    const result = this._twoFactorService.completePendingSetup(setupId, token);
 
     if (!result.isValid || !result.secret) {
       return { success: false };
@@ -293,7 +293,7 @@ export class AuthService {
 
     // Note: In production, store the secret and backup codes in the database
     // Example:
-    // await this.prismaService.user.update({
+    // await this._prismaService.user.update({
     //   where: { id: userId },
     //   data: {
     //     twoFactorSecret: result.secret,
@@ -302,7 +302,7 @@ export class AuthService {
     //   },
     // });
 
-    const backupCodes = this.twoFactorService.generateBackupCodes();
+    const backupCodes = this._twoFactorService.generateBackupCodes();
 
     return {
       success: true,
@@ -315,9 +315,9 @@ export class AuthService {
    */
   async disable2FA(
     userId: number,
-    token: string,
+    _token: string,
   ): Promise<{ success: boolean }> {
-    const user = await this.prismaService.user.findUnique({
+    const user = await this._prismaService.user.findUnique({
       where: { id: userId },
     });
 
@@ -326,13 +326,13 @@ export class AuthService {
     }
 
     // Note: Verify current 2FA token before disabling
-    // const verification = this.twoFactorService.verifyToken(user.twoFactorSecret!, token);
+    // const verification = this._twoFactorService.verifyToken(user.twoFactorSecret!, token);
     // if (!verification.isValid) {
     //   throw new UnauthorizedException('Invalid 2FA token');
     // }
 
     // Note: In production, clear 2FA data from database
-    // await this.prismaService.user.update({
+    // await this._prismaService.user.update({
     //   where: { id: userId },
     //   data: {
     //     twoFactorSecret: null,
@@ -349,9 +349,9 @@ export class AuthService {
    */
   async generateNewBackupCodes(
     userId: number,
-    token: string,
+    _token: string,
   ): Promise<{ backupCodes: string[] }> {
-    const user = await this.prismaService.user.findUnique({
+    const user = await this._prismaService.user.findUnique({
       where: { id: userId },
     });
 
@@ -360,15 +360,15 @@ export class AuthService {
     }
 
     // Note: Verify current 2FA token before generating new codes
-    // const verification = this.twoFactorService.verifyToken(user.twoFactorSecret!, token);
+    // const verification = this._twoFactorService.verifyToken(user.twoFactorSecret!, token);
     // if (!verification.isValid) {
     //   throw new UnauthorizedException('Invalid 2FA token');
     // }
 
-    const backupCodes = this.twoFactorService.generateBackupCodes();
+    const backupCodes = this._twoFactorService.generateBackupCodes();
 
     // Note: In production, update backup codes in database
-    // await this.prismaService.user.update({
+    // await this._prismaService.user.update({
     //   where: { id: userId },
     //   data: { twoFactorBackupCodes: JSON.stringify(backupCodes) },
     // });

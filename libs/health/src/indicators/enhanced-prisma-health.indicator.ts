@@ -28,7 +28,7 @@ export interface PrismaHealthDetails {
 export class EnhancedPrismaHealthIndicator extends HealthIndicator {
   private readonly logger = new Logger(EnhancedPrismaHealthIndicator.name);
 
-  constructor(private readonly prismaService: PrismaService) {
+  constructor(private readonly _prismaService: PrismaService) {
     super();
   }
 
@@ -37,7 +37,7 @@ export class EnhancedPrismaHealthIndicator extends HealthIndicator {
 
     try {
       // Basic connection test
-      const connectionTest = await this.testConnection();
+      const _connectionTest = await this.testConnection();
 
       // Get detailed database information
       const details = await this.getDatabaseDetails();
@@ -76,7 +76,7 @@ export class EnhancedPrismaHealthIndicator extends HealthIndicator {
 
   private async testConnection(): Promise<void> {
     // Test basic connection with a simple query
-    await this.prismaService.$queryRaw`SELECT 1`;
+    await this._prismaService.$queryRaw`SELECT 1`;
   }
 
   private async getDatabaseDetails(): Promise<PrismaHealthDetails> {
@@ -87,7 +87,7 @@ export class EnhancedPrismaHealthIndicator extends HealthIndicator {
 
     try {
       // Get database version
-      const versionResult = await this.prismaService.$queryRaw<
+      const versionResult = await this._prismaService.$queryRaw<
         Array<{ version: string }>
       >`
         SELECT version() as version
@@ -97,7 +97,7 @@ export class EnhancedPrismaHealthIndicator extends HealthIndicator {
       }
 
       // Get database size
-      const sizeResult = await this.prismaService.$queryRaw<
+      const sizeResult = await this._prismaService.$queryRaw<
         Array<{ size: string }>
       >`
         SELECT pg_size_pretty(pg_database_size(current_database())) as size
@@ -107,7 +107,7 @@ export class EnhancedPrismaHealthIndicator extends HealthIndicator {
       }
 
       // Get connection count
-      const connectionResult = await this.prismaService.$queryRaw<
+      const connectionResult = await this._prismaService.$queryRaw<
         Array<{ count: bigint }>
       >`
         SELECT count(*) as count FROM pg_stat_activity WHERE state = 'active'
@@ -117,7 +117,7 @@ export class EnhancedPrismaHealthIndicator extends HealthIndicator {
       }
 
       // Get database uptime
-      const uptimeResult = await this.prismaService.$queryRaw<
+      const uptimeResult = await this._prismaService.$queryRaw<
         Array<{ uptime: Date }>
       >`
         SELECT pg_postmaster_start_time() as uptime
@@ -128,7 +128,7 @@ export class EnhancedPrismaHealthIndicator extends HealthIndicator {
       }
 
       // Check for slow queries (queries running longer than 5 seconds)
-      const slowQueriesResult = await this.prismaService.$queryRaw<
+      const slowQueriesResult = await this._prismaService.$queryRaw<
         Array<{
           query: string;
           duration: number;
@@ -154,7 +154,7 @@ export class EnhancedPrismaHealthIndicator extends HealthIndicator {
 
       // Check migration status by querying the _prisma_migrations table
       try {
-        const migrationResult = await this.prismaService.$queryRaw<
+        const migrationResult = await this._prismaService.$queryRaw<
           Array<{
             migration_name: string;
             finished_at: Date | null;
@@ -211,7 +211,7 @@ export class EnhancedPrismaHealthIndicator extends HealthIndicator {
     maxConnections: number;
   }> {
     try {
-      const result = await this.prismaService.$queryRaw<
+      const result = await this._prismaService.$queryRaw<
         Array<{
           active: bigint;
           idle: bigint;

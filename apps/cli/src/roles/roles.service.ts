@@ -6,7 +6,7 @@ import { Command, Option, Positional } from 'nestjs-command';
 export class RolesService {
   private readonly logger = new Logger(RolesService.name);
 
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly _prismaService: PrismaService) {}
 
   @Command({
     command: 'roles:create <name>',
@@ -32,7 +32,7 @@ export class RolesService {
       console.log(`\n👑 Creating role: ${name}`);
       console.log('═'.repeat(50));
 
-      const role = await this.prismaService.role.create({
+      const role = await this._prismaService.role.create({
         data: {
           name,
           isActive,
@@ -70,7 +70,7 @@ export class RolesService {
       console.log('\n👑 Roles');
       console.log('═'.repeat(80));
 
-      const roles = await this.prismaService.role.findMany({
+      const roles = await this._prismaService.role.findMany({
         where: activeOnly ? { isActive: true } : undefined,
         include: {
           _count: {
@@ -131,11 +131,11 @@ export class RolesService {
       );
       console.log('═'.repeat(50));
 
-      const role = await this.prismaService.role.findUnique({
+      const role = await this._prismaService.role.findUnique({
         where: { id: roleId },
       });
 
-      const permission = await this.prismaService.permission.findUnique({
+      const permission = await this._prismaService.permission.findUnique({
         where: { id: permissionId },
       });
 
@@ -150,7 +150,7 @@ export class RolesService {
       }
 
       // Check if already assigned
-      const existing = await this.prismaService.permission2Role.findUnique({
+      const existing = await this._prismaService.permission2Role.findUnique({
         where: {
           permissionId_roleId: {
             permissionId,
@@ -164,7 +164,7 @@ export class RolesService {
         return;
       }
 
-      await this.prismaService.permission2Role.create({
+      await this._prismaService.permission2Role.create({
         data: {
           permissionId,
           roleId,
@@ -208,7 +208,7 @@ export class RolesService {
       console.log('═'.repeat(50));
 
       const permission2Role =
-        await this.prismaService.permission2Role.findUnique({
+        await this._prismaService.permission2Role.findUnique({
           where: {
             permissionId_roleId: {
               permissionId,
@@ -226,7 +226,7 @@ export class RolesService {
         return;
       }
 
-      await this.prismaService.permission2Role.delete({
+      await this._prismaService.permission2Role.delete({
         where: {
           permissionId_roleId: {
             permissionId,
@@ -261,7 +261,7 @@ export class RolesService {
       console.log(`\n✅ Activating role with ID: ${id}`);
       console.log('═'.repeat(50));
 
-      const role = await this.prismaService.role.findUnique({
+      const role = await this._prismaService.role.findUnique({
         where: { id },
       });
 
@@ -270,7 +270,7 @@ export class RolesService {
         return;
       }
 
-      await this.prismaService.role.update({
+      await this._prismaService.role.update({
         where: { id },
         data: { isActive: true },
       });
@@ -301,7 +301,7 @@ export class RolesService {
       console.log(`\n🚫 Deactivating role with ID: ${id}`);
       console.log('═'.repeat(50));
 
-      const role = await this.prismaService.role.findUnique({
+      const role = await this._prismaService.role.findUnique({
         where: { id },
       });
 
@@ -310,7 +310,7 @@ export class RolesService {
         return;
       }
 
-      await this.prismaService.role.update({
+      await this._prismaService.role.update({
         where: { id },
         data: { isActive: false },
       });

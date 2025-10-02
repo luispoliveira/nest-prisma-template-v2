@@ -20,25 +20,25 @@ export class PerformanceUtil {
   /**
    * Create a debounced version of a function
    */
-  static debounce<T extends (...args: any[]) => any>(
+  static debounce<T extends (..._args: any[]) => any>(
     func: T,
     delay: number,
-  ): (...args: Parameters<T>) => void {
+  ): (..._args: Parameters<T>) => void {
     let timeoutId: NodeJS.Timeout;
 
-    return (...args: Parameters<T>) => {
+    return (..._args: Parameters<T>) => {
       clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => func(...args), delay);
+      timeoutId = setTimeout(() => func(..._args), delay);
     };
   }
 
   /**
    * Create a throttled version of a function
    */
-  static throttle<T extends (...args: any[]) => any>(
+  static throttle<T extends (..._args: any[]) => any>(
     func: T,
     delay: number,
-  ): (...args: Parameters<T>) => void {
+  ): (..._args: Parameters<T>) => void {
     let lastCall = 0;
 
     return (...args: Parameters<T>) => {
@@ -59,7 +59,7 @@ export class PerformanceUtil {
     baseDelay = 1000,
     maxDelay = 30000,
   ): Promise<T> {
-    let lastError: Error;
+    let lastError: Error = new Error('Unknown error');
 
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
@@ -77,7 +77,7 @@ export class PerformanceUtil {
       }
     }
 
-    throw lastError!;
+    throw lastError;
   }
 
   /**
@@ -92,7 +92,7 @@ export class PerformanceUtil {
    */
   static async executeBatch<T, R>(
     items: T[],
-    operation: (item: T) => Promise<R>,
+    operation: (_item: T) => Promise<R>,
     batchSize = 10,
     delayBetweenBatches = 100,
   ): Promise<R[]> {
@@ -117,7 +117,7 @@ export class PerformanceUtil {
   /**
    * Create a memoized version of a function with TTL
    */
-  static memoizeWithTTL<T extends (...args: any[]) => any>(
+  static memoizeWithTTL<T extends (..._args: any[]) => any>(
     func: T,
     ttl = 300000, // 5 minutes default
   ): T {

@@ -64,8 +64,8 @@ export class QueueDashboardService {
   private readonly logger = new Logger(QueueDashboardService.name);
 
   constructor(
-    private readonly queueService: EnhancedQueueService,
-    private readonly monitoringService: QueueMonitoringService,
+    private readonly _queueService: EnhancedQueueService,
+    private readonly _monitoringService: QueueMonitoringService,
   ) {}
 
   /**
@@ -80,10 +80,10 @@ export class QueueDashboardService {
         alerts,
         performanceTrends,
       ] = await Promise.all([
-        this.monitoringService.getSystemHealth(),
+        this._monitoringService.getSystemHealth(),
         this.getAllQueueStats(),
         this.getRecentActivity(),
-        this.monitoringService.getActiveAlerts(),
+        this._monitoringService.getActiveAlerts(),
         this.getPerformanceTrends(),
       ]);
 
@@ -111,11 +111,11 @@ export class QueueDashboardService {
    * Get statistics for all queues
    */
   async getAllQueueStats(): Promise<ExtendedQueueStats[]> {
-    const queueNames = this.queueService.getQueueNames();
+    const queueNames = this._queueService.getQueueNames();
     const statsPromises = queueNames.map(async queueName => {
-      const stats = await this.queueService.getQueueStats(queueName);
+      const stats = await this._queueService.getQueueStats(queueName);
       const performance =
-        await this.monitoringService.getQueuePerformanceMetricsDetailed(
+        await this._monitoringService.getQueuePerformanceMetricsDetailed(
           queueName,
         );
 
@@ -140,9 +140,9 @@ export class QueueDashboardService {
    * Get recent job activity across all queues
    */
   async getRecentActivity(limit = 50): Promise<JobMetrics[]> {
-    const queueNames = this.queueService.getQueueNames();
+    const queueNames = this._queueService.getQueueNames();
     const activityPromises = queueNames.map(async queueName => {
-      return this.monitoringService.getJobMetrics(queueName, limit);
+      return this._monitoringService.getJobMetrics(queueName, limit);
     });
 
     const allActivity = await Promise.all(activityPromises);
@@ -156,9 +156,9 @@ export class QueueDashboardService {
    * Get performance trends for queues
    */
   async getPerformanceTrends(): Promise<QueuePerformanceMetrics[]> {
-    const queueNames = this.queueService.getQueueNames();
+    const queueNames = this._queueService.getQueueNames();
     const trendsPromises = queueNames.map(async queueName => {
-      return this.monitoringService.getQueuePerformanceMetricsDetailed(
+      return this._monitoringService.getQueuePerformanceMetricsDetailed(
         queueName,
       );
     });
@@ -174,7 +174,7 @@ export class QueueDashboardService {
     jobId: string | number,
   ): Promise<JobStatus | null> {
     try {
-      const job = await this.queueService.getJob(queueName, String(jobId));
+      const job = await this._queueService.getJob(queueName, String(jobId));
       if (!job) return null;
 
       return {
@@ -206,7 +206,7 @@ export class QueueDashboardService {
    */
   async retryJob(queueName: string, jobId: string | number): Promise<boolean> {
     try {
-      await this.queueService.retryJob(queueName, String(jobId));
+      await this._queueService.retryJob(queueName, String(jobId));
       return true;
     } catch (error) {
       this.logger.error(
@@ -222,7 +222,7 @@ export class QueueDashboardService {
    */
   async removeJob(queueName: string, jobId: string | number): Promise<boolean> {
     try {
-      await this.queueService.removeJob(queueName, String(jobId));
+      await this._queueService.removeJob(queueName, String(jobId));
       return true;
     } catch (error) {
       this.logger.error(
@@ -238,7 +238,7 @@ export class QueueDashboardService {
    */
   async pauseQueue(queueName: string): Promise<boolean> {
     try {
-      await this.queueService.pauseQueue(queueName);
+      await this._queueService.pauseQueue(queueName);
       return true;
     } catch (error) {
       this.logger.error(`Failed to pause queue ${queueName}`, error);
@@ -251,7 +251,7 @@ export class QueueDashboardService {
    */
   async resumeQueue(queueName: string): Promise<boolean> {
     try {
-      await this.queueService.resumeQueue(queueName);
+      await this._queueService.resumeQueue(queueName);
       return true;
     } catch (error) {
       this.logger.error(`Failed to resume queue ${queueName}`, error);
@@ -269,7 +269,7 @@ export class QueueDashboardService {
     limit?: number,
   ): Promise<boolean> {
     try {
-      await this.queueService.cleanQueue(queueName, grace, status, limit);
+      await this._queueService.cleanQueue(queueName, grace, status, limit);
       return true;
     } catch (error) {
       this.logger.error(`Failed to clean queue ${queueName}`, error);
@@ -286,7 +286,7 @@ export class QueueDashboardService {
     critical: number;
     total: number;
   }> {
-    const systemHealth = await this.monitoringService.getSystemHealth();
+    const systemHealth = await this._monitoringService.getSystemHealth();
 
     return {
       healthy: systemHealth.systemMetrics.healthyQueues,
@@ -310,7 +310,7 @@ export class QueueDashboardService {
   }> {
     const queueStats = await this.getAllQueueStats();
     const currentTime = new Date();
-    const oneHourAgo = new Date(currentTime.getTime() - 60 * 60 * 1000);
+    const _oneHourAgo = new Date(currentTime.getTime() - 60 * 60 * 1000);
 
     const totalJobs = queueStats.reduce((sum, stats) => sum + stats.total, 0);
     const activeJobs = queueStats.reduce((sum, stats) => sum + stats.active, 0);
@@ -382,7 +382,7 @@ export class QueueDashboardService {
    */
   private getProblematicQueues(systemHealth: SystemQueueHealth) {
     return systemHealth.queues
-      .filter(queue => queue.status !== QueueHealthStatus.HEALTHY)
+      .filter(queue => queue.status !== QueueHealthStatus._HEALTHY)
       .map(queue => ({
         queueName: queue.queueName,
         issues: queue.recommendations,
@@ -390,10 +390,10 @@ export class QueueDashboardService {
       }))
       .sort((a, b) => {
         const severityOrder = {
-          [QueueHealthStatus.CRITICAL]: 3,
-          [QueueHealthStatus.WARNING]: 2,
-          [QueueHealthStatus.HEALTHY]: 1,
-          [QueueHealthStatus.UNKNOWN]: 0,
+          [QueueHealthStatus._CRITICAL]: 3,
+          [QueueHealthStatus._WARNING]: 2,
+          [QueueHealthStatus._HEALTHY]: 1,
+          [QueueHealthStatus._UNKNOWN]: 0,
         };
         return severityOrder[b.severity] - severityOrder[a.severity];
       });
@@ -405,7 +405,7 @@ export class QueueDashboardService {
   private async calculateQueueHealthScore(queueName: string): Promise<number> {
     try {
       const healthCheck =
-        await this.monitoringService.performQueueHealthCheck(queueName);
+        await this._monitoringService.performQueueHealthCheck(queueName);
       return healthCheck.score;
     } catch (error) {
       this.logger.error(

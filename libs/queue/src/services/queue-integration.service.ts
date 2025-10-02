@@ -10,8 +10,8 @@ export class QueueIntegrationService implements OnModuleInit {
   private static registeredQueueNames: string[] = [];
 
   constructor(
-    private readonly moduleRef: ModuleRef,
-    private readonly enhancedQueueService: EnhancedQueueService,
+    private readonly _moduleRef: ModuleRef,
+    private readonly _enhancedQueueService: EnhancedQueueService,
   ) {}
 
   async onModuleInit() {
@@ -35,10 +35,10 @@ export class QueueIntegrationService implements OnModuleInit {
     for (const queueName of queueNames) {
       try {
         const queueToken = getQueueToken(queueName);
-        const queue = this.moduleRef.get<Queue>(queueToken, { strict: false });
+        const queue = this._moduleRef.get<Queue>(queueToken, { strict: false });
 
         if (queue) {
-          this.enhancedQueueService.registerQueue(queueName, queue);
+          this._enhancedQueueService.registerQueue(queueName, queue);
           this.logger.log(`Successfully registered queue '${queueName}'`);
         } else {
           this.logger.warn(`Queue '${queueName}' not found in module registry`);

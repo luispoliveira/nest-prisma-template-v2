@@ -39,10 +39,10 @@ export class TokenService {
   >();
 
   constructor(
-    private readonly jwtService: JwtService,
-    private readonly configService: ConfigService,
+    private readonly _jwtService: JwtService,
+    private readonly _configService: ConfigService,
   ) {
-    const jwtConfig = this.configService.get('jwt');
+    const jwtConfig = this._configService.get('jwt');
     this.accessTokenExpiresIn = jwtConfig?.accessTokenExpiresIn || '15m';
     this.refreshTokenExpiresIn = jwtConfig?.refreshTokenExpiresIn || '7d';
     this.jwtSecret = jwtConfig?.secret;
@@ -74,12 +74,12 @@ export class TokenService {
       sessionId,
     };
 
-    const accessToken = this.jwtService.sign(
+    const accessToken = this._jwtService.sign(
       { ...payload, type: 'access' },
       { expiresIn: this.accessTokenExpiresIn },
     );
 
-    const refreshToken = this.jwtService.sign(
+    const refreshToken = this._jwtService.sign(
       { ...payload, type: 'refresh' },
       { expiresIn: this.refreshTokenExpiresIn },
     );
@@ -104,10 +104,10 @@ export class TokenService {
    */
   async refreshAccessToken(
     refreshToken: string,
-    userProvider: (userId: number) => Promise<LoggedUser | null>,
+    userProvider: (_userId: number) => Promise<LoggedUser | null>,
   ): Promise<TokenPair | null> {
     try {
-      const payload = this.jwtService.verify(refreshToken) as JwtPayload;
+      const payload = this._jwtService.verify(refreshToken) as JwtPayload;
 
       if (payload.type !== 'refresh') {
         throw new Error('Invalid token type');
@@ -129,7 +129,7 @@ export class TokenService {
 
       // Generate new token pair
       return this.generateTokenPair(user, session.deviceInfo);
-    } catch (error) {
+    } catch {
       return null;
     }
   }
@@ -180,7 +180,7 @@ export class TokenService {
    */
   verifyToken(token: string): JwtPayload | null {
     try {
-      return this.jwtService.verify(token) as JwtPayload;
+      return this._jwtService.verify(token) as JwtPayload;
     } catch {
       return null;
     }

@@ -21,7 +21,7 @@ export class RateLimitService {
     { count: number; windowStart: number; blockedUntil?: number }
   >();
 
-  constructor(private readonly configService: ConfigService) {}
+  constructor(private readonly _configService: ConfigService) {}
 
   /**
    * Check if an action is rate limited

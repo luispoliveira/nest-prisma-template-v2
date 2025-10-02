@@ -7,7 +7,10 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.createApplicationContext(AppModule);
   const configService = app.get(ConfigService);
-  const environment = configService.get<EnvironmentEnum>('environment')!;
+  const environment = configService.get<EnvironmentEnum>(
+    'environment',
+    EnvironmentEnum._DEVELOPMENT,
+  );
 
   app.useLogger(LoggerUtil.getLogger(environment));
 

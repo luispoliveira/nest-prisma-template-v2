@@ -39,7 +39,7 @@ export class ApiKeysService {
     const expiresAt = new Date();
     expiresAt.setFullYear(expiresAt.getFullYear() + 100);
 
-    const apiKey = await this._prismaService.apiKey.create({
+    const _apiKey = await this._prismaService.apiKey.create({
       data: {
         name,
         description,

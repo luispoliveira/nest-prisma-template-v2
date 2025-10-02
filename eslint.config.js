@@ -26,12 +26,13 @@ module.exports = [
       'template/**',
       'ecosystem-example.config.js',
       'eslint.config.js',
+      '*.js',
     ],
   },
 
   // Base ESLint configuration
   {
-    files: ['**/*.{js,mjs,cjs,ts}'],
+    files: ['**/*.{mjs,cjs,ts}'],
     languageOptions: {
       parser: parser,
       parserOptions: {
@@ -97,7 +98,7 @@ module.exports = [
       // TypeScript ESLint recommended rules
       '@typescript-eslint/no-unused-vars': [
         'warn',
-        {argsIgnorePattern: '^_|^#', varsIgnorePattern: '^_|^#'},
+        { argsIgnorePattern: '^_|^#', varsIgnorePattern: '^_|^#' },
       ],
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/explicit-function-return-type': 'off',
@@ -111,7 +112,7 @@ module.exports = [
       // Allow unused vars that start with underscore
       'no-unused-vars': [
         'error',
-        {argsIgnorePattern: '^_|^#', varsIgnorePattern: '^_|^#'},
+        { argsIgnorePattern: '^_|^#', varsIgnorePattern: '^_|^#' },
       ],
 
       // NestJS specific rules

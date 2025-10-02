@@ -6,7 +6,7 @@ export interface RateLimitOptions {
   windowMs: number; // Time window in milliseconds
   maxAttempts: number; // Maximum attempts in window
   blockDurationMs: number; // How long to block after exceeding limit
-  keyGenerator?: (req: any) => string; // Custom key generator
+  keyGenerator?: (_req: any) => string; // Custom key generator
 }
 
 /**

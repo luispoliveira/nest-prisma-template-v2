@@ -1,3 +1,4 @@
+import { ConfigUtil } from '@lib/common';
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { WorkerConfig } from '../config/configuration';
@@ -31,8 +32,8 @@ export class WorkerHealthService implements OnModuleInit {
   private errors: Array<{ message: string; timestamp: Date; stack?: string }> =
     [];
 
-  constructor(private configService: ConfigService) {
-    this.config = this.configService.get<WorkerConfig>('worker')!;
+  constructor(private _configService: ConfigService) {
+    this.config = ConfigUtil.getRequiredConfig(this._configService, 'worker');
     this.startTime = new Date();
     this.initializeHealthMetrics();
   }
