@@ -71,7 +71,7 @@ export class QueueMonitoringService {
   private isMonitoring = false;
   private monitoringInterval?: NodeJS.Timeout;
 
-  constructor(private readonly queueService: EnhancedQueueService) {}
+  constructor(private readonly _queueService: EnhancedQueueService) {}
 
   /**
    * Start monitoring all queues
@@ -128,7 +128,7 @@ export class QueueMonitoringService {
    * Get comprehensive monitoring report
    */
   async getMonitoringReport(): Promise<QueueMonitoringReport> {
-    const queueNames = this.queueService.getQueueNames();
+    const queueNames = this._queueService.getQueueNames();
     const queueMetrics: QueueHealthMetric[] = [];
 
     let totalJobs = 0;
@@ -185,8 +185,8 @@ export class QueueMonitoringService {
    * Get health metrics for a specific queue
    */
   async getQueueHealthMetric(queueName: string): Promise<QueueHealthMetric> {
-    const stats = await this.queueService.getQueueStats(queueName);
-    const isHealthy = await this.queueService.isQueueHealthy(queueName);
+    const stats = await this._queueService.getQueueStats(queueName);
+    const isHealthy = await this._queueService.isQueueHealthy(queueName);
     const performance = this.calculateQueuePerformance(queueName);
     const queueAlerts = this.getQueueAlerts(queueName);
 
@@ -273,7 +273,7 @@ export class QueueMonitoringService {
    * Perform health checks for all queues
    */
   private async performHealthChecks(): Promise<void> {
-    const queueNames = this.queueService.getQueueNames();
+    const queueNames = this._queueService.getQueueNames();
 
     for (const queueName of queueNames) {
       try {
@@ -297,8 +297,8 @@ export class QueueMonitoringService {
    * Check health of a specific queue
    */
   private async checkQueueHealth(queueName: string): Promise<void> {
-    const stats = await this.queueService.getQueueStats(queueName);
-    const isHealthy = await this.queueService.isQueueHealthy(queueName);
+    const stats = await this._queueService.getQueueStats(queueName);
+    const isHealthy = await this._queueService.isQueueHealthy(queueName);
 
     // Check for high queue size
     if (stats.waiting > 1000) {
@@ -392,7 +392,7 @@ export class QueueMonitoringService {
    * Calculate average throughput across all queues
    */
   private calculateAverageThroughput(): number {
-    const queueNames = this.queueService.getQueueNames();
+    const queueNames = this._queueService.getQueueNames();
     if (queueNames.length === 0) return 0;
 
     const totalThroughput = queueNames.reduce((sum, queueName) => {
@@ -560,7 +560,7 @@ export class QueueMonitoringService {
    * Get system-wide queue health
    */
   async getSystemHealth(): Promise<SystemQueueHealth> {
-    const queueNames = this.queueService.getQueueNames();
+    const queueNames = this._queueService.getQueueNames();
     const queueHealthChecks: QueueHealthCheck[] = [];
 
     let healthyQueues = 0;
@@ -587,7 +587,7 @@ export class QueueMonitoringService {
             break;
         }
 
-        const stats = await this.queueService.getQueueStats(queueName);
+        const stats = await this._queueService.getQueueStats(queueName);
         totalJobs += stats.total;
         totalActiveJobs += stats.active;
         totalFailedJobs += stats.failed;
@@ -657,7 +657,7 @@ export class QueueMonitoringService {
     queueName: string,
   ): Promise<QueuePerformanceMetrics> {
     const metrics = this.getQueuePerformanceMetrics(queueName, 24);
-    const stats = await this.queueService.getQueueStats(queueName);
+    const _stats = await this._queueService.getQueueStats(queueName);
 
     const totalProcessed = metrics.length;
     const totalFailed = metrics.filter(m => !m.success).length;
@@ -706,8 +706,8 @@ export class QueueMonitoringService {
    * Perform detailed health check for a queue
    */
   async performQueueHealthCheck(queueName: string): Promise<QueueHealthCheck> {
-    const stats = await this.queueService.getQueueStats(queueName);
-    const isHealthy = await this.queueService.isQueueHealthy(queueName);
+    const stats = await this._queueService.getQueueStats(queueName);
+    const isHealthy = await this._queueService.isQueueHealthy(queueName);
     const performance = this.calculateQueuePerformance(queueName);
 
     // Calculate individual check statuses

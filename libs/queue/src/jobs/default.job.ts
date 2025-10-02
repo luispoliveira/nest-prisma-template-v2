@@ -4,10 +4,10 @@ import { EnhancedQueueService } from '../services/enhanced-queue.service';
 
 @Injectable()
 export class DefaultJob {
-  constructor(private readonly enhancedQueueService: EnhancedQueueService) {}
+  constructor(private readonly _enhancedQueueService: EnhancedQueueService) {}
 
   async addTestJob() {
-    const event = await this.enhancedQueueService.addJob(
+    const event = await this._enhancedQueueService.addJob(
       QUEUES.DEFAULT,
       EVENTS.TEST,
       {
@@ -18,7 +18,7 @@ export class DefaultJob {
   }
 
   async addAnotherTestJob() {
-    const event = await this.enhancedQueueService.addJob(
+    const event = await this._enhancedQueueService.addJob(
       QUEUES.DEFAULT,
       EVENTS.ANOTHER_TEST,
       {

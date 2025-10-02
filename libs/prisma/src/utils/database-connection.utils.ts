@@ -32,7 +32,7 @@ export class DatabaseConnectionMonitor {
   private isMonitoring = false;
   private monitoringInterval?: NodeJS.Timeout;
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly _prisma: PrismaService) {}
 
   /**
    * Start continuous connection monitoring
@@ -93,13 +93,13 @@ export class DatabaseConnectionMonitor {
 
   private async getDatabaseEngine(): Promise<string> {
     try {
-      await this.prisma.$queryRaw`SELECT version()`;
+      await this._prisma.$queryRaw`SELECT version()`;
       return 'postgresql';
-    } catch (error) {
+    } catch {
       try {
-        await this.prisma.$queryRaw`SELECT VERSION()`;
+        await this._prisma.$queryRaw`SELECT VERSION()`;
         return 'mysql';
-      } catch (mysqlError) {
+      } catch {
         return 'unknown';
       }
     }
@@ -108,7 +108,7 @@ export class DatabaseConnectionMonitor {
   private async getPostgreSQLConnectionMetrics(): Promise<ConnectionPoolMetrics> {
     try {
       // Get connection stats from pg_stat_activity
-      const connectionStats = await this.prisma.$queryRaw<
+      const connectionStats = await this._prisma.$queryRaw<
         {
           total: number;
           active: number;
@@ -124,7 +124,7 @@ export class DatabaseConnectionMonitor {
       `;
 
       // Get max connections setting
-      const maxConnectionsResult = await this.prisma.$queryRaw<
+      const maxConnectionsResult = await this._prisma.$queryRaw<
         {
           setting: string;
         }[]
@@ -154,7 +154,7 @@ export class DatabaseConnectionMonitor {
   private async getMySQLConnectionMetrics(): Promise<ConnectionPoolMetrics> {
     try {
       // Get connection stats
-      const connectionStats = await this.prisma.$queryRaw<
+      const connectionStats = await this._prisma.$queryRaw<
         {
           Variable_name: string;
           Value: string;
@@ -167,7 +167,7 @@ export class DatabaseConnectionMonitor {
         )
       `;
 
-      const maxConnectionsResult = await this.prisma.$queryRaw<
+      const maxConnectionsResult = await this._prisma.$queryRaw<
         {
           Variable_name: string;
           Value: string;
@@ -245,7 +245,7 @@ export class DatabaseConnectionMonitor {
 
       // Test connection by executing a simple query
       const startTime = Date.now();
-      await this.prisma.$queryRaw`SELECT 1`;
+      await this._prisma.$queryRaw`SELECT 1`;
       const connectionTime = Date.now() - startTime;
 
       // Check for slow connections
@@ -391,7 +391,7 @@ export class DatabaseConnectionMonitor {
     for (let i = 0; i < iterations; i++) {
       const startTime = Date.now();
       try {
-        await this.prisma.$queryRaw`SELECT 1`;
+        await this._prisma.$queryRaw`SELECT 1`;
         const duration = Date.now() - startTime;
         times.push(duration);
         successful++;

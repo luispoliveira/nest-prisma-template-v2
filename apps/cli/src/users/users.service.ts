@@ -8,7 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 export class UsersService {
   private readonly logger = new Logger(UsersService.name);
 
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly _prismaService: PrismaService) {}
 
   @Command({
     command: 'users:create <email>',
@@ -57,7 +57,7 @@ export class UsersService {
       // Find role if specified
       let role = null;
       if (roleName) {
-        role = await this.prismaService.role.findFirst({
+        role = await this._prismaService.role.findFirst({
           where: { name: roleName, isActive: true },
         });
         if (!role) {
@@ -66,7 +66,7 @@ export class UsersService {
         }
       }
 
-      const user = await this.prismaService.user.create({
+      const user = await this._prismaService.user.create({
         data: {
           email,
           password: hashedPassword,
@@ -129,7 +129,7 @@ export class UsersService {
         where.role = { name: roleName };
       }
 
-      const users = await this.prismaService.user.findMany({
+      const users = await this._prismaService.user.findMany({
         where,
         include: {
           role: true,
@@ -191,7 +191,7 @@ export class UsersService {
       console.log(`\n✅ Activating user with ID: ${id}`);
       console.log('═'.repeat(50));
 
-      const user = await this.prismaService.user.findUnique({
+      const user = await this._prismaService.user.findUnique({
         where: { id },
       });
 
@@ -200,7 +200,7 @@ export class UsersService {
         return;
       }
 
-      await this.prismaService.user.update({
+      await this._prismaService.user.update({
         where: { id },
         data: {
           isActive: true,
@@ -235,7 +235,7 @@ export class UsersService {
       console.log(`\n🚫 Deactivating user with ID: ${id}`);
       console.log('═'.repeat(50));
 
-      const user = await this.prismaService.user.findUnique({
+      const user = await this._prismaService.user.findUnique({
         where: { id },
       });
 
@@ -244,7 +244,7 @@ export class UsersService {
         return;
       }
 
-      await this.prismaService.user.update({
+      await this._prismaService.user.update({
         where: { id },
         data: {
           isActive: false,
@@ -287,7 +287,7 @@ export class UsersService {
       console.log(`\n🔑 Resetting password for user ID: ${id}`);
       console.log('═'.repeat(50));
 
-      const user = await this.prismaService.user.findUnique({
+      const user = await this._prismaService.user.findUnique({
         where: { id },
       });
 
@@ -299,7 +299,7 @@ export class UsersService {
       const newPassword = password || uuidv4().substring(0, 12);
       const hashedPassword = await PasswordUtil.hashPassword(newPassword);
 
-      await this.prismaService.user.update({
+      await this._prismaService.user.update({
         where: { id },
         data: {
           password: hashedPassword,
@@ -344,11 +344,11 @@ export class UsersService {
       console.log(`\n👑 Assigning role ${roleId} to user ${userId}`);
       console.log('═'.repeat(50));
 
-      const user = await this.prismaService.user.findUnique({
+      const user = await this._prismaService.user.findUnique({
         where: { id: userId },
       });
 
-      const role = await this.prismaService.role.findUnique({
+      const role = await this._prismaService.role.findUnique({
         where: { id: roleId },
       });
 
@@ -362,7 +362,7 @@ export class UsersService {
         return;
       }
 
-      await this.prismaService.user.update({
+      await this._prismaService.user.update({
         where: { id: userId },
         data: { roleId },
       });

@@ -20,10 +20,10 @@ export class BackupService implements OnModuleInit {
   #pgDumpAvailable = false;
   #runBackup = false;
 
-  constructor(private readonly configService: ConfigService) {}
+  constructor(private readonly _configService: ConfigService) {}
 
   async onModuleInit() {
-    this.#runBackup = this.configService.get('backup').enabled;
+    this.#runBackup = this._configService.get('backup').enabled;
     if (!this.#runBackup) {
       this.logger.warn(
         'BackupService is not configured to run backups. Skipping initialization.',
@@ -50,11 +50,11 @@ export class BackupService implements OnModuleInit {
 
     this.logger.log('Starting database backup...');
 
-    const databaseUrl = this.configService.get('databaseUrl');
+    const databaseUrl = this._configService.get('databaseUrl');
     if (!databaseUrl)
       throw new Error('DATABASE_URL is not defined in environment variables');
 
-    const backupDir = this.configService.get('backup')!.dir;
+    const backupDir = this._configService.get('backup')?.dir;
 
     if (!existsSync(backupDir)) mkdirSync(backupDir, { recursive: true });
 
@@ -71,7 +71,7 @@ export class BackupService implements OnModuleInit {
     this.logger.log(`Backup created: ${gzFile}`);
 
     // FTP upload if enabled
-    if (this.configService.get('backup')!.ftp.enabled)
+    if (this._configService.get('backup')?.ftp.enabled)
       await this.#uploadToFtp(gzFile);
   }
 
@@ -86,12 +86,12 @@ export class BackupService implements OnModuleInit {
     const client = new Client();
     try {
       await client.access({
-        host: this.configService.get('backup')!.ftp.host,
-        port: Number(this.configService.get('backup')!.ftp.port || 21),
-        user: this.configService.get('backup')!.ftp.user,
+        host: this._configService.get('backup')?.ftp.host,
+        port: Number(this._configService.get('backup')?.ftp.port || 21),
+        user: this._configService.get('backup')?.ftp.user,
         secure: false,
       });
-      const remoteDir = this.configService.get('backup')!.ftp.remoteDir || '/';
+      const remoteDir = this._configService.get('backup')?.ftp.remoteDir || '/';
       await client.ensureDir(remoteDir);
       await client.uploadFrom(filePath, join(remoteDir, basename(filePath)));
       this.logger.log(

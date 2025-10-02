@@ -18,7 +18,7 @@ export default class PermissionSeeder {
         },
       });
       for (const permission of permissions) {
-        const [permissionName, module] = permission.split(':');
+        const [_permissionName, module] = permission.split(':');
         const permissionObject = await this._prismaClient.permission.upsert({
           where: {
             name: permission,

@@ -55,16 +55,16 @@ export class EnhancedHealthService {
   private readonly startTime = Date.now();
 
   constructor(
-    private readonly healthCheckService: HealthCheckService,
-    private readonly httpIndicator: HttpHealthIndicator,
-    private readonly memoryIndicator: MemoryHealthIndicator,
-    private readonly diskIndicator: DiskHealthIndicator,
-    private readonly enhancedPrismaIndicator: EnhancedPrismaHealthIndicator,
-    private readonly queueHealthIndicator: QueueHealthIndicator,
-    private readonly redisIndicator: RedisHealthIndicator,
-    private readonly mongoIndicator: MongoHealthIndicator,
-    private readonly systemIndicator: SystemHealthIndicator,
-    private readonly configService: ConfigService,
+    private readonly _healthCheckService: HealthCheckService,
+    private readonly _httpIndicator: HttpHealthIndicator,
+    private readonly _memoryIndicator: MemoryHealthIndicator,
+    private readonly _diskIndicator: DiskHealthIndicator,
+    private readonly _enhancedPrismaIndicator: EnhancedPrismaHealthIndicator,
+    private readonly _queueHealthIndicator: QueueHealthIndicator,
+    private readonly _redisIndicator: RedisHealthIndicator,
+    private readonly _mongoIndicator: MongoHealthIndicator,
+    private readonly _systemIndicator: SystemHealthIndicator,
+    private readonly _configService: ConfigService,
   ) {}
 
   async checkHealth(): Promise<EnhancedHealthCheckResult> {
@@ -73,65 +73,69 @@ export class EnhancedHealthService {
 
     try {
       // Database check (Enhanced Prisma)
-      if (this.configService.get('healthChecks.database.enabled', true)) {
-        checks.push(() => this.enhancedPrismaIndicator.isHealthy('database'));
+      if (this._configService.get('healthChecks.database.enabled', true)) {
+        checks.push(() => this._enhancedPrismaIndicator.isHealthy('database'));
       }
 
       // Queue health check
-      if (this.configService.get('healthChecks.queues.enabled', true)) {
-        const queueNames = this.configService.get<string[]>(
+      if (this._configService.get('healthChecks.queues.enabled', true)) {
+        const queueNames = this._configService.get<string[]>(
           'healthChecks.queues.names',
           [],
         );
         checks.push(() =>
-          this.queueHealthIndicator.isHealthy('queues', queueNames),
+          this._queueHealthIndicator.isHealthy('queues', queueNames),
         );
       }
 
       // Redis check
-      if (this.configService.get('healthChecks.redis.enabled', true)) {
+      if (this._configService.get('healthChecks.redis.enabled', true)) {
         const redisOptions = {
-          host: this.configService.get('healthChecks.redis.host', 'localhost'),
-          port: this.configService.get('healthChecks.redis.port', 6379),
-          timeout: this.configService.get('healthChecks.redis.timeout', 3000),
+          host: this._configService.get('healthChecks.redis.host', 'localhost'),
+          port: this._configService.get('healthChecks.redis.port', 6379),
+          timeout: this._configService.get('healthChecks.redis.timeout', 3000),
         };
-        checks.push(() => this.redisIndicator.isHealthy('redis', redisOptions));
+        checks.push(() =>
+          this._redisIndicator.isHealthy('redis', redisOptions),
+        );
       }
 
       // MongoDB check
-      if (this.configService.get('healthChecks.mongo.enabled', false)) {
+      if (this._configService.get('healthChecks.mongo.enabled', false)) {
         const mongoOptions = {
-          url: this.configService.get(
+          url: this._configService.get(
             'healthChecks.mongo.url',
             'mongodb://localhost:27017',
           ),
-          timeout: this.configService.get('healthChecks.mongo.timeout', 3000),
+          timeout: this._configService.get('healthChecks.mongo.timeout', 3000),
         };
-        checks.push(() => this.mongoIndicator.isHealthy('mongo', mongoOptions));
+        checks.push(() =>
+          this._mongoIndicator.isHealthy('mongo', mongoOptions),
+        );
       }
 
       // System checks
-      if (this.configService.get('healthChecks.system.memory.enabled', true)) {
-        const memoryThreshold = this.configService.get(
+      if (this._configService.get('healthChecks.system.memory.enabled', true)) {
+        const memoryThreshold = this._configService.get(
           'healthChecks.system.memory.threshold',
           1024 * 1024 * 1024,
         ); // 1GB default
         checks.push(() =>
-          this.memoryIndicator.checkHeap('memory', memoryThreshold),
+          this._memoryIndicator.checkHeap('memory', memoryThreshold),
         );
       }
 
-      if (this.configService.get('healthChecks.system.disk.enabled', true)) {
-        const diskThreshold = this.configService.get(
+      if (this._configService.get('healthChecks.system.disk.enabled', true)) {
+        const diskThreshold = this._configService.get(
           'healthChecks.system.disk.threshold',
           0.9,
         ); // 90% default
-        const diskPath = this.configService.get(
+        const diskPath = this._configService.get(
           'healthChecks.system.disk.path',
           '/',
         );
         checks.push(() =>
-          this.diskIndicator.checkStorage('disk', {
+          this._diskIndicator.checkStorage('disk', {
             thresholdPercent: diskThreshold,
             path: diskPath,
           }),
@@ -139,30 +143,30 @@ export class EnhancedHealthService {
       }
 
       // External service checks
-      const externalUrls = this.configService.get<string[]>(
+      const externalUrls = this._configService.get<string[]>(
         'healthChecks.external.urls',
         [],
       );
       for (const url of externalUrls) {
-        const timeout = this.configService.get(
+        const timeout = this._configService.get(
           'healthChecks.external.timeout',
           3000,
         );
         checks.push(() =>
-          this.httpIndicator.pingCheck(`external-${url}`, url, { timeout }),
+          this._httpIndicator.pingCheck(`external-${url}`, url, { timeout }),
         );
       }
 
       // Perform all health checks
-      const result = await this.healthCheckService.check(checks);
+      const result = await this._healthCheckService.check(checks);
       const duration = Date.now() - startTime;
 
       // Add enhanced metadata
       const enhancedResult: EnhancedHealthCheckResult = {
         ...result,
         metadata: {
-          version: this.configService.get('app.version', 'unknown'),
-          environment: this.configService.get('NODE_ENV', 'unknown'),
+          version: this._configService.get('app.version', 'unknown'),
+          environment: this._configService.get('NODE_ENV', 'unknown'),
           uptime: Date.now() - this.startTime,
           timestamp: new Date().toISOString(),
           checkDuration: duration,
@@ -194,7 +198,7 @@ export class EnhancedHealthService {
       status: 'ok',
       timestamp: new Date().toISOString(),
       uptime: Date.now() - this.startTime,
-      version: this.configService.get('app.version'),
+      version: this._configService.get('app.version'),
     };
   }
 
@@ -210,32 +214,32 @@ export class EnhancedHealthService {
       const criticalChecks = [];
 
       // Database is critical
-      if (this.configService.get('healthChecks.database.enabled', true)) {
+      if (this._configService.get('healthChecks.database.enabled', true)) {
         criticalChecks.push(() =>
-          this.enhancedPrismaIndicator.isHealthy('database'),
+          this._enhancedPrismaIndicator.isHealthy('database'),
         );
       }
 
       // Queues might be critical depending on app
-      if (this.configService.get('healthChecks.queues.critical', false)) {
+      if (this._configService.get('healthChecks.queues.critical', false)) {
         criticalChecks.push(() =>
-          this.queueHealthIndicator.isHealthy('queues'),
+          this._queueHealthIndicator.isHealthy('queues'),
         );
       }
 
       // Redis might be critical
-      if (this.configService.get('healthChecks.redis.critical', false)) {
+      if (this._configService.get('healthChecks.redis.critical', false)) {
         const redisOptions = {
-          host: this.configService.get('healthChecks.redis.host', 'localhost'),
-          port: this.configService.get('healthChecks.redis.port', 6379),
-          timeout: this.configService.get('healthChecks.redis.timeout', 3000),
+          host: this._configService.get('healthChecks.redis.host', 'localhost'),
+          port: this._configService.get('healthChecks.redis.port', 6379),
+          timeout: this._configService.get('healthChecks.redis.timeout', 3000),
         };
         criticalChecks.push(() =>
-          this.redisIndicator.isHealthy('redis', redisOptions),
+          this._redisIndicator.isHealthy('redis', redisOptions),
         );
       }
 
-      const result = await this.healthCheckService.check(criticalChecks);
+      const result = await this._healthCheckService.check(criticalChecks);
 
       return {
         status: 'ready',
@@ -292,10 +296,10 @@ export class EnhancedHealthService {
 
     try {
       // Get detailed database health
-      if (this.configService.get('healthChecks.database.enabled', true)) {
+      if (this._configService.get('healthChecks.database.enabled', true)) {
         try {
           const dbResult =
-            await this.enhancedPrismaIndicator.isHealthy('database');
+            await this._enhancedPrismaIndicator.isHealthy('database');
           services.database = dbResult.database;
         } catch (error) {
           services.database = {
@@ -313,10 +317,10 @@ export class EnhancedHealthService {
       }
 
       // Get detailed queue health
-      if (this.configService.get('healthChecks.queues.enabled', true)) {
+      if (this._configService.get('healthChecks.queues.enabled', true)) {
         try {
           const queueReport =
-            await this.queueHealthIndicator.getDetailedQueueReport();
+            await this._queueHealthIndicator.getDetailedQueueReport();
           services.queues = queueReport;
 
           // Add queue alerts
@@ -343,7 +347,7 @@ export class EnhancedHealthService {
 
       // Get system health
       try {
-        const systemHealth = this.systemIndicator.getSystemInfo();
+        const systemHealth = this._systemIndicator.getSystemInfo();
         services.system = systemHealth.system;
       } catch (error) {
         services.system = {
@@ -374,7 +378,7 @@ export class EnhancedHealthService {
         status: overallStatus,
         timestamp: new Date().toISOString(),
         uptime: Date.now() - this.startTime,
-        version: this.configService.get('app.version'),
+        version: this._configService.get('app.version'),
       },
       services,
       metrics,
@@ -426,10 +430,10 @@ export class EnhancedHealthService {
 
     try {
       // Get database connection pool stats
-      if (this.configService.get('healthChecks.database.enabled', true)) {
+      if (this._configService.get('healthChecks.database.enabled', true)) {
         try {
           const poolStats =
-            await this.enhancedPrismaIndicator.getConnectionPoolStats();
+            await this._enhancedPrismaIndicator.getConnectionPoolStats();
           dependencies.database = { connectionPool: poolStats };
         } catch (error) {
           dependencies.database = {
@@ -439,10 +443,10 @@ export class EnhancedHealthService {
       }
 
       // Get queue summary
-      if (this.configService.get('healthChecks.queues.enabled', true)) {
+      if (this._configService.get('healthChecks.queues.enabled', true)) {
         try {
           const queueReport =
-            await this.queueHealthIndicator.getDetailedQueueReport();
+            await this._queueHealthIndicator.getDetailedQueueReport();
           dependencies.queues = {
             summary: queueReport.summary,
             systemMetrics: queueReport.systemMetrics,
