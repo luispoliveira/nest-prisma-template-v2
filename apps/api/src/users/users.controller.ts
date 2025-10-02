@@ -81,7 +81,7 @@ export class UsersController extends BaseAuthController {
   @Patch(':id/reset-password')
   async resetPassword(
     @Param('id', ParseIntPipe) id: number,
-    @CurrentUser() user: LoggedUser,
+    @CurrentUser() _user: LoggedUser,
   ) {
     try {
       const token = TokenUtil.generate();
@@ -140,7 +140,7 @@ export class UsersController extends BaseAuthController {
   async alterRole(
     @Param('id', ParseIntPipe) id: number,
     @Body('role', ParseIntPipe) roleId: number,
-    @CurrentUser() user: LoggedUser,
+    @CurrentUser() _user: LoggedUser,
   ) {
     try {
       return await this._prismaService.user.update({

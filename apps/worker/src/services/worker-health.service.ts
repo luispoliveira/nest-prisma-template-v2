@@ -31,8 +31,12 @@ export class WorkerHealthService implements OnModuleInit {
   private errors: Array<{ message: string; timestamp: Date; stack?: string }> =
     [];
 
-  constructor(private configService: ConfigService) {
-    this.config = this.configService.get<WorkerConfig>('worker')!;
+  constructor(private _configService: ConfigService) {
+    const config = this._configService.get<WorkerConfig>('worker');
+    if (!config) {
+      throw new Error('Worker configuration is not defined');
+    }
+    this.config = config;
     this.startTime = new Date();
     this.initializeHealthMetrics();
   }

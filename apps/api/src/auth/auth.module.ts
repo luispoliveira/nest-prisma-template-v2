@@ -13,7 +13,11 @@ import { AuthService } from './auth.service';
         const jwt = config.get<{
           secret: string;
           expiresIn: string;
-        }>('jwt')!;
+        }>('jwt');
+
+        if (!jwt) {
+          throw new Error('JWT configuration is not defined');
+        }
 
         return {
           global: true,

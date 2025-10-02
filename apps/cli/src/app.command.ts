@@ -9,8 +9,8 @@ export class AppCommand {
   private readonly logger = new Logger(AppCommand.name);
 
   constructor(
-    private readonly configService: ConfigService,
-    private readonly prismaService: PrismaService,
+    private readonly _configService: ConfigService,
+    private readonly _prismaService: PrismaService,
   ) {}
 
   @Command({
@@ -18,8 +18,8 @@ export class AppCommand {
     describe: 'Display application information',
   })
   async info() {
-    const environment = this.configService.get<EnvironmentEnum>('environment');
-    const databaseUrl = this.configService.get<string>('DATABASE_URL');
+    const environment = this._configService.get<EnvironmentEnum>('environment');
+    const databaseUrl = this._configService.get<string>('DATABASE_URL');
 
     console.log('\n🎯 Application Information');
     console.log('═'.repeat(50));
@@ -42,7 +42,7 @@ export class AppCommand {
 
     try {
       // Test database connection
-      await this.prismaService.$queryRaw`SELECT 1`;
+      await this._prismaService.$queryRaw`SELECT 1`;
       console.log('✅ Database: Connected');
     } catch (error) {
       console.log('❌ Database: Connection failed');
@@ -51,14 +51,14 @@ export class AppCommand {
 
     try {
       // Check database stats
-      const userCount = await this.prismaService.user.count();
-      const roleCount = await this.prismaService.role.count();
-      const apiKeyCount = await this.prismaService.apiKey.count();
+      const userCount = await this._prismaService.user.count();
+      const roleCount = await this._prismaService.role.count();
+      const apiKeyCount = await this._prismaService.apiKey.count();
 
       console.log(`👥 Users: ${userCount}`);
       console.log(`🔑 Roles: ${roleCount}`);
       console.log(`🗝️  API Keys: ${apiKeyCount}`);
-    } catch (error) {
+    } catch {
       console.log('❌ Database stats: Failed to retrieve');
     }
 

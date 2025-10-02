@@ -68,10 +68,10 @@ import { UsersModule } from './users/users.module';
     MailModule.forRootAsync({
       useFactory: (config: ConfigService) => ({
         provider: 'brevo',
-        apiKey: config.get<string>('mail.brevoApiKey')!,
+        apiKey: config.get<string>('mail.brevoApiKey', ''),
         defaultFrom: {
-          email: config.get<string>('mail.defaultFromEmail')!,
-          name: config.get<string>('mail.defaultFromName')!,
+          email: config.get<string>('mail.defaultFromEmail', ''),
+          name: config.get<string>('mail.defaultFromName', ''),
         },
       }),
       inject: [ConfigService],

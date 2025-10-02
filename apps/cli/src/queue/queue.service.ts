@@ -8,7 +8,7 @@ import { Command, Option } from 'nestjs-command';
 export class QueueService {
   private readonly logger = new Logger(QueueService.name);
 
-  constructor(@InjectQueue(QUEUES.DEFAULT) private defaultQueue: Queue) {}
+  constructor(@InjectQueue(QUEUES.DEFAULT) private _defaultQueue: Queue) {}
 
   @Command({
     command: 'queue:status',
@@ -20,11 +20,11 @@ export class QueueService {
       console.log('═'.repeat(50));
 
       const [waiting, active, completed, failed, delayed] = await Promise.all([
-        this.defaultQueue.getWaiting(),
-        this.defaultQueue.getActive(),
-        this.defaultQueue.getCompleted(),
-        this.defaultQueue.getFailed(),
-        this.defaultQueue.getDelayed(),
+        this._defaultQueue.getWaiting(),
+        this._defaultQueue.getActive(),
+        this._defaultQueue.getCompleted(),
+        this._defaultQueue.getFailed(),
+        this._defaultQueue.getDelayed(),
       ]);
 
       console.log(`📦 Queue: ${QUEUES.DEFAULT}`);
@@ -34,7 +34,7 @@ export class QueueService {
       console.log(`❌ Failed: ${failed.length}`);
       console.log(`⏰ Delayed: ${delayed.length}`);
 
-      const isPaused = await this.defaultQueue.isPaused();
+      const isPaused = await this._defaultQueue.isPaused();
       console.log(`📊 Status: ${isPaused ? '🟡 Paused' : '🟢 Running'}`);
 
       console.log('═'.repeat(50));
@@ -71,8 +71,8 @@ export class QueueService {
       console.log('═'.repeat(50));
 
       const [completedJobs, failedJobs] = await Promise.all([
-        this.defaultQueue.clean(grace, 'completed', limit),
-        this.defaultQueue.clean(grace, 'failed', limit),
+        this._defaultQueue.clean(grace, 'completed', limit),
+        this._defaultQueue.clean(grace, 'failed', limit),
       ]);
 
       console.log(`✅ Cleaned completed jobs: ${completedJobs.length}`);
@@ -93,7 +93,7 @@ export class QueueService {
       console.log('\n⏸️  Pausing queue');
       console.log('═'.repeat(50));
 
-      await this.defaultQueue.pause();
+      await this._defaultQueue.pause();
       console.log('✅ Queue paused successfully');
       console.log('═'.repeat(50));
     } catch (error: any) {
@@ -111,7 +111,7 @@ export class QueueService {
       console.log('\n▶️  Resuming queue');
       console.log('═'.repeat(50));
 
-      await this.defaultQueue.resume();
+      await this._defaultQueue.resume();
       console.log('✅ Queue resumed successfully');
       console.log('═'.repeat(50));
     } catch (error: any) {
@@ -149,19 +149,19 @@ export class QueueService {
       let jobs: any[] = [];
       switch (status) {
         case 'waiting':
-          jobs = await this.defaultQueue.getWaiting(0, limit - 1);
+          jobs = await this._defaultQueue.getWaiting(0, limit - 1);
           break;
         case 'active':
-          jobs = await this.defaultQueue.getActive(0, limit - 1);
+          jobs = await this._defaultQueue.getActive(0, limit - 1);
           break;
         case 'completed':
-          jobs = await this.defaultQueue.getCompleted(0, limit - 1);
+          jobs = await this._defaultQueue.getCompleted(0, limit - 1);
           break;
         case 'failed':
-          jobs = await this.defaultQueue.getFailed(0, limit - 1);
+          jobs = await this._defaultQueue.getFailed(0, limit - 1);
           break;
         case 'delayed':
-          jobs = await this.defaultQueue.getDelayed(0, limit - 1);
+          jobs = await this._defaultQueue.getDelayed(0, limit - 1);
           break;
         default:
           console.log(
@@ -207,7 +207,7 @@ export class QueueService {
       console.log('\n🔄 Retrying failed jobs');
       console.log('═'.repeat(50));
 
-      const failedJobs = await this.defaultQueue.getFailed();
+      const failedJobs = await this._defaultQueue.getFailed();
       console.log(`Found ${failedJobs.length} failed jobs`);
 
       for (const job of failedJobs) {
@@ -240,7 +240,7 @@ export class QueueService {
       console.log('\n➕ Adding test job');
       console.log('═'.repeat(50));
 
-      const job = await this.defaultQueue.add(
+      const job = await this._defaultQueue.add(
         'test-job',
         {
           message: 'This is a test job from CLI',

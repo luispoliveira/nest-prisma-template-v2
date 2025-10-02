@@ -1,4 +1,3 @@
-// jest-int.config.js
 const { pathsToModuleNameMapper } = require('ts-jest');
 const { compilerOptions } = require('./tsconfig.json');
 

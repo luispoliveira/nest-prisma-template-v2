@@ -6,7 +6,7 @@ import { Command, Option, Positional } from 'nestjs-command';
 export class PermissionsService {
   private readonly logger = new Logger(PermissionsService.name);
 
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly _prismaService: PrismaService) {}
 
   @Command({
     command: 'permissions:create <name> <module>',
@@ -38,7 +38,7 @@ export class PermissionsService {
       console.log(`\n🎫 Creating permission: ${name}`);
       console.log('═'.repeat(50));
 
-      const permission = await this.prismaService.permission.create({
+      const permission = await this._prismaService.permission.create({
         data: {
           name,
           module,
@@ -92,7 +92,7 @@ export class PermissionsService {
       if (activeOnly) where.isActive = true;
       if (moduleName) where.module = moduleName;
 
-      const permissions = await this.prismaService.permission.findMany({
+      const permissions = await this._prismaService.permission.findMany({
         where,
         include: {
           _count: {
@@ -111,7 +111,7 @@ export class PermissionsService {
       }
 
       let currentModule = '';
-      permissions.forEach((permission, index) => {
+      permissions.forEach((permission, _index) => {
         if (permission.module !== currentModule) {
           if (currentModule !== '') console.log('');
           console.log(`📦 Module: ${permission.module}`);
@@ -145,7 +145,7 @@ export class PermissionsService {
       console.log('\n📦 Modules');
       console.log('═'.repeat(50));
 
-      const modules = await this.prismaService.permission.groupBy({
+      const modules = await this._prismaService.permission.groupBy({
         by: ['module'],
         _count: {
           module: true,
@@ -188,7 +188,7 @@ export class PermissionsService {
       console.log(`\n✅ Activating permission with ID: ${id}`);
       console.log('═'.repeat(50));
 
-      const permission = await this.prismaService.permission.findUnique({
+      const permission = await this._prismaService.permission.findUnique({
         where: { id },
       });
 
@@ -197,7 +197,7 @@ export class PermissionsService {
         return;
       }
 
-      await this.prismaService.permission.update({
+      await this._prismaService.permission.update({
         where: { id },
         data: { isActive: true },
       });
@@ -229,7 +229,7 @@ export class PermissionsService {
       console.log(`\n🚫 Deactivating permission with ID: ${id}`);
       console.log('═'.repeat(50));
 
-      const permission = await this.prismaService.permission.findUnique({
+      const permission = await this._prismaService.permission.findUnique({
         where: { id },
       });
 
@@ -238,7 +238,7 @@ export class PermissionsService {
         return;
       }
 
-      await this.prismaService.permission.update({
+      await this._prismaService.permission.update({
         where: { id },
         data: { isActive: false },
       });
@@ -282,7 +282,7 @@ export class PermissionsService {
 
       for (const permissionName of permissions) {
         try {
-          const permission = await this.prismaService.permission.create({
+          const permission = await this._prismaService.permission.create({
             data: {
               name: permissionName,
               module,
@@ -291,7 +291,7 @@ export class PermissionsService {
             },
           });
           createdPermissions.push(permission);
-        } catch (error) {
+        } catch {
           console.log(`⚠️  Permission ${permissionName} already exists`);
         }
       }

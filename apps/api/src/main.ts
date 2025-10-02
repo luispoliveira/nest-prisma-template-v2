@@ -11,8 +11,11 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
   const configService = app.get(ConfigService);
 
-  const port = configService.get<number>('port')!;
-  const environment = configService.get<EnvironmentEnum>('environment')!;
+  const port = configService.get<number>('port', 3000);
+  const environment = configService.get<EnvironmentEnum>(
+    'environment',
+    EnvironmentEnum._DEVELOPMENT,
+  );
 
   app.setGlobalPrefix('api');
 

@@ -6,7 +6,7 @@ import { Command, Option } from 'nestjs-command';
 export class DatabaseService {
   private readonly logger = new Logger(DatabaseService.name);
 
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly _prismaService: PrismaService) {}
 
   @Command({
     command: 'db:status',
@@ -18,16 +18,16 @@ export class DatabaseService {
       console.log('═'.repeat(50));
 
       // Test connection
-      await this.prismaService.$queryRaw`SELECT 1`;
+      await this._prismaService.$queryRaw`SELECT 1`;
       console.log('✅ Connection: Active');
 
       // Get statistics
       const [users, roles, permissions, apiKeys, sessions] = await Promise.all([
-        this.prismaService.user.count(),
-        this.prismaService.role.count(),
-        this.prismaService.permission.count(),
-        this.prismaService.apiKey.count(),
-        this.prismaService.session.count(),
+        this._prismaService.user.count(),
+        this._prismaService.role.count(),
+        this._prismaService.permission.count(),
+        this._prismaService.apiKey.count(),
+        this._prismaService.session.count(),
       ]);
 
       console.log(`👥 Users: ${users}`);
@@ -38,9 +38,9 @@ export class DatabaseService {
 
       // Active counts
       const [activeUsers, activeRoles, activeApiKeys] = await Promise.all([
-        this.prismaService.user.count({ where: { isActive: true } }),
-        this.prismaService.role.count({ where: { isActive: true } }),
-        this.prismaService.apiKey.count({ where: { isActive: true } }),
+        this._prismaService.user.count({ where: { isActive: true } }),
+        this._prismaService.role.count({ where: { isActive: true } }),
+        this._prismaService.apiKey.count({ where: { isActive: true } }),
       ]);
 
       console.log('\n📊 Active Records:');
@@ -78,13 +78,13 @@ export class DatabaseService {
 
       // Find expired data
       const [expiredApiKeys, expiredSessions, expiredOtps] = await Promise.all([
-        this.prismaService.apiKey.count({
+        this._prismaService.apiKey.count({
           where: { expiresAt: { lt: now } },
         }),
-        this.prismaService.session.count({
+        this._prismaService.session.count({
           where: { expire: { lt: now } },
         }),
-        this.prismaService.otp.count({
+        this._prismaService.otp.count({
           where: { expiresAt: { lt: now } },
         }),
       ]);
@@ -106,13 +106,13 @@ export class DatabaseService {
 
       // Clean up expired data
       const [deletedApiKeys, deletedSessions, deletedOtps] = await Promise.all([
-        this.prismaService.apiKey.deleteMany({
+        this._prismaService.apiKey.deleteMany({
           where: { expiresAt: { lt: now } },
         }),
-        this.prismaService.session.deleteMany({
+        this._prismaService.session.deleteMany({
           where: { expire: { lt: now } },
         }),
-        this.prismaService.otp.deleteMany({
+        this._prismaService.otp.deleteMany({
           where: { expiresAt: { lt: now } },
         }),
       ]);

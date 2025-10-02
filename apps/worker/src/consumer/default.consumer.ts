@@ -5,12 +5,12 @@ import { Job } from 'bull';
 @Processor(QUEUES.DEFAULT)
 export class DefaultConsumer {
   @Process(EVENTS.TEST)
-  async test(job: Job): Promise<void> {
+  async test(_job: Job): Promise<void> {
     console.log('test');
   }
 
   @Process(EVENTS.ANOTHER_TEST)
-  async anotherTest(job: Job): Promise<void> {
+  async anotherTest(_job: Job): Promise<void> {
     console.log('another test');
   }
 }
