@@ -382,7 +382,7 @@ export class QueueDashboardService {
    */
   private getProblematicQueues(systemHealth: SystemQueueHealth) {
     return systemHealth.queues
-      .filter(queue => queue.status !== QueueHealthStatus.HEALTHY)
+      .filter(queue => queue.status !== QueueHealthStatus._HEALTHY)
       .map(queue => ({
         queueName: queue.queueName,
         issues: queue.recommendations,
@@ -390,10 +390,10 @@ export class QueueDashboardService {
       }))
       .sort((a, b) => {
         const severityOrder = {
-          [QueueHealthStatus.CRITICAL]: 3,
-          [QueueHealthStatus.WARNING]: 2,
-          [QueueHealthStatus.HEALTHY]: 1,
-          [QueueHealthStatus.UNKNOWN]: 0,
+          [QueueHealthStatus._CRITICAL]: 3,
+          [QueueHealthStatus._WARNING]: 2,
+          [QueueHealthStatus._HEALTHY]: 1,
+          [QueueHealthStatus._UNKNOWN]: 0,
         };
         return severityOrder[b.severity] - severityOrder[a.severity];
       });

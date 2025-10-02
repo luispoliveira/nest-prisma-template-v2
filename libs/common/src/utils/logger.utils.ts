@@ -7,10 +7,9 @@ export class LoggerUtil {
     const logger: LogLevel[] = ['error', 'warn'];
 
     switch (environment) {
-      case EnvironmentEnum.DEVELOPMENT:
-        logger.push('log', 'debug', 'verbose');
+      case EnvironmentEnum._DEVELOPMENT:
         break;
-      case EnvironmentEnum.STAGING:
+      case EnvironmentEnum._STAGING:
         logger.push('log');
         break;
     }
@@ -22,10 +21,10 @@ export class LoggerUtil {
     const logger: Prisma.LogLevel[] = ['error', 'warn'];
 
     switch (environment) {
-      case EnvironmentEnum.DEVELOPMENT:
+      case EnvironmentEnum._DEVELOPMENT:
         logger.push('info', 'query');
         break;
-      case EnvironmentEnum.STAGING:
+      case EnvironmentEnum._STAGING:
         logger.push('info', 'query');
         break;
     }

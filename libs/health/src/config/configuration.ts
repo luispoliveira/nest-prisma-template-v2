@@ -1,7 +1,7 @@
 import { EnvironmentEnum } from '@lib/common';
 
 export const configuration = () => ({
-  environment: process.env.NODE_ENV || EnvironmentEnum.DEVELOPMENT,
+  environment: process.env.NODE_ENV || EnvironmentEnum._DEVELOPMENT,
   healthChecks: {
     database: {
       enabled: process.env.HEALTH_CHECK_DATABASE_ENABLED !== 'false',

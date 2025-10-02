@@ -4,11 +4,11 @@ import * as Joi from 'joi';
 export const validationSchema = Joi.object({
   NODE_ENV: Joi.string()
     .valid(
-      EnvironmentEnum.DEVELOPMENT,
-      EnvironmentEnum.STAGING,
-      EnvironmentEnum.PRODUCTION,
+      EnvironmentEnum._DEVELOPMENT,
+      EnvironmentEnum._STAGING,
+      EnvironmentEnum._PRODUCTION,
     )
-    .default(EnvironmentEnum.DEVELOPMENT),
+    .default(EnvironmentEnum._DEVELOPMENT),
 
   // Database health check
   HEALTH_CHECK_DATABASE_ENABLED: Joi.string()

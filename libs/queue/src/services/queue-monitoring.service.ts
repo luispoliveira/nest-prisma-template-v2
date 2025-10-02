@@ -576,13 +576,13 @@ export class QueueMonitoringService {
         queueHealthChecks.push(healthCheck);
 
         switch (healthCheck.status) {
-          case QueueHealthStatus.HEALTHY:
+          case QueueHealthStatus._HEALTHY:
             healthyQueues++;
             break;
-          case QueueHealthStatus.WARNING:
+          case QueueHealthStatus._WARNING:
             warningQueues++;
             break;
-          case QueueHealthStatus.CRITICAL:
+          case QueueHealthStatus._CRITICAL:
             criticalQueues++;
             break;
         }
@@ -616,7 +616,7 @@ export class QueueMonitoringService {
         totalActiveJobs,
         totalFailedJobs,
         systemMemoryUsage: 0, // TODO: Implement actual memory monitoring
-        redisConnectionStatus: QueueHealthStatus.HEALTHY, // TODO: Check Redis connection
+        redisConnectionStatus: QueueHealthStatus._HEALTHY, // TODO: Check Redis connection
       },
       systemRecommendations:
         this.generateSystemRecommendations(queueHealthChecks),
@@ -712,11 +712,11 @@ export class QueueMonitoringService {
 
     // Calculate individual check statuses
     const connectionStatus = isHealthy
-      ? QueueHealthStatus.HEALTHY
-      : QueueHealthStatus.CRITICAL;
+      ? QueueHealthStatus._HEALTHY
+      : QueueHealthStatus._CRITICAL;
 
     const processingStatus = this.determineProcessingStatus(stats, performance);
-    const memoryStatus = QueueHealthStatus.HEALTHY; // TODO: Implement memory checks
+    const memoryStatus = QueueHealthStatus._HEALTHY; // TODO: Implement memory checks
     const performanceStatus = this.determinePerformanceStatus(
       performance,
       stats,
@@ -784,9 +784,9 @@ export class QueueMonitoringService {
    * Determine overall health status from score
    */
   private determineOverallHealthStatus(score: number): QueueHealthStatus {
-    if (score >= 80) return QueueHealthStatus.HEALTHY;
-    if (score >= 60) return QueueHealthStatus.WARNING;
-    return QueueHealthStatus.CRITICAL;
+    if (score >= 80) return QueueHealthStatus._HEALTHY;
+    if (score >= 60) return QueueHealthStatus._WARNING;
+    return QueueHealthStatus._CRITICAL;
   }
 
   /**
@@ -798,10 +798,10 @@ export class QueueMonitoringService {
     const recommendations: string[] = [];
 
     const criticalQueues = healthChecks.filter(
-      hc => hc.status === QueueHealthStatus.CRITICAL,
+      hc => hc.status === QueueHealthStatus._CRITICAL,
     );
     const warningQueues = healthChecks.filter(
-      hc => hc.status === QueueHealthStatus.WARNING,
+      hc => hc.status === QueueHealthStatus._WARNING,
     );
 
     if (criticalQueues.length > 0) {
@@ -830,10 +830,10 @@ export class QueueMonitoringService {
     stats: QueueStats,
     performance: any,
   ): QueueHealthStatus {
-    if (performance.errorRate > 25) return QueueHealthStatus.CRITICAL;
-    if (performance.errorRate > 10) return QueueHealthStatus.WARNING;
-    if (stats.waiting > 1000) return QueueHealthStatus.WARNING;
-    return QueueHealthStatus.HEALTHY;
+    if (performance.errorRate > 25) return QueueHealthStatus._CRITICAL;
+    if (performance.errorRate > 10) return QueueHealthStatus._WARNING;
+    if (stats.waiting > 1000) return QueueHealthStatus._WARNING;
+    return QueueHealthStatus._HEALTHY;
   }
 
   /**
@@ -844,9 +844,10 @@ export class QueueMonitoringService {
     stats: QueueStats,
   ): QueueHealthStatus {
     if (performance.throughput < 1 && stats.waiting > 100)
-      return QueueHealthStatus.CRITICAL;
-    if (performance.avgProcessingTime > 30000) return QueueHealthStatus.WARNING;
-    return QueueHealthStatus.HEALTHY;
+      return QueueHealthStatus._CRITICAL;
+    if (performance.avgProcessingTime > 30000)
+      return QueueHealthStatus._WARNING;
+    return QueueHealthStatus._HEALTHY;
   }
 
   /**
@@ -870,13 +871,13 @@ export class QueueMonitoringService {
    */
   private getStatusScore(status: QueueHealthStatus): number {
     switch (status) {
-      case QueueHealthStatus.HEALTHY:
+      case QueueHealthStatus._HEALTHY:
         return 100;
-      case QueueHealthStatus.WARNING:
+      case QueueHealthStatus._WARNING:
         return 70;
-      case QueueHealthStatus.CRITICAL:
+      case QueueHealthStatus._CRITICAL:
         return 30;
-      case QueueHealthStatus.UNKNOWN:
+      case QueueHealthStatus._UNKNOWN:
         return 0;
       default:
         return 0;
@@ -887,9 +888,9 @@ export class QueueMonitoringService {
    * Determine health status from score
    */
   private determineHealthStatus(score: number): QueueHealthStatus {
-    if (score >= 80) return QueueHealthStatus.HEALTHY;
-    if (score >= 60) return QueueHealthStatus.WARNING;
-    return QueueHealthStatus.CRITICAL;
+    if (score >= 80) return QueueHealthStatus._HEALTHY;
+    if (score >= 60) return QueueHealthStatus._WARNING;
+    return QueueHealthStatus._CRITICAL;
   }
 
   /**
@@ -902,7 +903,7 @@ export class QueueMonitoringService {
   ): string[] {
     const recommendations: string[] = [];
 
-    if (checks.connection.status !== QueueHealthStatus.HEALTHY) {
+    if (checks.connection.status !== QueueHealthStatus._HEALTHY) {
       recommendations.push('Check Redis connection and configuration');
     }
 

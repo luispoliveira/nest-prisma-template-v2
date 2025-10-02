@@ -25,7 +25,7 @@ export class PrismaService
 
     const environment = _configService.get<EnvironmentEnum>(
       'environment',
-      EnvironmentEnum.DEVELOPMENT,
+      EnvironmentEnum._DEVELOPMENT,
     );
     const logPrisma = _configService.get<boolean>('logPrisma', false);
 
