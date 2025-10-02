@@ -1,4 +1,4 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable, Logger } from '@nestjs/common';
 
 interface JobMetric {
   jobName: string;
@@ -21,7 +21,9 @@ export class WorkerMetricsService {
         `Job failed: ${metric.jobName} (Attempts: ${metric.attempts}) - ${metric.errorMessage}`,
       );
     } else {
-      this.logger.debug(`Job succeeded: ${metric.jobName} (Duration: ${metric.duration}ms)`);
+      this.logger.debug(
+        `Job succeeded: ${metric.jobName} (Duration: ${metric.duration}ms)`,
+      );
     }
     // Keep only last 1000 metrics
     if (this.metrics.length > 1000) {

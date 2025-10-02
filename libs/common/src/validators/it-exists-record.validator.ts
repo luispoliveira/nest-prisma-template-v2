@@ -1,10 +1,10 @@
-import { PrismaClient } from "@gen/prisma-client";
-import { Injectable } from "@nestjs/common";
+import { PrismaClient } from '@gen/prisma-client';
+import { Injectable } from '@nestjs/common';
 import {
   ValidationArguments,
   ValidatorConstraint,
   ValidatorConstraintInterface,
-} from "class-validator";
+} from 'class-validator';
 
 /**
  * ## Only works with PrismaClient
@@ -22,7 +22,8 @@ export class ItExistsRecordValidator implements ValidatorConstraintInterface {
     const [table, column]: string[] = validationArguments.constraints;
     if (
       !(table in this._prisma) ||
-      typeof (this._prisma[table as keyof PrismaClient] as any).findFirst !== "function"
+      typeof (this._prisma[table as keyof PrismaClient] as any).findFirst !==
+        'function'
     ) {
       throw new Error(
         `Table ${table} does not exist in the PrismaService or does not have a findUnique method.`,

@@ -1,6 +1,6 @@
-import { Injectable } from "@nestjs/common";
-import { HealthIndicator, HealthIndicatorResult } from "@nestjs/terminus";
-import * as os from "os";
+import { Injectable } from '@nestjs/common';
+import { HealthIndicator, HealthIndicatorResult } from '@nestjs/terminus';
+import * as os from 'os';
 
 @Injectable()
 export class SystemHealthIndicator extends HealthIndicator {
@@ -10,7 +10,8 @@ export class SystemHealthIndicator extends HealthIndicator {
   ): HealthIndicatorResult {
     const memoryUsage = process.memoryUsage();
     const isHealthy =
-      memoryUsage.heapUsed <= options.heapThreshold && memoryUsage.rss <= options.rssThreshold;
+      memoryUsage.heapUsed <= options.heapThreshold &&
+      memoryUsage.rss <= options.rssThreshold;
 
     const result = this.getStatus(key, isHealthy, {
       heapUsed: `${Math.round(memoryUsage.heapUsed / 1024 / 1024)}MB`,
@@ -36,7 +37,7 @@ export class SystemHealthIndicator extends HealthIndicator {
       loadAverage: os.loadavg(),
     };
 
-    return this.getStatus("system", true, systemInfo);
+    return this.getStatus('system', true, systemInfo);
   }
 
   checkProcessUptime(key: string, minUptimeMs?: number): HealthIndicatorResult {

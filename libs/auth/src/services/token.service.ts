@@ -1,8 +1,8 @@
-import { Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { JwtService } from "@nestjs/jwt";
-import * as crypto from "crypto";
-import { LoggedUser } from "../models/user.model";
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import * as crypto from 'crypto';
+import { LoggedUser } from '../models/user.model';
 
 export interface TokenPair {
   accessToken: string;
@@ -16,7 +16,7 @@ export interface JwtPayload {
   email: string;
   role: string;
   sessionId: string;
-  type: "access" | "refresh";
+  type: 'access' | 'refresh';
   iat?: number;
   exp?: number;
 }
@@ -42,27 +42,32 @@ export class TokenService {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {
-    const jwtConfig = this.configService.get("jwt");
-    this.accessTokenExpiresIn = jwtConfig?.accessTokenExpiresIn || "15m";
-    this.refreshTokenExpiresIn = jwtConfig?.refreshTokenExpiresIn || "7d";
+    const jwtConfig = this.configService.get('jwt');
+    this.accessTokenExpiresIn = jwtConfig?.accessTokenExpiresIn || '15m';
+    this.refreshTokenExpiresIn = jwtConfig?.refreshTokenExpiresIn || '7d';
     this.jwtSecret = jwtConfig?.secret;
   }
 
   /**
    * Generate access and refresh token pair
    */
-  async generateTokenPair(user: LoggedUser, deviceInfo?: string): Promise<TokenPair> {
+  async generateTokenPair(
+    user: LoggedUser,
+    deviceInfo?: string,
+  ): Promise<TokenPair> {
     const sessionId = crypto.randomUUID();
 
     // Store session info in memory (replace with database storage)
     this.activeSessions.set(sessionId, {
       userId: user.id,
-      deviceInfo: deviceInfo || "unknown",
+      deviceInfo: deviceInfo || 'unknown',
       createdAt: new Date(),
-      expiresAt: new Date(Date.now() + this.parseExpiration(this.refreshTokenExpiresIn)),
+      expiresAt: new Date(
+        Date.now() + this.parseExpiration(this.refreshTokenExpiresIn),
+      ),
     });
 
-    const payload: Omit<JwtPayload, "type" | "iat" | "exp"> = {
+    const payload: Omit<JwtPayload, 'type' | 'iat' | 'exp'> = {
       sub: user.id,
       email: user.email,
       role: user.role,
@@ -70,12 +75,12 @@ export class TokenService {
     };
 
     const accessToken = this.jwtService.sign(
-      { ...payload, type: "access" },
+      { ...payload, type: 'access' },
       { expiresIn: this.accessTokenExpiresIn },
     );
 
     const refreshToken = this.jwtService.sign(
-      { ...payload, type: "refresh" },
+      { ...payload, type: 'refresh' },
       { expiresIn: this.refreshTokenExpiresIn },
     );
 
@@ -104,8 +109,8 @@ export class TokenService {
     try {
       const payload = this.jwtService.verify(refreshToken) as JwtPayload;
 
-      if (payload.type !== "refresh") {
-        throw new Error("Invalid token type");
+      if (payload.type !== 'refresh') {
+        throw new Error('Invalid token type');
       }
 
       // Verify session is still active
@@ -165,7 +170,9 @@ export class TokenService {
       }
     }
 
-    return userSessions.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    return userSessions.sort(
+      (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+    );
   }
 
   /**
@@ -199,13 +206,13 @@ export class TokenService {
     const value = parseInt(expiration.slice(0, -1));
 
     switch (unit) {
-      case "s":
+      case 's':
         return value * 1000;
-      case "m":
+      case 'm':
         return value * 60 * 1000;
-      case "h":
+      case 'h':
         return value * 60 * 60 * 1000;
-      case "d":
+      case 'd':
         return value * 24 * 60 * 60 * 1000;
       default:
         return 15 * 60 * 1000; // Default 15 minutes

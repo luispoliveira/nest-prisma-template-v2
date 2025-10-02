@@ -55,9 +55,9 @@ export class PerformanceUtil {
    */
   static async retryWithBackoff<T>(
     operation: () => Promise<T>,
-    maxRetries: number = 3,
-    baseDelay: number = 1000,
-    maxDelay: number = 30000,
+    maxRetries = 3,
+    baseDelay = 1000,
+    maxDelay = 30000,
   ): Promise<T> {
     let lastError: Error;
 
@@ -93,8 +93,8 @@ export class PerformanceUtil {
   static async executeBatch<T, R>(
     items: T[],
     operation: (item: T) => Promise<R>,
-    batchSize: number = 10,
-    delayBetweenBatches: number = 100,
+    batchSize = 10,
+    delayBetweenBatches = 100,
   ): Promise<R[]> {
     const results: R[] = [];
 
@@ -119,7 +119,7 @@ export class PerformanceUtil {
    */
   static memoizeWithTTL<T extends (...args: any[]) => any>(
     func: T,
-    ttl: number = 300000, // 5 minutes default
+    ttl = 300000, // 5 minutes default
   ): T {
     const cache = new Map<string, { value: ReturnType<T>; expiry: number }>();
 
@@ -164,11 +164,11 @@ export class PerformanceUtil {
    * Format bytes to human readable format
    */
   private static formatBytes(bytes: number): string {
-    const sizes = ["Bytes", "KB", "MB", "GB"];
-    if (bytes === 0) return "0 Bytes";
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    if (bytes === 0) return '0 Bytes';
 
     const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    return Math.round((bytes / Math.pow(1024, i)) * 100) / 100 + " " + sizes[i];
+    return Math.round((bytes / Math.pow(1024, i)) * 100) / 100 + ' ' + sizes[i];
   }
 
   /**

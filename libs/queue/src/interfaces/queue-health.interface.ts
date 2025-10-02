@@ -2,10 +2,10 @@
  * Queue health status levels
  */
 export enum QueueHealthStatus {
-  HEALTHY = "healthy",
-  WARNING = "warning",
-  CRITICAL = "critical",
-  UNKNOWN = "unknown",
+  HEALTHY = 'healthy',
+  WARNING = 'warning',
+  CRITICAL = 'critical',
+  UNKNOWN = 'unknown',
 }
 
 /**

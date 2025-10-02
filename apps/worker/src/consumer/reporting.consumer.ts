@@ -1,10 +1,10 @@
-import { QUEUES } from "@lib/queue";
-import { Process, Processor } from "@nestjs/bull";
-import { Job } from "bull";
+import { QUEUES } from '@lib/queue';
+import { Process, Processor } from '@nestjs/bull';
+import { Job } from 'bull';
 
 @Processor(QUEUES.DEFAULT)
 export class ReportingConsumer {
-  @Process("generate-report")
+  @Process('generate-report')
   async generateReport(job: Job) {
     // Simulate report generation
     console.log(`[ReportingConsumer] Generating report:`, job.data);

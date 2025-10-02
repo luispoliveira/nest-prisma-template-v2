@@ -1,6 +1,6 @@
-import { SetMetadata } from "@nestjs/common";
+import { SetMetadata } from '@nestjs/common';
 
-export const RATE_LIMIT_KEY = "rateLimit";
+export const RATE_LIMIT_KEY = 'rateLimit';
 
 export interface RateLimitOptions {
   windowMs: number; // Time window in milliseconds
@@ -12,4 +12,5 @@ export interface RateLimitOptions {
 /**
  * Decorator to apply rate limiting to specific endpoints
  */
-export const RateLimit = (options: RateLimitOptions) => SetMetadata(RATE_LIMIT_KEY, options);
+export const RateLimit = (options: RateLimitOptions) =>
+  SetMetadata(RATE_LIMIT_KEY, options);

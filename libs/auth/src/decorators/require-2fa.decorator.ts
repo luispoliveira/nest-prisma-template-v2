@@ -1,6 +1,6 @@
-import { SetMetadata } from "@nestjs/common";
+import { SetMetadata } from '@nestjs/common';
 
-export const REQUIRE_2FA_KEY = "require2fa";
+export const REQUIRE_2FA_KEY = 'require2fa';
 
 /**
  * Decorator to require 2FA for specific endpoints

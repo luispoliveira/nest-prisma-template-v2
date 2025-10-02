@@ -1,34 +1,34 @@
-import { ApiKeyUtil } from "@lib/common";
-import { PrismaService } from "@lib/prisma";
-import { Injectable } from "@nestjs/common";
-import { Command, Option, Positional } from "nestjs-command";
+import { ApiKeyUtil } from '@lib/common';
+import { PrismaService } from '@lib/prisma';
+import { Injectable } from '@nestjs/common';
+import { Command, Option, Positional } from 'nestjs-command';
 
 @Injectable()
 export class ApiKeysService {
   constructor(private readonly _prismaService: PrismaService) {}
 
   @Command({
-    command: "api-keys:create <name>",
-    describe: "Create a new API key",
+    command: 'api-keys:create <name>',
+    describe: 'Create a new API key',
   })
   async create(
     @Positional({
-      name: "name",
-      describe: "The name of the API key to create",
-      type: "string",
-      alias: "n",
+      name: 'name',
+      describe: 'The name of the API key to create',
+      type: 'string',
+      alias: 'n',
     })
     name: string,
     @Option({
-      name: "description",
-      describe: "The description of the API key",
-      type: "string",
+      name: 'description',
+      describe: 'The description of the API key',
+      type: 'string',
       required: false,
-      alias: "d",
+      alias: 'd',
     })
     description: string,
   ) {
-    console.log("Creating API key", name, description);
+    console.log('Creating API key', name, description);
 
     const key = ApiKeyUtil.generateApiKey();
 
@@ -47,6 +47,6 @@ export class ApiKeysService {
         expiresAt,
       },
     });
-    console.log("🚀 ~ ApiKeysService ~ key:", key);
+    console.log('🚀 ~ ApiKeysService ~ key:', key);
   }
 }

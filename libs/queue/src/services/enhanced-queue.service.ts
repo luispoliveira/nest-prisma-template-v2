@@ -1,5 +1,5 @@
-import { Injectable, Logger, OnModuleDestroy } from "@nestjs/common";
-import { Job, JobStatus, Queue } from "bull";
+import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
+import { Job, JobStatus, Queue } from 'bull';
 
 export interface QueueJobData {
   id?: string;
@@ -110,7 +110,7 @@ export class EnhancedQueueService implements OnModuleDestroy {
       removeOnComplete: options.removeOnComplete ?? 10,
       removeOnFail: options.removeOnFail ?? 50,
       backoff: options.backoff || {
-        type: "exponential",
+        type: 'exponential',
         delay: 2000,
       },
       jobId: data.id || options.jobId,
@@ -125,11 +125,16 @@ export class EnhancedQueueService implements OnModuleDestroy {
     try {
       const job = await queue.add(jobName, data, jobOptions);
 
-      this.logger.debug(`Job '${jobName}' added to queue '${queueName}' with ID: ${job.id}`);
+      this.logger.debug(
+        `Job '${jobName}' added to queue '${queueName}' with ID: ${job.id}`,
+      );
 
       return job;
     } catch (error) {
-      this.logger.error(`Failed to add job '${jobName}' to queue '${queueName}'`, error);
+      this.logger.error(
+        `Failed to add job '${jobName}' to queue '${queueName}'`,
+        error,
+      );
       throw error;
     }
   }
@@ -162,7 +167,7 @@ export class EnhancedQueueService implements OnModuleDestroy {
           removeOnComplete: jobOptions.removeOnComplete ?? 10,
           removeOnFail: jobOptions.removeOnFail ?? 50,
           backoff: jobOptions.backoff || {
-            type: "exponential",
+            type: 'exponential',
             delay: 2000,
           },
           jobId: data.id || jobOptions.jobId,
@@ -178,7 +183,10 @@ export class EnhancedQueueService implements OnModuleDestroy {
 
       return createdJobs;
     } catch (error) {
-      this.logger.error(`Failed to add bulk jobs to queue '${queueName}'`, error);
+      this.logger.error(
+        `Failed to add bulk jobs to queue '${queueName}'`,
+        error,
+      );
       throw error;
     }
   }
@@ -245,17 +253,22 @@ export class EnhancedQueueService implements OnModuleDestroy {
       throw new Error(`Queue '${queueName}' not found`);
     }
 
-    const [waiting, active, completed, failed, delayed, paused] = await Promise.all([
-      queue.getWaiting(),
-      queue.getActive(),
-      queue.getCompleted(),
-      queue.getFailed(),
-      queue.getDelayed(),
-      queue.isPaused(),
-    ]);
+    const [waiting, active, completed, failed, delayed, paused] =
+      await Promise.all([
+        queue.getWaiting(),
+        queue.getActive(),
+        queue.getCompleted(),
+        queue.getFailed(),
+        queue.getDelayed(),
+        queue.isPaused(),
+      ]);
 
     const total =
-      waiting.length + active.length + completed.length + failed.length + delayed.length;
+      waiting.length +
+      active.length +
+      completed.length +
+      failed.length +
+      delayed.length;
 
     return {
       waiting: waiting.length,
@@ -271,24 +284,29 @@ export class EnhancedQueueService implements OnModuleDestroy {
   /**
    * Get jobs by status
    */
-  async getJobsByStatus(queueName: string, status: JobStatus, start = 0, end = -1): Promise<Job[]> {
+  async getJobsByStatus(
+    queueName: string,
+    status: JobStatus,
+    start = 0,
+    end = -1,
+  ): Promise<Job[]> {
     const queue = this.getQueue(queueName);
     if (!queue) {
       throw new Error(`Queue '${queueName}' not found`);
     }
 
     switch (status) {
-      case "waiting":
+      case 'waiting':
         return await queue.getWaiting(start, end);
-      case "active":
+      case 'active':
         return await queue.getActive(start, end);
-      case "completed":
+      case 'completed':
         return await queue.getCompleted(start, end);
-      case "failed":
+      case 'failed':
         return await queue.getFailed(start, end);
-      case "delayed":
+      case 'delayed':
         return await queue.getDelayed(start, end);
-      case "paused":
+      case 'paused':
         // Bull doesn't have getPaused method, return empty array
         return [];
       default:
@@ -361,7 +379,7 @@ export class EnhancedQueueService implements OnModuleDestroy {
   async cleanQueue(
     queueName: string,
     grace: number,
-    status: "completed" | "failed" | "active",
+    status: 'completed' | 'failed' | 'active',
     limit?: number,
   ): Promise<Job[]> {
     const queue = this.getQueue(queueName);
@@ -370,16 +388,18 @@ export class EnhancedQueueService implements OnModuleDestroy {
     }
 
     // Bull only supports cleaning completed, failed, and active jobs
-    const validStatuses = ["completed", "failed", "active"];
+    const validStatuses = ['completed', 'failed', 'active'];
     if (!validStatuses.includes(status)) {
       throw new Error(
-        `Invalid status for cleaning: ${status}. Valid statuses: ${validStatuses.join(", ")}`,
+        `Invalid status for cleaning: ${status}. Valid statuses: ${validStatuses.join(', ')}`,
       );
     }
 
     const cleaned = await queue.clean(grace, status as any, limit);
 
-    this.logger.log(`Cleaned ${cleaned.length} ${status} jobs from queue '${queueName}'`);
+    this.logger.log(
+      `Cleaned ${cleaned.length} ${status} jobs from queue '${queueName}'`,
+    );
 
     return cleaned;
   }
@@ -414,35 +434,39 @@ export class EnhancedQueueService implements OnModuleDestroy {
    * Setup queue event listeners for monitoring
    */
   private setupQueueListeners(name: string, queue: Queue): void {
-    queue.on("completed", (job: Job, result: any) => {
+    queue.on('completed', (job: Job, result: any) => {
       this.logger.debug(`Job ${job.id} completed in queue '${name}'`);
     });
 
-    queue.on("failed", (job: Job, err: Error) => {
-      this.logger.warn(`Job ${job.id} failed in queue '${name}': ${err.message}`);
+    queue.on('failed', (job: Job, err: Error) => {
+      this.logger.warn(
+        `Job ${job.id} failed in queue '${name}': ${err.message}`,
+      );
     });
 
-    queue.on("stalled", (job: Job) => {
+    queue.on('stalled', (job: Job) => {
       this.logger.warn(`Job ${job.id} stalled in queue '${name}'`);
     });
 
-    queue.on("progress", (job: Job, progress: number) => {
-      this.logger.debug(`Job ${job.id} progress in queue '${name}': ${progress}%`);
+    queue.on('progress', (job: Job, progress: number) => {
+      this.logger.debug(
+        `Job ${job.id} progress in queue '${name}': ${progress}%`,
+      );
     });
 
-    queue.on("paused", () => {
+    queue.on('paused', () => {
       this.logger.log(`Queue '${name}' paused`);
     });
 
-    queue.on("resumed", () => {
+    queue.on('resumed', () => {
       this.logger.log(`Queue '${name}' resumed`);
     });
 
-    queue.on("cleaned", (jobs: Job[], type: string) => {
+    queue.on('cleaned', (jobs: Job[], type: string) => {
       this.logger.log(`Queue '${name}' cleaned ${jobs.length} ${type} jobs`);
     });
 
-    queue.on("error", (error: Error) => {
+    queue.on('error', (error: Error) => {
       this.logger.error(`Queue '${name}' error`, error);
     });
   }

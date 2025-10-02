@@ -1,4 +1,4 @@
-import { JobOptions } from "bull";
+import { JobOptions } from 'bull';
 
 /**
  * Interface for type-safe job data
@@ -30,7 +30,7 @@ export interface EnhancedJobOptions extends JobOptions {
    * Backoff strategy for retries
    */
   backoff?: {
-    type: "fixed" | "exponential";
+    type: 'fixed' | 'exponential';
     delay: number;
   };
 
@@ -68,13 +68,13 @@ export interface BulkJobData<T = JobData> {
  * Job lifecycle events
  */
 export type JobEvent =
-  | "waiting"
-  | "active"
-  | "completed"
-  | "failed"
-  | "delayed"
-  | "removed"
-  | "stalled";
+  | 'waiting'
+  | 'active'
+  | 'completed'
+  | 'failed'
+  | 'delayed'
+  | 'removed'
+  | 'stalled';
 
 /**
  * Job status information

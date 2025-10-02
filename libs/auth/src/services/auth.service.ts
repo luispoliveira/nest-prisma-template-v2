@@ -1,10 +1,14 @@
-import { PrismaService } from "@lib/prisma";
-import { BadRequestException, Injectable, UnauthorizedException } from "@nestjs/common";
-import { LoggedUser } from "../models/user.model";
-import { PasswordService } from "./password.service";
-import { RateLimitService } from "./rate-limit.service";
-import { TokenService } from "./token.service";
-import { TwoFactorService } from "./two-factor.service";
+import { PrismaService } from '@lib/prisma';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { LoggedUser } from '../models/user.model';
+import { PasswordService } from './password.service';
+import { RateLimitService } from './rate-limit.service';
+import { TokenService } from './token.service';
+import { TwoFactorService } from './two-factor.service';
 
 export interface LoginCredentials {
   email: string;
@@ -48,10 +52,15 @@ export class AuthService {
 
     // Rate limiting for login attempts
     const rateLimitConfig = this.rateLimitService.getDefaultConfigs().login;
-    const rateLimitResult = this.rateLimitService.checkRateLimit(`login:${email}`, rateLimitConfig);
+    const rateLimitResult = this.rateLimitService.checkRateLimit(
+      `login:${email}`,
+      rateLimitConfig,
+    );
 
     if (!rateLimitResult.allowed) {
-      throw new UnauthorizedException("Too many login attempts. Please try again later.");
+      throw new UnauthorizedException(
+        'Too many login attempts. Please try again later.',
+      );
     }
 
     // Find user
@@ -61,20 +70,20 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new UnauthorizedException("Invalid credentials");
+      throw new UnauthorizedException('Invalid credentials');
     }
 
     if (!user.isActive) {
-      throw new UnauthorizedException("Account is not active");
+      throw new UnauthorizedException('Account is not active');
     }
 
     // Verify password
     const isPasswordValid = await this.passwordService.verifyPassword(
       password,
-      user.password || "",
+      user.password || '',
     );
     if (!isPasswordValid) {
-      throw new UnauthorizedException("Invalid credentials");
+      throw new UnauthorizedException('Invalid credentials');
     }
 
     // Check if 2FA is enabled
@@ -87,8 +96,8 @@ export class AuthService {
         const tempToken = await this.generateTempToken(user.id);
         return {
           user: this.mapToLoggedUser(user),
-          accessToken: "",
-          refreshToken: "",
+          accessToken: '',
+          refreshToken: '',
           accessTokenExpiresAt: new Date(),
           refreshTokenExpiresAt: new Date(),
           requiresTwoFactor: true,
@@ -116,7 +125,10 @@ export class AuthService {
 
     // Generate tokens
     const loggedUser = this.mapToLoggedUser(user);
-    const tokens = await this.tokenService.generateTokenPair(loggedUser, deviceInfo);
+    const tokens = await this.tokenService.generateTokenPair(
+      loggedUser,
+      deviceInfo,
+    );
 
     // Reset rate limit on successful login
     this.rateLimitService.resetRateLimit(`login:${email}`);
@@ -130,7 +142,9 @@ export class AuthService {
   /**
    * Register a new user
    */
-  async register(data: RegisterData): Promise<{ user: LoggedUser; message: string }> {
+  async register(
+    data: RegisterData,
+  ): Promise<{ user: LoggedUser; message: string }> {
     const { email, password } = data;
 
     // Check if user already exists
@@ -139,14 +153,14 @@ export class AuthService {
     });
 
     if (existingUser) {
-      throw new BadRequestException("User with this email already exists");
+      throw new BadRequestException('User with this email already exists');
     }
 
     // Validate password
     const passwordValidation = this.passwordService.validatePassword(password);
     if (!passwordValidation.isValid) {
       throw new BadRequestException({
-        message: "Password does not meet requirements",
+        message: 'Password does not meet requirements',
         issues: passwordValidation.issues,
       });
     }
@@ -167,14 +181,16 @@ export class AuthService {
 
     return {
       user: this.mapToLoggedUser(user),
-      message: "User registered successfully. Please verify your email.",
+      message: 'User registered successfully. Please verify your email.',
     };
   }
 
   /**
    * Refresh access token
    */
-  async refreshToken(refreshToken: string): Promise<Omit<LoginResult, "user"> | null> {
+  async refreshToken(
+    refreshToken: string,
+  ): Promise<Omit<LoginResult, 'user'> | null> {
     const userProvider = async (userId: number): Promise<LoggedUser | null> => {
       const user = await this.prismaService.user.findUnique({
         where: { id: userId, isActive: true },
@@ -184,7 +200,10 @@ export class AuthService {
       return user ? this.mapToLoggedUser(user) : null;
     };
 
-    const tokens = await this.tokenService.refreshAccessToken(refreshToken, userProvider);
+    const tokens = await this.tokenService.refreshAccessToken(
+      refreshToken,
+      userProvider,
+    );
     return tokens;
   }
 
@@ -228,22 +247,28 @@ export class AuthService {
   /**
    * Setup 2FA for a user
    */
-  async setup2FA(
-    userId: number,
-  ): Promise<{ setupId: string; qrCode: string; qrCodeDataUrl: string; backupCodes: string[] }> {
+  async setup2FA(userId: number): Promise<{
+    setupId: string;
+    qrCode: string;
+    qrCodeDataUrl: string;
+    backupCodes: string[];
+  }> {
     const user = await this.prismaService.user.findUnique({
       where: { id: userId },
     });
 
     if (!user) {
-      throw new BadRequestException("User not found");
+      throw new BadRequestException('User not found');
     }
 
     // Generate 2FA secret
     const secret = await this.twoFactorService.generateSecret(user.email);
 
     // Start pending setup
-    const setupId = this.twoFactorService.startPendingSetup(userId, secret.secret);
+    const setupId = this.twoFactorService.startPendingSetup(
+      userId,
+      secret.secret,
+    );
 
     return {
       setupId,
@@ -288,13 +313,16 @@ export class AuthService {
   /**
    * Disable 2FA for a user
    */
-  async disable2FA(userId: number, token: string): Promise<{ success: boolean }> {
+  async disable2FA(
+    userId: number,
+    token: string,
+  ): Promise<{ success: boolean }> {
     const user = await this.prismaService.user.findUnique({
       where: { id: userId },
     });
 
     if (!user) {
-      throw new BadRequestException("User not found");
+      throw new BadRequestException('User not found');
     }
 
     // Note: Verify current 2FA token before disabling
@@ -319,13 +347,16 @@ export class AuthService {
   /**
    * Generate new backup codes
    */
-  async generateNewBackupCodes(userId: number, token: string): Promise<{ backupCodes: string[] }> {
+  async generateNewBackupCodes(
+    userId: number,
+    token: string,
+  ): Promise<{ backupCodes: string[] }> {
     const user = await this.prismaService.user.findUnique({
       where: { id: userId },
     });
 
     if (!user) {
-      throw new BadRequestException("User not found");
+      throw new BadRequestException('User not found');
     }
 
     // Note: Verify current 2FA token before generating new codes

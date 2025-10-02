@@ -1,6 +1,6 @@
-import { Prisma } from "@gen/prisma-client";
-import { ApiPropertyOptional } from "@nestjs/swagger";
-import { Type } from "class-transformer";
+import { Prisma } from '@gen/prisma-client';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsArray,
   IsBoolean,
@@ -9,40 +9,40 @@ import {
   IsOptional,
   IsString,
   ValidateNested,
-} from "class-validator";
+} from 'class-validator';
 
 export class NestedIntFilter {
-  @ApiPropertyOptional({ type: Number, format: "integer" })
+  @ApiPropertyOptional({ type: Number, format: 'integer' })
   @IsOptional()
   @IsNumber()
   equals?: number | null;
 
-  @ApiPropertyOptional({ type: [Number], format: "integer" })
+  @ApiPropertyOptional({ type: [Number], format: 'integer' })
   @IsOptional()
   @IsNumber({}, { each: true })
   in?: number[] | null;
 
-  @ApiPropertyOptional({ type: [Number], format: "integer" })
+  @ApiPropertyOptional({ type: [Number], format: 'integer' })
   @IsOptional()
   @IsNumber({}, { each: true })
   notIn?: number[] | null;
 
-  @ApiPropertyOptional({ type: Number, format: "integer" })
+  @ApiPropertyOptional({ type: Number, format: 'integer' })
   @IsOptional()
   @IsNumber()
   lt?: number;
 
-  @ApiPropertyOptional({ type: Number, format: "integer" })
+  @ApiPropertyOptional({ type: Number, format: 'integer' })
   @IsOptional()
   @IsNumber()
   lte?: number;
 
-  @ApiPropertyOptional({ type: Number, format: "integer" })
+  @ApiPropertyOptional({ type: Number, format: 'integer' })
   @IsOptional()
   @IsNumber()
   gt?: number;
 
-  @ApiPropertyOptional({ type: Number, format: "integer" })
+  @ApiPropertyOptional({ type: Number, format: 'integer' })
   @IsOptional()
   @IsNumber()
   gte?: number;
@@ -55,37 +55,37 @@ export class NestedIntFilter {
 }
 
 export class IntFilter {
-  @ApiPropertyOptional({ type: Number, format: "integer" })
+  @ApiPropertyOptional({ type: Number, format: 'integer' })
   @IsOptional()
   @IsNumber()
   equals?: number | null;
 
-  @ApiPropertyOptional({ type: [Number], format: "integer" })
+  @ApiPropertyOptional({ type: [Number], format: 'integer' })
   @IsOptional()
   @IsNumber({}, { each: true })
   in?: number[] | null;
 
-  @ApiPropertyOptional({ type: [Number], format: "integer" })
+  @ApiPropertyOptional({ type: [Number], format: 'integer' })
   @IsOptional()
   @IsNumber({}, { each: true })
   notIn?: number[] | null;
 
-  @ApiPropertyOptional({ type: Number, format: "integer" })
+  @ApiPropertyOptional({ type: Number, format: 'integer' })
   @IsOptional()
   @IsNumber()
   lt?: number;
 
-  @ApiPropertyOptional({ type: Number, format: "integer" })
+  @ApiPropertyOptional({ type: Number, format: 'integer' })
   @IsOptional()
   @IsNumber()
   lte?: number;
 
-  @ApiPropertyOptional({ type: Number, format: "integer" })
+  @ApiPropertyOptional({ type: Number, format: 'integer' })
   @IsOptional()
   @IsNumber()
   gt?: number;
 
-  @ApiPropertyOptional({ type: Number, format: "integer" })
+  @ApiPropertyOptional({ type: Number, format: 'integer' })
   @IsOptional()
   @IsNumber()
   gte?: number;

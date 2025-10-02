@@ -1,19 +1,23 @@
-import { registerDecorator, ValidationArguments, ValidationOptions } from "class-validator";
+import {
+  registerDecorator,
+  ValidationArguments,
+  ValidationOptions,
+} from 'class-validator';
 
 export function IsStrongPassword(validationOptions?: ValidationOptions) {
-  return function (object: Object, propertyName: string) {
+  return function (object: object, propertyName: string) {
     registerDecorator({
-      name: "isStrongPassword",
+      name: 'isStrongPassword',
       target: object.constructor,
       propertyName: propertyName,
       options: {
         message:
-          "Password must contain at least 8 characters, including uppercase, lowercase, number and special character",
+          'Password must contain at least 8 characters, including uppercase, lowercase, number and special character',
         ...validationOptions,
       },
       validator: {
         validate(value: any, args: ValidationArguments) {
-          if (typeof value !== "string") return false;
+          if (typeof value !== 'string') return false;
 
           const hasMinLength = value.length >= 8;
           const hasUppercase = /[A-Z]/.test(value);
@@ -21,7 +25,13 @@ export function IsStrongPassword(validationOptions?: ValidationOptions) {
           const hasNumber = /\d/.test(value);
           const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(value);
 
-          return hasMinLength && hasUppercase && hasLowercase && hasNumber && hasSpecialChar;
+          return (
+            hasMinLength &&
+            hasUppercase &&
+            hasLowercase &&
+            hasNumber &&
+            hasSpecialChar
+          );
         },
       },
     });
@@ -29,18 +39,19 @@ export function IsStrongPassword(validationOptions?: ValidationOptions) {
 }
 
 export function IsValidSlug(validationOptions?: ValidationOptions) {
-  return function (object: Object, propertyName: string) {
+  return function (object: object, propertyName: string) {
     registerDecorator({
-      name: "isValidSlug",
+      name: 'isValidSlug',
       target: object.constructor,
       propertyName: propertyName,
       options: {
-        message: "Slug must contain only lowercase letters, numbers, and hyphens",
+        message:
+          'Slug must contain only lowercase letters, numbers, and hyphens',
         ...validationOptions,
       },
       validator: {
         validate(value: any, args: ValidationArguments) {
-          if (typeof value !== "string") return false;
+          if (typeof value !== 'string') return false;
           return /^[a-z0-9-]+$/.test(value);
         },
       },
@@ -49,18 +60,18 @@ export function IsValidSlug(validationOptions?: ValidationOptions) {
 }
 
 export function IsValidHexColor(validationOptions?: ValidationOptions) {
-  return function (object: Object, propertyName: string) {
+  return function (object: object, propertyName: string) {
     registerDecorator({
-      name: "isValidHexColor",
+      name: 'isValidHexColor',
       target: object.constructor,
       propertyName: propertyName,
       options: {
-        message: "Must be a valid hex color code",
+        message: 'Must be a valid hex color code',
         ...validationOptions,
       },
       validator: {
         validate(value: any, args: ValidationArguments) {
-          if (typeof value !== "string") return false;
+          if (typeof value !== 'string') return false;
           return /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(value);
         },
       },
@@ -69,18 +80,18 @@ export function IsValidHexColor(validationOptions?: ValidationOptions) {
 }
 
 export function IsNotBlank(validationOptions?: ValidationOptions) {
-  return function (object: Object, propertyName: string) {
+  return function (object: object, propertyName: string) {
     registerDecorator({
-      name: "isNotBlank",
+      name: 'isNotBlank',
       target: object.constructor,
       propertyName: propertyName,
       options: {
-        message: "Value cannot be empty or contain only whitespace",
+        message: 'Value cannot be empty or contain only whitespace',
         ...validationOptions,
       },
       validator: {
         validate(value: any, args: ValidationArguments) {
-          if (typeof value !== "string") return false;
+          if (typeof value !== 'string') return false;
           return value.trim().length > 0;
         },
       },
@@ -89,18 +100,18 @@ export function IsNotBlank(validationOptions?: ValidationOptions) {
 }
 
 export function IsValidJSON(validationOptions?: ValidationOptions) {
-  return function (object: Object, propertyName: string) {
+  return function (object: object, propertyName: string) {
     registerDecorator({
-      name: "isValidJSON",
+      name: 'isValidJSON',
       target: object.constructor,
       propertyName: propertyName,
       options: {
-        message: "Must be valid JSON",
+        message: 'Must be valid JSON',
         ...validationOptions,
       },
       validator: {
         validate(value: any, args: ValidationArguments) {
-          if (typeof value !== "string") return false;
+          if (typeof value !== 'string') return false;
           try {
             JSON.parse(value);
             return true;

@@ -1,19 +1,30 @@
-import { Prisma } from "@gen/prisma-client";
-import { BaseAuthController } from "@lib/auth";
-import { PrismaErrorHandler, PrismaService } from "@lib/prisma";
-import { Body, Controller, Get, Inject, Param, ParseIntPipe, Patch, Post } from "@nestjs/common";
-import { ApiTags } from "@nestjs/swagger";
-import { ENHANCED_PRISMA } from "@zenstackhq/server/nestjs";
-import { CreateRoleDto, UpdateRoleDto } from "./dto/role.dto";
+import { Prisma } from '@gen/prisma-client';
+import { BaseAuthController } from '@lib/auth';
+import { PrismaErrorHandler, PrismaService } from '@lib/prisma';
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+} from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+import { ENHANCED_PRISMA } from '@zenstackhq/server/nestjs';
+import { CreateRoleDto, UpdateRoleDto } from './dto/role.dto';
 
-@Controller("roles")
-@ApiTags("Roles")
+@Controller('roles')
+@ApiTags('Roles')
 export class RolesController extends BaseAuthController {
-  constructor(@Inject(ENHANCED_PRISMA) private readonly _prismaService: PrismaService) {
+  constructor(
+    @Inject(ENHANCED_PRISMA) private readonly _prismaService: PrismaService,
+  ) {
     super();
   }
 
-  @Get("")
+  @Get('')
   async findAll() {
     return await this._prismaService.role.findMany({
       include: {
@@ -26,8 +37,8 @@ export class RolesController extends BaseAuthController {
     });
   }
 
-  @Get(":id")
-  async findOne(@Param("id", ParseIntPipe) id: number) {
+  @Get(':id')
+  async findOne(@Param('id', ParseIntPipe) id: number) {
     return await this._prismaService.role.findUnique({
       where: { id },
       include: {
@@ -40,8 +51,8 @@ export class RolesController extends BaseAuthController {
     });
   }
 
-  @Get(":id/permissions")
-  async permissions(@Param("id", ParseIntPipe) id: number) {
+  @Get(':id/permissions')
+  async permissions(@Param('id', ParseIntPipe) id: number) {
     return await this._prismaService.permission.findMany({
       where: {
         Permission2Role: {
@@ -53,7 +64,7 @@ export class RolesController extends BaseAuthController {
     });
   }
 
-  @Post("")
+  @Post('')
   async create(@Body() body: CreateRoleDto) {
     try {
       return await this._prismaService.role.create({
@@ -66,8 +77,11 @@ export class RolesController extends BaseAuthController {
     }
   }
 
-  @Patch(":id")
-  async update(@Param("id", ParseIntPipe) id: number, @Body() body: UpdateRoleDto) {
+  @Patch(':id')
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: UpdateRoleDto,
+  ) {
     const data: Prisma.RoleUpdateInput = {
       ...body,
     };
@@ -82,10 +96,10 @@ export class RolesController extends BaseAuthController {
     }
   }
 
-  @Post(":id/permissions/:permissionId")
+  @Post(':id/permissions/:permissionId')
   async addPermission(
-    @Param("id", ParseIntPipe) id: number,
-    @Param("permissionId", ParseIntPipe) permissionId: number,
+    @Param('id', ParseIntPipe) id: number,
+    @Param('permissionId', ParseIntPipe) permissionId: number,
   ) {
     try {
       return await this._prismaService.permission2Role.create({
@@ -99,10 +113,10 @@ export class RolesController extends BaseAuthController {
     }
   }
 
-  @Patch(":id/permissions/:permissionId")
+  @Patch(':id/permissions/:permissionId')
   async removePermission(
-    @Param("id", ParseIntPipe) id: number,
-    @Param("permissionId", ParseIntPipe) permissionId: number,
+    @Param('id', ParseIntPipe) id: number,
+    @Param('permissionId', ParseIntPipe) permissionId: number,
   ) {
     try {
       return await this._prismaService.permission2Role.delete({

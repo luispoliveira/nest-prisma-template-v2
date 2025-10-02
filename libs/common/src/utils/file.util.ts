@@ -1,6 +1,6 @@
-import { BadRequestException } from "@nestjs/common";
-import * as crypto from "crypto";
-import * as path from "path";
+import { BadRequestException } from '@nestjs/common';
+import * as crypto from 'crypto';
+import * as path from 'path';
 
 export interface FileValidationOptions {
   maxSize?: number; // in bytes
@@ -35,7 +35,10 @@ export class FileUtil {
   /**
    * Validate uploaded file
    */
-  static validateFile(file: MulterFile, options: FileValidationOptions = {}): void {
+  static validateFile(
+    file: MulterFile,
+    options: FileValidationOptions = {},
+  ): void {
     const {
       maxSize = 5 * 1024 * 1024, // 5MB default
       allowedMimeTypes = [],
@@ -44,21 +47,29 @@ export class FileUtil {
 
     // Check file size
     if (file.size > maxSize) {
-      throw new BadRequestException(`File size exceeds limit of ${this.formatFileSize(maxSize)}`);
+      throw new BadRequestException(
+        `File size exceeds limit of ${this.formatFileSize(maxSize)}`,
+      );
     }
 
     // Check MIME type
-    if (allowedMimeTypes.length > 0 && !allowedMimeTypes.includes(file.mimetype)) {
+    if (
+      allowedMimeTypes.length > 0 &&
+      !allowedMimeTypes.includes(file.mimetype)
+    ) {
       throw new BadRequestException(
-        `File type ${file.mimetype} is not allowed. Allowed types: ${allowedMimeTypes.join(", ")}`,
+        `File type ${file.mimetype} is not allowed. Allowed types: ${allowedMimeTypes.join(', ')}`,
       );
     }
 
     // Check file extension
     const extension = path.extname(file.originalname).toLowerCase();
-    if (allowedExtensions.length > 0 && !allowedExtensions.includes(extension)) {
+    if (
+      allowedExtensions.length > 0 &&
+      !allowedExtensions.includes(extension)
+    ) {
       throw new BadRequestException(
-        `File extension ${extension} is not allowed. Allowed extensions: ${allowedExtensions.join(", ")}`,
+        `File extension ${extension} is not allowed. Allowed extensions: ${allowedExtensions.join(', ')}`,
       );
     }
   }
@@ -70,7 +81,7 @@ export class FileUtil {
     const extension = path.extname(originalName);
     const baseName = path.basename(originalName, extension);
     const timestamp = Date.now();
-    const random = crypto.randomBytes(8).toString("hex");
+    const random = crypto.randomBytes(8).toString('hex');
 
     return `${baseName}_${timestamp}_${random}${extension}`;
   }
@@ -79,7 +90,7 @@ export class FileUtil {
    * Generate file hash for deduplication
    */
   static generateFileHash(buffer: Buffer): string {
-    return crypto.createHash("md5").update(buffer).digest("hex");
+    return crypto.createHash('md5').update(buffer).digest('hex');
   }
 
   /**
@@ -115,11 +126,11 @@ export class FileUtil {
    * Format file size to human readable format
    */
   static formatFileSize(bytes: number): string {
-    const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
-    if (bytes === 0) return "0 Bytes";
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    if (bytes === 0) return '0 Bytes';
 
     const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    return Math.round((bytes / Math.pow(1024, i)) * 100) / 100 + " " + sizes[i];
+    return Math.round((bytes / Math.pow(1024, i)) * 100) / 100 + ' ' + sizes[i];
   }
 
   /**
@@ -127,36 +138,39 @@ export class FileUtil {
    */
   static getExtensionFromMimeType(mimeType: string): string {
     const mimeToExt: Record<string, string> = {
-      "image/jpeg": ".jpg",
-      "image/jpg": ".jpg",
-      "image/png": ".png",
-      "image/gif": ".gif",
-      "image/webp": ".webp",
-      "image/svg+xml": ".svg",
-      "application/pdf": ".pdf",
-      "application/msword": ".doc",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document": ".docx",
-      "application/vnd.ms-excel": ".xls",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": ".xlsx",
-      "application/vnd.ms-powerpoint": ".ppt",
-      "application/vnd.openxmlformats-officedocument.presentationml.presentation": ".pptx",
-      "text/plain": ".txt",
-      "text/csv": ".csv",
-      "application/json": ".json",
-      "application/xml": ".xml",
-      "application/zip": ".zip",
-      "application/x-rar-compressed": ".rar",
-      "application/x-7z-compressed": ".7z",
+      'image/jpeg': '.jpg',
+      'image/jpg': '.jpg',
+      'image/png': '.png',
+      'image/gif': '.gif',
+      'image/webp': '.webp',
+      'image/svg+xml': '.svg',
+      'application/pdf': '.pdf',
+      'application/msword': '.doc',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+        '.docx',
+      'application/vnd.ms-excel': '.xls',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+        '.xlsx',
+      'application/vnd.ms-powerpoint': '.ppt',
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation':
+        '.pptx',
+      'text/plain': '.txt',
+      'text/csv': '.csv',
+      'application/json': '.json',
+      'application/xml': '.xml',
+      'application/zip': '.zip',
+      'application/x-rar-compressed': '.rar',
+      'application/x-7z-compressed': '.7z',
     };
 
-    return mimeToExt[mimeType] || "";
+    return mimeToExt[mimeType] || '';
   }
 
   /**
    * Check if file is an image
    */
   static isImage(mimeType: string): boolean {
-    return mimeType.startsWith("image/");
+    return mimeType.startsWith('image/');
   }
 
   /**
@@ -164,15 +178,15 @@ export class FileUtil {
    */
   static isDocument(mimeType: string): boolean {
     const documentTypes = [
-      "application/pdf",
-      "application/msword",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-      "application/vnd.ms-excel",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      "application/vnd.ms-powerpoint",
-      "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-      "text/plain",
-      "text/csv",
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'application/vnd.ms-powerpoint',
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+      'text/plain',
+      'text/csv',
     ];
 
     return documentTypes.includes(mimeType);
@@ -183,11 +197,11 @@ export class FileUtil {
    */
   static isArchive(mimeType: string): boolean {
     const archiveTypes = [
-      "application/zip",
-      "application/x-rar-compressed",
-      "application/x-7z-compressed",
-      "application/x-tar",
-      "application/gzip",
+      'application/zip',
+      'application/x-rar-compressed',
+      'application/x-7z-compressed',
+      'application/x-tar',
+      'application/gzip',
     ];
 
     return archiveTypes.includes(mimeType);
@@ -199,38 +213,54 @@ export class FileUtil {
   static sanitizeFilename(filename: string): string {
     // Remove or replace unsafe characters
     return filename
-      .replace(/[<>:"/\\|?*]/g, "_") // Replace unsafe chars with underscore
-      .replace(/\s+/g, "_") // Replace spaces with underscore
-      .replace(/_{2,}/g, "_") // Replace multiple underscores with single
-      .replace(/^_|_$/g, "") // Remove leading/trailing underscores
+      .replace(/[<>:"/\\|?*]/g, '_') // Replace unsafe chars with underscore
+      .replace(/\s+/g, '_') // Replace spaces with underscore
+      .replace(/_{2,}/g, '_') // Replace multiple underscores with single
+      .replace(/^_|_$/g, '') // Remove leading/trailing underscores
       .toLowerCase();
   }
 
   /**
    * Create file upload configuration for common file types
    */
-  static getFileValidationConfig(type: "image" | "document" | "any"): FileValidationOptions {
+  static getFileValidationConfig(
+    type: 'image' | 'document' | 'any',
+  ): FileValidationOptions {
     switch (type) {
-      case "image":
+      case 'image':
         return {
           maxSize: 5 * 1024 * 1024, // 5MB
-          allowedMimeTypes: ["image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"],
-          allowedExtensions: [".jpg", ".jpeg", ".png", ".gif", ".webp"],
+          allowedMimeTypes: [
+            'image/jpeg',
+            'image/jpg',
+            'image/png',
+            'image/gif',
+            'image/webp',
+          ],
+          allowedExtensions: ['.jpg', '.jpeg', '.png', '.gif', '.webp'],
         };
 
-      case "document":
+      case 'document':
         return {
           maxSize: 10 * 1024 * 1024, // 10MB
           allowedMimeTypes: [
-            "application/pdf",
-            "application/msword",
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            "application/vnd.ms-excel",
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            "text/plain",
-            "text/csv",
+            'application/pdf',
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'application/vnd.ms-excel',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'text/plain',
+            'text/csv',
           ],
-          allowedExtensions: [".pdf", ".doc", ".docx", ".xls", ".xlsx", ".txt", ".csv"],
+          allowedExtensions: [
+            '.pdf',
+            '.doc',
+            '.docx',
+            '.xls',
+            '.xlsx',
+            '.txt',
+            '.csv',
+          ],
         };
 
       default:

@@ -1,7 +1,12 @@
-import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from "@nestjs/common";
-import { ClsService } from "nestjs-cls";
-import { Observable } from "rxjs";
-import { LoggedUser } from "../models/user.model";
+import {
+  CallHandler,
+  ExecutionContext,
+  Injectable,
+  NestInterceptor,
+} from '@nestjs/common';
+import { ClsService } from 'nestjs-cls';
+import { Observable } from 'rxjs';
+import { LoggedUser } from '../models/user.model';
 
 @Injectable()
 export class AuthInterceptor implements NestInterceptor {
@@ -11,7 +16,7 @@ export class AuthInterceptor implements NestInterceptor {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
 
-    if (user) this._clsService.set<LoggedUser>("user", user);
+    if (user) this._clsService.set<LoggedUser>('user', user);
 
     return next.handle();
   }

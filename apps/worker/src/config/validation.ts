@@ -1,10 +1,12 @@
-import * as Joi from "joi";
+import * as Joi from 'joi';
 
 export const validationSchema = Joi.object({
   // Worker Configuration
   WORKER_CONCURRENCY: Joi.number().default(10),
   WORKER_MAX_JOBS: Joi.number().default(100),
-  WORKER_ENABLED_CONSUMERS: Joi.string().default("default,email,file-processing,reporting"),
+  WORKER_ENABLED_CONSUMERS: Joi.string().default(
+    'default,email,file-processing,reporting',
+  ),
 
   // Health Check
   WORKER_HEALTH_CHECK_ENABLED: Joi.boolean().default(true),

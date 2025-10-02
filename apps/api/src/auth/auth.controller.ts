@@ -1,24 +1,24 @@
-import { User } from "@gen/prisma-client";
-import { Public } from "@lib/auth";
-import { BaseAuthController } from "@lib/auth/controllers/base-auth.controller";
-import { Body, Controller, Post } from "@nestjs/common";
-import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
-import { AuthService } from "./auth.service";
-import { ForgetPasswordDto, ResetPasswordDto } from "./dto/reset-password.dto";
-import { SignInDto } from "./dto/sign-in.dto";
-import { SignUpDto } from "./dto/sign-up.dto";
-import { Login } from "./models/login.model";
-import { SignUpModel } from "./models/sign-up.model";
+import { User } from '@gen/prisma-client';
+import { Public } from '@lib/auth';
+import { BaseAuthController } from '@lib/auth/controllers/base-auth.controller';
+import { Body, Controller, Post } from '@nestjs/common';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { AuthService } from './auth.service';
+import { ForgetPasswordDto, ResetPasswordDto } from './dto/reset-password.dto';
+import { SignInDto } from './dto/sign-in.dto';
+import { SignUpDto } from './dto/sign-up.dto';
+import { Login } from './models/login.model';
+import { SignUpModel } from './models/sign-up.model';
 
-@ApiTags("Auth")
-@Controller("auth")
+@ApiTags('Auth')
+@Controller('auth')
 export class AuthController extends BaseAuthController {
   constructor(private readonly _authService: AuthService) {
     super();
   }
 
   @Public()
-  @Post("signin")
+  @Post('signin')
   @ApiOkResponse({
     type: Login,
   })
@@ -36,7 +36,7 @@ export class AuthController extends BaseAuthController {
   }
 
   @Public()
-  @Post("signup")
+  @Post('signup')
   @ApiOkResponse({
     type: SignUpModel,
   })
@@ -47,7 +47,7 @@ export class AuthController extends BaseAuthController {
   }
 
   @Public()
-  @Post("forget-password")
+  @Post('forget-password')
   async forgetPassword(@Body() body: ForgetPasswordDto) {
     await this._authService.forgetPassword(body.email);
 
@@ -55,7 +55,7 @@ export class AuthController extends BaseAuthController {
   }
 
   @Public()
-  @Post("reset-password")
+  @Post('reset-password')
   async resetPassword(@Body() body: ResetPasswordDto) {
     await this._authService.resetPassword(body.token, body.password);
 

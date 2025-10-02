@@ -1,5 +1,5 @@
 export interface HealthCheckDetails {
-  status: "up" | "down";
+  status: 'up' | 'down';
   message?: string;
   duration?: number;
   timestamp: string;
@@ -7,21 +7,21 @@ export interface HealthCheckDetails {
 }
 
 export interface HealthStatus {
-  status: "ok" | "error" | "partial";
+  status: 'ok' | 'error' | 'partial';
   info: Record<string, HealthCheckDetails>;
   error: Record<string, HealthCheckDetails>;
   details: Record<string, HealthCheckDetails>;
 }
 
 export interface LivenessResponse {
-  status: "ok";
+  status: 'ok';
   timestamp: string;
   uptime: number;
   version?: string;
 }
 
 export interface ReadinessResponse {
-  status: "ready" | "not_ready";
+  status: 'ready' | 'not_ready';
   timestamp: string;
   checks: Record<string, HealthCheckDetails>;
 }

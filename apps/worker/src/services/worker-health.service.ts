@@ -1,9 +1,9 @@
-import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { WorkerConfig } from "../config/configuration";
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { WorkerConfig } from '../config/configuration';
 
 interface WorkerHealthMetrics {
-  status: "healthy" | "unhealthy" | "degraded";
+  status: 'healthy' | 'unhealthy' | 'degraded';
   uptime: number;
   memoryUsage: {
     heapUsed: number;
@@ -28,17 +28,18 @@ export class WorkerHealthService implements OnModuleInit {
   private readonly config: WorkerConfig;
   private startTime: Date;
   private healthMetrics: WorkerHealthMetrics;
-  private errors: Array<{ message: string; timestamp: Date; stack?: string }> = [];
+  private errors: Array<{ message: string; timestamp: Date; stack?: string }> =
+    [];
 
   constructor(private configService: ConfigService) {
-    this.config = this.configService.get<WorkerConfig>("worker")!;
+    this.config = this.configService.get<WorkerConfig>('worker')!;
     this.startTime = new Date();
     this.initializeHealthMetrics();
   }
 
   private initializeHealthMetrics(): void {
     this.healthMetrics = {
-      status: "healthy",
+      status: 'healthy',
       uptime: 0,
       memoryUsage: {
         heapUsed: 0,
@@ -68,7 +69,7 @@ export class WorkerHealthService implements OnModuleInit {
       this.evaluateHealth();
       this.logger.debug(`Health check completed: ${this.healthMetrics.status}`);
     } catch (error: any) {
-      this.logger.error("Health check failed", error);
+      this.logger.error('Health check failed', error);
       this.recordError(error);
     }
   }
@@ -103,11 +104,14 @@ export class WorkerHealthService implements OnModuleInit {
     );
 
     if (memoryUsage.rss > memoryCriticalThreshold || recentErrors.length > 10) {
-      this.healthMetrics.status = "unhealthy";
-    } else if (memoryUsage.rss > memoryWarningThreshold || recentErrors.length > 5) {
-      this.healthMetrics.status = "degraded";
+      this.healthMetrics.status = 'unhealthy';
+    } else if (
+      memoryUsage.rss > memoryWarningThreshold ||
+      recentErrors.length > 5
+    ) {
+      this.healthMetrics.status = 'degraded';
     } else {
-      this.healthMetrics.status = "healthy";
+      this.healthMetrics.status = 'healthy';
     }
   }
 
@@ -129,7 +133,10 @@ export class WorkerHealthService implements OnModuleInit {
   }
 
   decrementProcessingJobs(): void {
-    this.healthMetrics.processingJobs = Math.max(0, this.healthMetrics.processingJobs - 1);
+    this.healthMetrics.processingJobs = Math.max(
+      0,
+      this.healthMetrics.processingJobs - 1,
+    );
   }
 
   incrementCompletedJobs(): void {
@@ -145,6 +152,6 @@ export class WorkerHealthService implements OnModuleInit {
   }
 
   isHealthy(): boolean {
-    return this.healthMetrics.status === "healthy";
+    return this.healthMetrics.status === 'healthy';
   }
 }

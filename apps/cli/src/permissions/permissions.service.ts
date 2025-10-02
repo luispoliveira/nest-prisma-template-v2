@@ -1,6 +1,6 @@
-import { PrismaService } from "@lib/prisma";
-import { Injectable, Logger } from "@nestjs/common";
-import { Command, Option, Positional } from "nestjs-command";
+import { PrismaService } from '@lib/prisma';
+import { Injectable, Logger } from '@nestjs/common';
+import { Command, Option, Positional } from 'nestjs-command';
 
 @Injectable()
 export class PermissionsService {
@@ -9,82 +9,84 @@ export class PermissionsService {
   constructor(private readonly prismaService: PrismaService) {}
 
   @Command({
-    command: "permissions:create <name> <module>",
-    describe: "Create a new permission",
+    command: 'permissions:create <name> <module>',
+    describe: 'Create a new permission',
   })
   async create(
     @Positional({
-      name: "name",
-      describe: "Permission name",
-      type: "string",
+      name: 'name',
+      describe: 'Permission name',
+      type: 'string',
     })
     name: string,
     @Positional({
-      name: "module",
-      describe: "Module name",
-      type: "string",
+      name: 'module',
+      describe: 'Module name',
+      type: 'string',
     })
     module: string,
     @Option({
-      name: "active",
-      describe: "Set permission as active",
-      type: "boolean",
+      name: 'active',
+      describe: 'Set permission as active',
+      type: 'boolean',
       required: false,
-      alias: "a",
+      alias: 'a',
     })
-    isActive: boolean = true,
+    isActive = true,
   ) {
     try {
       console.log(`\n🎫 Creating permission: ${name}`);
-      console.log("═".repeat(50));
+      console.log('═'.repeat(50));
 
       const permission = await this.prismaService.permission.create({
         data: {
           name,
           module,
           isActive,
-          createdBy: "CLI",
+          createdBy: 'CLI',
         },
       });
 
-      console.log("✅ Permission created successfully!");
+      console.log('✅ Permission created successfully!');
       console.log(`📝 Name: ${permission.name}`);
       console.log(`📦 Module: ${permission.module}`);
-      console.log(`📊 Status: ${permission.isActive ? "🟢 Active" : "🔴 Inactive"}`);
+      console.log(
+        `📊 Status: ${permission.isActive ? '🟢 Active' : '🔴 Inactive'}`,
+      );
       console.log(`🆔 ID: ${permission.id}`);
-      console.log("═".repeat(50));
+      console.log('═'.repeat(50));
     } catch (error: any) {
       this.logger.error(`Failed to create permission: ${error.message}`);
-      console.error("❌ Failed to create permission:", error.message);
+      console.error('❌ Failed to create permission:', error.message);
       process.exit(1);
     }
   }
 
   @Command({
-    command: "permissions:list",
-    describe: "List all permissions",
+    command: 'permissions:list',
+    describe: 'List all permissions',
   })
   async list(
     @Option({
-      name: "active-only",
-      describe: "Show only active permissions",
-      type: "boolean",
+      name: 'active-only',
+      describe: 'Show only active permissions',
+      type: 'boolean',
       required: false,
-      alias: "a",
+      alias: 'a',
     })
-    activeOnly: boolean = false,
+    activeOnly = false,
     @Option({
-      name: "module",
-      describe: "Filter by module name",
-      type: "string",
+      name: 'module',
+      describe: 'Filter by module name',
+      type: 'string',
       required: false,
-      alias: "m",
+      alias: 'm',
     })
     moduleName?: string,
   ) {
     try {
-      console.log("\n🎫 Permissions");
-      console.log("═".repeat(80));
+      console.log('\n🎫 Permissions');
+      console.log('═'.repeat(80));
 
       const where: any = {};
       if (activeOnly) where.isActive = true;
@@ -100,24 +102,24 @@ export class PermissionsService {
             },
           },
         },
-        orderBy: [{ module: "asc" }, { name: "asc" }],
+        orderBy: [{ module: 'asc' }, { name: 'asc' }],
       });
 
       if (permissions.length === 0) {
-        console.log("📭 No permissions found");
+        console.log('📭 No permissions found');
         return;
       }
 
-      let currentModule = "";
+      let currentModule = '';
       permissions.forEach((permission, index) => {
         if (permission.module !== currentModule) {
-          if (currentModule !== "") console.log("");
+          if (currentModule !== '') console.log('');
           console.log(`📦 Module: ${permission.module}`);
-          console.log("─".repeat(40));
+          console.log('─'.repeat(40));
           currentModule = permission.module;
         }
 
-        const status = permission.isActive ? "🟢 Active" : "🔴 Inactive";
+        const status = permission.isActive ? '🟢 Active' : '🔴 Inactive';
 
         console.log(`  ${permission.name}`);
         console.log(`    🆔 ID: ${permission.id}`);
@@ -127,34 +129,34 @@ export class PermissionsService {
         console.log(`    👥 Users: ${permission._count.Permission2User}`);
       });
 
-      console.log("\n═".repeat(80));
+      console.log('\n═'.repeat(80));
     } catch (error: any) {
       this.logger.error(`Failed to list permissions: ${error.message}`);
-      console.error("❌ Failed to list permissions:", error.message);
+      console.error('❌ Failed to list permissions:', error.message);
     }
   }
 
   @Command({
-    command: "permissions:modules",
-    describe: "List all modules with permission counts",
+    command: 'permissions:modules',
+    describe: 'List all modules with permission counts',
   })
   async listModules() {
     try {
-      console.log("\n📦 Modules");
-      console.log("═".repeat(50));
+      console.log('\n📦 Modules');
+      console.log('═'.repeat(50));
 
       const modules = await this.prismaService.permission.groupBy({
-        by: ["module"],
+        by: ['module'],
         _count: {
           module: true,
         },
         orderBy: {
-          module: "asc",
+          module: 'asc',
         },
       });
 
       if (modules.length === 0) {
-        console.log("📭 No modules found");
+        console.log('📭 No modules found');
         return;
       }
 
@@ -163,35 +165,35 @@ export class PermissionsService {
         console.log(`   🎫 Permissions: ${module._count.module}`);
       });
 
-      console.log("═".repeat(50));
+      console.log('═'.repeat(50));
     } catch (error: any) {
       this.logger.error(`Failed to list modules: ${error.message}`);
-      console.error("❌ Failed to list modules:", error.message);
+      console.error('❌ Failed to list modules:', error.message);
     }
   }
 
   @Command({
-    command: "permissions:activate <id>",
-    describe: "Activate a permission by ID",
+    command: 'permissions:activate <id>',
+    describe: 'Activate a permission by ID',
   })
   async activate(
     @Positional({
-      name: "id",
-      describe: "Permission ID to activate",
-      type: "number",
+      name: 'id',
+      describe: 'Permission ID to activate',
+      type: 'number',
     })
     id: number,
   ) {
     try {
       console.log(`\n✅ Activating permission with ID: ${id}`);
-      console.log("═".repeat(50));
+      console.log('═'.repeat(50));
 
       const permission = await this.prismaService.permission.findUnique({
         where: { id },
       });
 
       if (!permission) {
-        console.log("❌ Permission not found");
+        console.log('❌ Permission not found');
         return;
       }
 
@@ -200,39 +202,39 @@ export class PermissionsService {
         data: { isActive: true },
       });
 
-      console.log("✅ Permission activated successfully!");
+      console.log('✅ Permission activated successfully!');
       console.log(`📝 Name: ${permission.name}`);
       console.log(`📦 Module: ${permission.module}`);
       console.log(`🆔 ID: ${permission.id}`);
-      console.log("═".repeat(50));
+      console.log('═'.repeat(50));
     } catch (error: any) {
       this.logger.error(`Failed to activate permission: ${error.message}`);
-      console.error("❌ Failed to activate permission:", error.message);
+      console.error('❌ Failed to activate permission:', error.message);
     }
   }
 
   @Command({
-    command: "permissions:deactivate <id>",
-    describe: "Deactivate a permission by ID",
+    command: 'permissions:deactivate <id>',
+    describe: 'Deactivate a permission by ID',
   })
   async deactivate(
     @Positional({
-      name: "id",
-      describe: "Permission ID to deactivate",
-      type: "number",
+      name: 'id',
+      describe: 'Permission ID to deactivate',
+      type: 'number',
     })
     id: number,
   ) {
     try {
       console.log(`\n🚫 Deactivating permission with ID: ${id}`);
-      console.log("═".repeat(50));
+      console.log('═'.repeat(50));
 
       const permission = await this.prismaService.permission.findUnique({
         where: { id },
       });
 
       if (!permission) {
-        console.log("❌ Permission not found");
+        console.log('❌ Permission not found');
         return;
       }
 
@@ -241,32 +243,32 @@ export class PermissionsService {
         data: { isActive: false },
       });
 
-      console.log("✅ Permission deactivated successfully!");
+      console.log('✅ Permission deactivated successfully!');
       console.log(`📝 Name: ${permission.name}`);
       console.log(`📦 Module: ${permission.module}`);
       console.log(`🆔 ID: ${permission.id}`);
-      console.log("═".repeat(50));
+      console.log('═'.repeat(50));
     } catch (error: any) {
       this.logger.error(`Failed to deactivate permission: ${error.message}`);
-      console.error("❌ Failed to deactivate permission:", error.message);
+      console.error('❌ Failed to deactivate permission:', error.message);
     }
   }
 
   @Command({
-    command: "permissions:bulk-create <module>",
-    describe: "Create common CRUD permissions for a module",
+    command: 'permissions:bulk-create <module>',
+    describe: 'Create common CRUD permissions for a module',
   })
   async bulkCreate(
     @Positional({
-      name: "module",
-      describe: "Module name",
-      type: "string",
+      name: 'module',
+      describe: 'Module name',
+      type: 'string',
     })
     module: string,
   ) {
     try {
       console.log(`\n🎫 Creating CRUD permissions for module: ${module}`);
-      console.log("═".repeat(50));
+      console.log('═'.repeat(50));
 
       const permissions = [
         `${module}:create`,
@@ -285,7 +287,7 @@ export class PermissionsService {
               name: permissionName,
               module,
               isActive: true,
-              createdBy: "CLI",
+              createdBy: 'CLI',
             },
           });
           createdPermissions.push(permission);
@@ -299,10 +301,10 @@ export class PermissionsService {
         console.log(`  🎫 ${permission.name} (ID: ${permission.id})`);
       });
 
-      console.log("═".repeat(50));
+      console.log('═'.repeat(50));
     } catch (error: any) {
       this.logger.error(`Failed to bulk create permissions: ${error.message}`);
-      console.error("❌ Failed to bulk create permissions:", error.message);
+      console.error('❌ Failed to bulk create permissions:', error.message);
     }
   }
 }

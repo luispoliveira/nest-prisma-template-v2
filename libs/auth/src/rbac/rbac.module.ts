@@ -1,6 +1,6 @@
-import { PrismaModule } from "@lib/prisma";
-import { Global, Module } from "@nestjs/common";
-import { RbacService } from "./rbac.service";
+import { PrismaModule } from '@lib/prisma';
+import { Global, Module } from '@nestjs/common';
+import { RbacService } from './rbac.service';
 
 @Global()
 @Module({

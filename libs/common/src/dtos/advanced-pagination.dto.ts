@@ -1,10 +1,10 @@
-import { ApiPropertyOptional } from "@nestjs/swagger";
-import { Transform, Type } from "class-transformer";
-import { IsIn, IsInt, IsOptional, IsString, Max, Min } from "class-validator";
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform, Type } from 'class-transformer';
+import { IsIn, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
 
 export class AdvancedPaginationDto {
   @ApiPropertyOptional({
-    description: "Page number (1-based)",
+    description: 'Page number (1-based)',
     minimum: 1,
     default: 1,
     example: 1,
@@ -13,10 +13,10 @@ export class AdvancedPaginationDto {
   @Type(() => Number)
   @IsInt()
   @Min(1)
-  page: number = 1;
+  page = 1;
 
   @ApiPropertyOptional({
-    description: "Number of items per page",
+    description: 'Number of items per page',
     minimum: 1,
     maximum: 100,
     default: 20,
@@ -27,29 +27,29 @@ export class AdvancedPaginationDto {
   @IsInt()
   @Min(1)
   @Max(100)
-  limit: number = 20;
+  limit = 20;
 
   @ApiPropertyOptional({
-    description: "Field to sort by",
-    example: "createdAt",
+    description: 'Field to sort by',
+    example: 'createdAt',
   })
   @IsOptional()
   @IsString()
   sortBy?: string;
 
   @ApiPropertyOptional({
-    description: "Sort order",
-    enum: ["asc", "desc"],
-    default: "desc",
-    example: "desc",
+    description: 'Sort order',
+    enum: ['asc', 'desc'],
+    default: 'desc',
+    example: 'desc',
   })
   @IsOptional()
-  @IsIn(["asc", "desc"])
-  sortOrder: "asc" | "desc" = "desc";
+  @IsIn(['asc', 'desc'])
+  sortOrder: 'asc' | 'desc' = 'desc';
 
   @ApiPropertyOptional({
-    description: "Search term for full-text search",
-    example: "john@example.com",
+    description: 'Search term for full-text search',
+    example: 'john@example.com',
   })
   @IsOptional()
   @IsString()

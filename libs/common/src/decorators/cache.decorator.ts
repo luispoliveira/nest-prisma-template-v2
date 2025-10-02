@@ -1,7 +1,7 @@
-import { SetMetadata } from "@nestjs/common";
+import { SetMetadata } from '@nestjs/common';
 
-export const CACHE_KEY_METADATA = "cache:key";
-export const CACHE_TTL_METADATA = "cache:ttl";
+export const CACHE_KEY_METADATA = 'cache:key';
+export const CACHE_TTL_METADATA = 'cache:ttl';
 
 /**
  * Decorator to set cache key for a method
@@ -16,8 +16,12 @@ export const CacheTTL = (ttl: number) => SetMetadata(CACHE_TTL_METADATA, ttl);
 /**
  * Combined decorator for cache key and TTL
  */
-export const Cacheable = (key: string, ttl: number = 300) => {
-  return (target: any, propertyName: string, descriptor: PropertyDescriptor) => {
+export const Cacheable = (key: string, ttl = 300) => {
+  return (
+    target: any,
+    propertyName: string,
+    descriptor: PropertyDescriptor,
+  ) => {
     SetMetadata(CACHE_KEY_METADATA, key)(target, propertyName, descriptor);
     SetMetadata(CACHE_TTL_METADATA, ttl)(target, propertyName, descriptor);
   };
@@ -30,21 +34,21 @@ export class CacheUtil {
   static generateKey(prefix: string, ...params: (string | number)[]): string {
     const sanitizedParams = params
       .map(param => String(param))
-      .map(param => param.replace(/[^a-zA-Z0-9_-]/g, "_"));
+      .map(param => param.replace(/[^a-zA-Z0-9_-]/g, '_'));
 
-    return `${prefix}:${sanitizedParams.join(":")}`;
+    return `${prefix}:${sanitizedParams.join(':')}`;
   }
 
   /**
    * Calculate cache TTL based on data type
    */
-  static calculateTTL(dataType: "static" | "dynamic" | "realtime"): number {
+  static calculateTTL(dataType: 'static' | 'dynamic' | 'realtime'): number {
     switch (dataType) {
-      case "static":
+      case 'static':
         return 3600; // 1 hour
-      case "dynamic":
+      case 'dynamic':
         return 300; // 5 minutes
-      case "realtime":
+      case 'realtime':
         return 60; // 1 minute
       default:
         return 300;

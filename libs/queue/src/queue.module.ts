@@ -1,15 +1,15 @@
-import { BullModule, BullModuleAsyncOptions } from "@nestjs/bull";
-import { DynamicModule, Global, Module } from "@nestjs/common";
-import { ConfigModule, ConfigService } from "@nestjs/config";
-import { configuration } from "./config/configuration";
-import { validationSchema } from "./config/validation";
-import { DefaultJob } from "./jobs/default.job";
-import { QUEUES } from "./queue.const";
-import { QueueController } from "./queue.controller";
-import { EnhancedQueueService } from "./services/enhanced-queue.service";
-import { QueueDashboardService } from "./services/queue-dashboard.service";
-import { QueueIntegrationService } from "./services/queue-integration.service";
-import { QueueMonitoringService } from "./services/queue-monitoring.service";
+import { BullModule, BullModuleAsyncOptions } from '@nestjs/bull';
+import { DynamicModule, Global, Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { configuration } from './config/configuration';
+import { validationSchema } from './config/validation';
+import { DefaultJob } from './jobs/default.job';
+import { QUEUES } from './queue.const';
+import { QueueController } from './queue.controller';
+import { EnhancedQueueService } from './services/enhanced-queue.service';
+import { QueueDashboardService } from './services/queue-dashboard.service';
+import { QueueIntegrationService } from './services/queue-integration.service';
+import { QueueMonitoringService } from './services/queue-monitoring.service';
 
 export const ALL_QUEUES = [QUEUES.DEFAULT, QUEUES.EMAIL];
 
@@ -25,8 +25,8 @@ export class QueueModule {
         name: queueName,
         useFactory: (configService: ConfigService) => ({
           redis: {
-            host: configService.get("redis.host"),
-            port: configService.get("redis.port"),
+            host: configService.get('redis.host'),
+            port: configService.get('redis.port'),
           },
         }),
         inject: [ConfigService],

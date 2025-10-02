@@ -1,11 +1,11 @@
-import { Global, Module } from "@nestjs/common";
-import { ConfigModule, ConfigService } from "@nestjs/config";
-import { MongooseModule } from "@nestjs/mongoose";
-import { AuditService } from "./audit.service";
-import { configuration } from "./config/configuration";
-import { validationSchema } from "./config/validation";
-import { LogService } from "./log/log.service";
-import { Log, LogSchema } from "./schemas/log.schema";
+import { Global, Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { MongooseModule } from '@nestjs/mongoose';
+import { AuditService } from './audit.service';
+import { configuration } from './config/configuration';
+import { validationSchema } from './config/validation';
+import { LogService } from './log/log.service';
+import { Log, LogSchema } from './schemas/log.schema';
 
 @Global()
 @Module({
@@ -18,7 +18,7 @@ import { Log, LogSchema } from "./schemas/log.schema";
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
-        uri: configService.get("mongoDatabaseUrl"),
+        uri: configService.get('mongoDatabaseUrl'),
       }),
       inject: [ConfigService],
     }),

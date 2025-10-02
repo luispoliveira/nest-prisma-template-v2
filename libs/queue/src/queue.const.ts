@@ -1,9 +1,9 @@
 export const QUEUES = {
-  DEFAULT: "default",
-  EMAIL: "email",
+  DEFAULT: 'default',
+  EMAIL: 'email',
 };
 
 export const EVENTS = {
-  TEST: "test",
-  ANOTHER_TEST: "another_test",
+  TEST: 'test',
+  ANOTHER_TEST: 'another_test',
 };

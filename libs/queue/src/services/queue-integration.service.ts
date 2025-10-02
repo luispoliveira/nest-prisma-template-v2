@@ -1,8 +1,8 @@
-import { getQueueToken } from "@nestjs/bull";
-import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
-import { ModuleRef } from "@nestjs/core";
-import { Queue } from "bull";
-import { EnhancedQueueService } from "./enhanced-queue.service";
+import { getQueueToken } from '@nestjs/bull';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
+import { Queue } from 'bull';
+import { EnhancedQueueService } from './enhanced-queue.service';
 
 @Injectable()
 export class QueueIntegrationService implements OnModuleInit {
@@ -24,11 +24,13 @@ export class QueueIntegrationService implements OnModuleInit {
     const queueNames = QueueIntegrationService.registeredQueueNames;
 
     if (queueNames.length === 0) {
-      this.logger.warn("No queue names registered for integration");
+      this.logger.warn('No queue names registered for integration');
       return;
     }
 
-    this.logger.log(`Registering ${queueNames.length} queues with EnhancedQueueService`);
+    this.logger.log(
+      `Registering ${queueNames.length} queues with EnhancedQueueService`,
+    );
 
     for (const queueName of queueNames) {
       try {

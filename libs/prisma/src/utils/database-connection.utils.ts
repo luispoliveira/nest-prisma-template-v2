@@ -1,5 +1,5 @@
-import { Injectable, Logger } from "@nestjs/common";
-import { PrismaService } from "../prisma/prisma.service";
+import { Injectable, Logger } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
 
 export interface ConnectionPoolMetrics {
   activeConnections: number;
@@ -13,9 +13,13 @@ export interface ConnectionPoolMetrics {
 }
 
 export interface ConnectionPoolAlert {
-  type: "high_utilization" | "connection_error" | "pool_exhausted" | "long_wait_time";
+  type:
+    | 'high_utilization'
+    | 'connection_error'
+    | 'pool_exhausted'
+    | 'long_wait_time';
   message: string;
-  severity: "low" | "medium" | "high" | "critical";
+  severity: 'low' | 'medium' | 'high' | 'critical';
   timestamp: Date;
   metrics?: Partial<ConnectionPoolMetrics>;
 }
@@ -33,20 +37,22 @@ export class DatabaseConnectionMonitor {
   /**
    * Start continuous connection monitoring
    */
-  startMonitoring(intervalMs: number = 30000): void {
+  startMonitoring(intervalMs = 30000): void {
     if (this.isMonitoring) {
-      this.logger.warn("Connection monitoring is already running");
+      this.logger.warn('Connection monitoring is already running');
       return;
     }
 
     this.isMonitoring = true;
-    this.logger.log(`Starting connection pool monitoring (interval: ${intervalMs}ms)`);
+    this.logger.log(
+      `Starting connection pool monitoring (interval: ${intervalMs}ms)`,
+    );
 
     this.monitoringInterval = setInterval(async () => {
       try {
         await this.checkConnectionHealth();
       } catch (error) {
-        this.logger.error("Error during connection monitoring", error);
+        this.logger.error('Error during connection monitoring', error);
       }
     }, intervalMs);
   }
@@ -61,7 +67,7 @@ export class DatabaseConnectionMonitor {
     }
 
     this.isMonitoring = false;
-    this.logger.log("Connection pool monitoring stopped");
+    this.logger.log('Connection pool monitoring stopped');
   }
 
   /**
@@ -71,16 +77,16 @@ export class DatabaseConnectionMonitor {
     try {
       const dbEngine = await this.getDatabaseEngine();
 
-      if (dbEngine === "postgresql") {
+      if (dbEngine === 'postgresql') {
         return await this.getPostgreSQLConnectionMetrics();
-      } else if (dbEngine === "mysql") {
+      } else if (dbEngine === 'mysql') {
         return await this.getMySQLConnectionMetrics();
       } else {
         // Fallback basic metrics
         return this.getBasicConnectionMetrics();
       }
     } catch (error) {
-      this.logger.error("Failed to get connection metrics", error);
+      this.logger.error('Failed to get connection metrics', error);
       return this.getBasicConnectionMetrics();
     }
   }
@@ -88,13 +94,13 @@ export class DatabaseConnectionMonitor {
   private async getDatabaseEngine(): Promise<string> {
     try {
       await this.prisma.$queryRaw`SELECT version()`;
-      return "postgresql";
+      return 'postgresql';
     } catch (error) {
       try {
         await this.prisma.$queryRaw`SELECT VERSION()`;
-        return "mysql";
+        return 'mysql';
       } catch (mysqlError) {
-        return "unknown";
+        return 'unknown';
       }
     }
   }
@@ -127,7 +133,9 @@ export class DatabaseConnectionMonitor {
       `;
 
       const stats = connectionStats[0];
-      const maxConnections = parseInt(maxConnectionsResult[0]?.setting || "100");
+      const maxConnections = parseInt(
+        maxConnectionsResult[0]?.setting || '100',
+      );
 
       return {
         activeConnections: stats?.active || 0,
@@ -138,7 +146,7 @@ export class DatabaseConnectionMonitor {
         connectionErrors: 0, // Would need to track this separately
       };
     } catch (error) {
-      this.logger.warn("Could not get PostgreSQL connection metrics", error);
+      this.logger.warn('Could not get PostgreSQL connection metrics', error);
       return this.getBasicConnectionMetrics();
     }
   }
@@ -176,9 +184,9 @@ export class DatabaseConnectionMonitor {
         {} as Record<string, number>,
       );
 
-      const maxConnections = parseInt(maxConnectionsResult[0]?.Value || "100");
-      const totalConnections = statsMap["Threads_connected"] || 0;
-      const activeConnections = statsMap["Threads_running"] || 0;
+      const maxConnections = parseInt(maxConnectionsResult[0]?.Value || '100');
+      const totalConnections = statsMap['Threads_connected'] || 0;
+      const activeConnections = statsMap['Threads_running'] || 0;
 
       return {
         activeConnections,
@@ -189,7 +197,7 @@ export class DatabaseConnectionMonitor {
         connectionErrors: 0,
       };
     } catch (error) {
-      this.logger.warn("Could not get MySQL connection metrics", error);
+      this.logger.warn('Could not get MySQL connection metrics', error);
       return this.getBasicConnectionMetrics();
     }
   }
@@ -216,9 +224,9 @@ export class DatabaseConnectionMonitor {
       // Check for high utilization
       if (metrics.connectionUtilization > 80) {
         this.addAlert({
-          type: "high_utilization",
+          type: 'high_utilization',
           message: `Connection pool utilization is high: ${metrics.connectionUtilization.toFixed(1)}%`,
-          severity: metrics.connectionUtilization > 95 ? "critical" : "high",
+          severity: metrics.connectionUtilization > 95 ? 'critical' : 'high',
           timestamp: new Date(),
           metrics,
         });
@@ -227,9 +235,9 @@ export class DatabaseConnectionMonitor {
       // Check for pool exhaustion
       if (metrics.totalConnections >= metrics.maxConnections) {
         this.addAlert({
-          type: "pool_exhausted",
-          message: "Connection pool is exhausted",
-          severity: "critical",
+          type: 'pool_exhausted',
+          message: 'Connection pool is exhausted',
+          severity: 'critical',
           timestamp: new Date(),
           metrics,
         });
@@ -244,18 +252,18 @@ export class DatabaseConnectionMonitor {
       if (connectionTime > 5000) {
         // 5 seconds
         this.addAlert({
-          type: "long_wait_time",
+          type: 'long_wait_time',
           message: `Connection acquisition took ${connectionTime}ms`,
-          severity: "medium",
+          severity: 'medium',
           timestamp: new Date(),
           metrics: { ...metrics, averageWaitTime: connectionTime },
         });
       }
     } catch (error) {
       this.addAlert({
-        type: "connection_error",
-        message: `Connection health check failed: ${error instanceof Error ? error.message : "Unknown error"}`,
-        severity: "high",
+        type: 'connection_error',
+        message: `Connection health check failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        severity: 'high',
         timestamp: new Date(),
       });
     }
@@ -275,16 +283,16 @@ export class DatabaseConnectionMonitor {
     // Log alert based on severity
     const logMessage = `[${alert.type}] ${alert.message}`;
     switch (alert.severity) {
-      case "critical":
+      case 'critical':
         this.logger.error(logMessage);
         break;
-      case "high":
+      case 'high':
         this.logger.warn(logMessage);
         break;
-      case "medium":
+      case 'medium':
         this.logger.log(logMessage);
         break;
-      case "low":
+      case 'low':
         this.logger.debug(logMessage);
         break;
     }
@@ -301,7 +309,9 @@ export class DatabaseConnectionMonitor {
   /**
    * Get alerts by severity
    */
-  getAlertsBySeverity(severity: ConnectionPoolAlert["severity"]): ConnectionPoolAlert[] {
+  getAlertsBySeverity(
+    severity: ConnectionPoolAlert['severity'],
+  ): ConnectionPoolAlert[] {
     return this.alerts.filter(alert => alert.severity === severity);
   }
 
@@ -310,48 +320,50 @@ export class DatabaseConnectionMonitor {
    */
   clearAlerts(): void {
     this.alerts = [];
-    this.logger.log("Connection alerts cleared");
+    this.logger.log('Connection alerts cleared');
   }
 
   /**
    * Get connection health summary
    */
   async getHealthSummary(): Promise<{
-    status: "healthy" | "warning" | "critical";
+    status: 'healthy' | 'warning' | 'critical';
     metrics: ConnectionPoolMetrics;
     recentAlerts: ConnectionPoolAlert[];
     recommendations: string[];
   }> {
     const metrics = await this.getConnectionMetrics();
     const recentAlerts = this.getAlerts(5);
-    const criticalAlerts = this.getAlertsBySeverity("critical");
-    const highAlerts = this.getAlertsBySeverity("high");
+    const criticalAlerts = this.getAlertsBySeverity('critical');
+    const highAlerts = this.getAlertsBySeverity('high');
 
     // Determine overall status
-    let status: "healthy" | "warning" | "critical" = "healthy";
+    let status: 'healthy' | 'warning' | 'critical' = 'healthy';
     if (criticalAlerts.length > 0) {
-      status = "critical";
+      status = 'critical';
     } else if (highAlerts.length > 0 || metrics.connectionUtilization > 70) {
-      status = "warning";
+      status = 'warning';
     }
 
     // Generate recommendations
     const recommendations: string[] = [];
 
     if (metrics.connectionUtilization > 80) {
-      recommendations.push("Consider increasing the connection pool size");
+      recommendations.push('Consider increasing the connection pool size');
     }
 
     if (metrics.connectionUtilization > 50) {
-      recommendations.push("Monitor connection usage patterns and optimize queries");
+      recommendations.push(
+        'Monitor connection usage patterns and optimize queries',
+      );
     }
 
     if (criticalAlerts.length > 0) {
-      recommendations.push("Address critical connection issues immediately");
+      recommendations.push('Address critical connection issues immediately');
     }
 
     if (recommendations.length === 0) {
-      recommendations.push("Connection pool is operating normally");
+      recommendations.push('Connection pool is operating normally');
     }
 
     return {
@@ -365,7 +377,7 @@ export class DatabaseConnectionMonitor {
   /**
    * Test connection performance
    */
-  async testConnectionPerformance(iterations: number = 10): Promise<{
+  async testConnectionPerformance(iterations = 10): Promise<{
     averageConnectionTime: number;
     minConnectionTime: number;
     maxConnectionTime: number;
@@ -390,7 +402,9 @@ export class DatabaseConnectionMonitor {
     }
 
     const averageConnectionTime =
-      times.length > 0 ? times.reduce((sum, time) => sum + time, 0) / times.length : 0;
+      times.length > 0
+        ? times.reduce((sum, time) => sum + time, 0) / times.length
+        : 0;
 
     return {
       averageConnectionTime,
@@ -406,7 +420,10 @@ export class DatabaseConnectionMonitor {
    */
   async getConfigurationRecommendations(): Promise<{
     currentConfig: Record<string, any>;
-    recommendations: Record<string, { current: any; recommended: any; reason: string }>;
+    recommendations: Record<
+      string,
+      { current: any; recommended: any; reason: string }
+    >;
   }> {
     const metrics = await this.getConnectionMetrics();
     const dbEngine = await this.getDatabaseEngine();
@@ -416,31 +433,34 @@ export class DatabaseConnectionMonitor {
       currentUtilization: `${metrics.connectionUtilization.toFixed(1)}%`,
     };
 
-    const recommendations: Record<string, { current: any; recommended: any; reason: string }> = {};
+    const recommendations: Record<
+      string,
+      { current: any; recommended: any; reason: string }
+    > = {};
 
     // Connection pool size recommendations
     if (metrics.connectionUtilization > 80) {
       recommendations.maxConnections = {
         current: metrics.maxConnections,
         recommended: Math.ceil(metrics.maxConnections * 1.5),
-        reason: "High connection utilization detected",
+        reason: 'High connection utilization detected',
       };
     }
 
     // Database-specific recommendations
-    if (dbEngine === "postgresql") {
+    if (dbEngine === 'postgresql') {
       // Add PostgreSQL-specific recommendations
       recommendations.sharedBuffers = {
-        current: "Unknown",
-        recommended: "25% of RAM",
-        reason: "Optimize PostgreSQL memory usage",
+        current: 'Unknown',
+        recommended: '25% of RAM',
+        reason: 'Optimize PostgreSQL memory usage',
       };
-    } else if (dbEngine === "mysql") {
+    } else if (dbEngine === 'mysql') {
       // Add MySQL-specific recommendations
       recommendations.innodbBufferPoolSize = {
-        current: "Unknown",
-        recommended: "70% of RAM",
-        reason: "Optimize MySQL InnoDB buffer pool",
+        current: 'Unknown',
+        recommended: '70% of RAM',
+        reason: 'Optimize MySQL InnoDB buffer pool',
       };
     }
 

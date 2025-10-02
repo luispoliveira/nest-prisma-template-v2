@@ -1,25 +1,25 @@
-import { Logger } from "@nestjs/common";
+import { Logger } from '@nestjs/common';
 
 export interface QueryFilter {
   field: string;
   operator:
-    | "equals"
-    | "not"
-    | "in"
-    | "notIn"
-    | "lt"
-    | "lte"
-    | "gt"
-    | "gte"
-    | "contains"
-    | "startsWith"
-    | "endsWith";
+    | 'equals'
+    | 'not'
+    | 'in'
+    | 'notIn'
+    | 'lt'
+    | 'lte'
+    | 'gt'
+    | 'gte'
+    | 'contains'
+    | 'startsWith'
+    | 'endsWith';
   value: any;
 }
 
 export interface QuerySort {
   field: string;
-  direction: "asc" | "desc";
+  direction: 'asc' | 'desc';
 }
 
 export interface QueryOptions {
@@ -48,38 +48,38 @@ export class PrismaQueryBuilder {
       const { field, operator, value } = filter;
 
       switch (operator) {
-        case "equals":
+        case 'equals':
           where[field] = value;
           break;
-        case "not":
+        case 'not':
           where[field] = { not: value };
           break;
-        case "in":
+        case 'in':
           where[field] = { in: Array.isArray(value) ? value : [value] };
           break;
-        case "notIn":
+        case 'notIn':
           where[field] = { notIn: Array.isArray(value) ? value : [value] };
           break;
-        case "lt":
+        case 'lt':
           where[field] = { lt: value };
           break;
-        case "lte":
+        case 'lte':
           where[field] = { lte: value };
           break;
-        case "gt":
+        case 'gt':
           where[field] = { gt: value };
           break;
-        case "gte":
+        case 'gte':
           where[field] = { gte: value };
           break;
-        case "contains":
-          where[field] = { contains: value, mode: "insensitive" };
+        case 'contains':
+          where[field] = { contains: value, mode: 'insensitive' };
           break;
-        case "startsWith":
-          where[field] = { startsWith: value, mode: "insensitive" };
+        case 'startsWith':
+          where[field] = { startsWith: value, mode: 'insensitive' };
           break;
-        case "endsWith":
-          where[field] = { endsWith: value, mode: "insensitive" };
+        case 'endsWith':
+          where[field] = { endsWith: value, mode: 'insensitive' };
           break;
         default:
           this.logger.warn(`Unknown filter operator: ${operator}`);
@@ -95,7 +95,7 @@ export class PrismaQueryBuilder {
    */
   static buildOrderByClause(sorts: QuerySort[]): any {
     if (!sorts || sorts.length === 0) {
-      return { createdAt: "desc" };
+      return { createdAt: 'desc' };
     }
 
     if (sorts.length === 1) {
@@ -150,7 +150,7 @@ export class PrismaQueryBuilder {
     const searchConditions = searchFields.map(field => ({
       [field]: {
         contains: searchTerm,
-        mode: "insensitive",
+        mode: 'insensitive',
       },
     }));
 
@@ -162,7 +162,11 @@ export class PrismaQueryBuilder {
   /**
    * Build date range query
    */
-  static buildDateRangeQuery(field: string, startDate?: Date, endDate?: Date): any {
+  static buildDateRangeQuery(
+    field: string,
+    startDate?: Date,
+    endDate?: Date,
+  ): any {
     if (!startDate && !endDate) {
       return {};
     }
@@ -184,7 +188,9 @@ export class PrismaQueryBuilder {
    * Combine multiple where clauses with AND
    */
   static combineAndClauses(...clauses: any[]): any {
-    const validClauses = clauses.filter(clause => clause && Object.keys(clause).length > 0);
+    const validClauses = clauses.filter(
+      clause => clause && Object.keys(clause).length > 0,
+    );
 
     if (validClauses.length === 0) {
       return {};
@@ -201,7 +207,9 @@ export class PrismaQueryBuilder {
    * Combine multiple where clauses with OR
    */
   static combineOrClauses(...clauses: any[]): any {
-    const validClauses = clauses.filter(clause => clause && Object.keys(clause).length > 0);
+    const validClauses = clauses.filter(
+      clause => clause && Object.keys(clause).length > 0,
+    );
 
     if (validClauses.length === 0) {
       return {};
@@ -218,8 +226,8 @@ export class PrismaQueryBuilder {
    * Build pagination query
    */
   static buildPaginationQuery(
-    page: number = 1,
-    limit: number = 10,
+    page = 1,
+    limit = 10,
   ): { skip: number; take: number } {
     const skip = (page - 1) * limit;
     return { skip, take: limit };
@@ -237,8 +245,8 @@ export class PrismaQueryBuilder {
 
     for (const relation of relations) {
       // Support nested relations with dot notation
-      if (relation.includes(".")) {
-        const parts = relation.split(".");
+      if (relation.includes('.')) {
+        const parts = relation.split('.');
         let current = include;
 
         for (let i = 0; i < parts.length; i++) {
@@ -280,15 +288,19 @@ export class PrismaQueryBuilder {
    */
   static sanitizeFilters(filters: QueryFilter[]): QueryFilter[] {
     return filters.filter(filter => {
-      if (!filter.field || filter.value === undefined || filter.value === null) {
+      if (
+        !filter.field ||
+        filter.value === undefined ||
+        filter.value === null
+      ) {
         this.logger.warn(`Invalid filter: ${JSON.stringify(filter)}`);
         return false;
       }
 
       // Sanitize string values
-      if (typeof filter.value === "string") {
+      if (typeof filter.value === 'string') {
         filter.value = filter.value.trim();
-        if (filter.value === "") {
+        if (filter.value === '') {
           return false;
         }
       }

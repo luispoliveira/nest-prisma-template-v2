@@ -1,25 +1,26 @@
-import { AuditModule } from "@lib/audit";
-import { RbacModule } from "@lib/auth";
-import { GraphqlModule } from "@lib/graphql";
-import { HealthModule } from "@lib/health";
-import { PrismaModule, PrismaService } from "@lib/prisma";
-import { ALL_QUEUES, QueueModule } from "@lib/queue";
-import { Module } from "@nestjs/common";
-import { ConfigModule } from "@nestjs/config";
-import { APP_GUARD } from "@nestjs/core";
-import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
-import { enhance } from "@zenstackhq/runtime";
-import { ZenStackModule } from "@zenstackhq/server/nestjs";
-import { ClsModule, ClsService } from "nestjs-cls";
-import { AppController } from "./app.controller";
-import { AppService } from "./app.service";
-import { AuthModule } from "./auth/auth.module";
-import { configuration } from "./config/configuration";
-import { validationSchema } from "./config/validation";
-import { PermissionsModule } from "./permissions/permissions.module";
+import { AuditModule } from '@lib/audit';
+import { RbacModule } from '@lib/auth';
+import { GraphqlModule } from '@lib/graphql';
+import { HealthModule } from '@lib/health';
+import { PrismaModule, PrismaService } from '@lib/prisma';
+import { ALL_QUEUES, QueueModule } from '@lib/queue';
+import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { enhance } from '@zenstackhq/runtime';
+import { ZenStackModule } from '@zenstackhq/server/nestjs';
+import { ClsModule, ClsService } from 'nestjs-cls';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { AuthModule } from './auth/auth.module';
+import { configuration } from './config/configuration';
+import { validationSchema } from './config/validation';
+import { PermissionsModule } from './permissions/permissions.module';
 
-import { RolesModule } from "./roles/roles.module";
-import { UsersModule } from "./users/users.module";
+import { MailModule } from '@lib/mail';
+import { RolesModule } from './roles/roles.module';
+import { UsersModule } from './users/users.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -47,9 +48,16 @@ import { UsersModule } from "./users/users.module";
           getEnhancedPrisma: () =>
             enhance(
               prisma,
-              { user: cls.get("user") },
+              { user: cls.get('user') },
               {
-                kinds: ["policy", "validation", "delegate", "password", "omit", "encryption"],
+                kinds: [
+                  'policy',
+                  'validation',
+                  'delegate',
+                  'password',
+                  'omit',
+                  'encryption',
+                ],
               },
             ),
         };
@@ -59,6 +67,17 @@ import { UsersModule } from "./users/users.module";
     }),
     HealthModule,
     GraphqlModule.register(),
+    MailModule.forRootAsync({
+      useFactory: (config: ConfigService) => ({
+        provider: 'brevo',
+        apiKey: config.get<string>('mail.brevoApiKey')!,
+        defaultFrom: {
+          email: config.get<string>('mail.defaultFromEmail')!,
+          name: config.get<string>('mail.defaultFromName')!,
+        },
+      }),
+      inject: [ConfigService],
+    }),
     RbacModule,
     QueueModule.register(ALL_QUEUES),
     AuthModule,

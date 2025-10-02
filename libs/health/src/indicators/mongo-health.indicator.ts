@@ -1,6 +1,10 @@
-import { Injectable } from "@nestjs/common";
-import { HealthCheckError, HealthIndicator, HealthIndicatorResult } from "@nestjs/terminus";
-import { MongoClient } from "mongodb";
+import { Injectable } from '@nestjs/common';
+import {
+  HealthCheckError,
+  HealthIndicator,
+  HealthIndicatorResult,
+} from '@nestjs/terminus';
+import { MongoClient } from 'mongodb';
 
 @Injectable()
 export class MongoHealthIndicator extends HealthIndicator {
@@ -24,7 +28,7 @@ export class MongoHealthIndicator extends HealthIndicator {
 
       const duration = Date.now() - startTime;
       const result = this.getStatus(key, true, {
-        url: options.url.replace(/\/\/.*@/, "//***:***@"), // Hide credentials
+        url: options.url.replace(/\/\/.*@/, '//***:***@'), // Hide credentials
         duration: `${duration}ms`,
       });
 
@@ -34,8 +38,8 @@ export class MongoHealthIndicator extends HealthIndicator {
       throw new HealthCheckError(
         `MongoDB health check failed`,
         this.getStatus(key, false, {
-          url: options.url.replace(/\/\/.*@/, "//***:***@"), // Hide credentials
-          error: error instanceof Error ? error.message : "Unknown error",
+          url: options.url.replace(/\/\/.*@/, '//***:***@'), // Hide credentials
+          error: error instanceof Error ? error.message : 'Unknown error',
           duration: `${duration}ms`,
         }),
       );
