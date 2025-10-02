@@ -41,12 +41,6 @@
       "@lib/common": [
         "libs/common/src/index.ts"
       ],
-      "@lib/graphql": [
-        "libs/graphql/src"
-      ],
-      "@lib/graphql/*": [
-        "libs/graphql/src/*"
-      ],
       "@lib/health": [
         "libs/health/src"
       ],

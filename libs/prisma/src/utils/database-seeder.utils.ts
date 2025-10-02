@@ -231,7 +231,6 @@ export class DatabaseSeeder {
       'Building Scalable APIs',
       'Database Design Best Practices',
       'Testing Strategies in Node.js',
-      'GraphQL vs REST API',
       'Microservices Architecture',
       'Security in Web Applications',
       'Performance Optimization Tips',

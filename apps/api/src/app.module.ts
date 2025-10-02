@@ -1,6 +1,5 @@
 import { AuditModule } from '@lib/audit';
 import { RbacModule } from '@lib/auth';
-import { GraphqlModule } from '@lib/graphql';
 import { HealthModule } from '@lib/health';
 import { PrismaModule, PrismaService } from '@lib/prisma';
 import { ALL_QUEUES, QueueModule } from '@lib/queue';
@@ -66,7 +65,6 @@ import { UsersModule } from './users/users.module';
       extraProviders: [PrismaService],
     }),
     HealthModule,
-    GraphqlModule.register(),
     MailModule.forRootAsync({
       useFactory: (config: ConfigService) => ({
         provider: 'brevo',

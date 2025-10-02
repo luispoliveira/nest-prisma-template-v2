@@ -1,5 +1,5 @@
 import { PrismaModel } from '@gen/prisma-class-generator';
-import { EnvironmentEnum, GQL_APOLLO_HELMET, LoggerUtil } from '@lib/common';
+import { EnvironmentEnum, LoggerUtil } from '@lib/common';
 import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
@@ -18,11 +18,7 @@ async function bootstrap() {
 
   app.useLogger(LoggerUtil.getLogger(environment));
 
-  app.use(
-    helmet({
-      ...GQL_APOLLO_HELMET,
-    }),
-  );
+  app.use(helmet({}));
 
   app.useGlobalPipes(new ValidationPipe());
 
