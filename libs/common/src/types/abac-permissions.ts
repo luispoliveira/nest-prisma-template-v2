@@ -5,12 +5,12 @@ export type Role = 'admin' | 'moderator' | 'user';
 
 type PermissionCheck<Key extends keyof AbacPermissions> =
   | boolean
-  | ((user: LoggedUser, data: AbacPermissions[Key]['dataType']) => boolean);
+  | ((_user: LoggedUser, _data: AbacPermissions[Key]['dataType']) => boolean);
 
 export type RolesWithPermissions = {
-  [R in Role]: Partial<{
+  [_R in Role]: Partial<{
     [Key in keyof AbacPermissions]: Partial<{
-      [Action in AbacPermissions[Key]['action']]: PermissionCheck<Key>;
+      [_Action in AbacPermissions[Key]['action']]: PermissionCheck<Key>;
     }>;
   }>;
 };
