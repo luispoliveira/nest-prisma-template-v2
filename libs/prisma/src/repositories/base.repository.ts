@@ -1,4 +1,5 @@
 import { Logger } from '@nestjs/common';
+import { NotFoundError } from '../errors/not-found-error';
 import { PrismaService } from '../prisma/prisma.service';
 import { PrismaTx } from '../types/tx-type';
 
@@ -78,7 +79,7 @@ export abstract class BaseRepository<
   ): Promise<T> {
     const record = await this.findById(id, includeDeleted);
     if (!record) {
-      throw new Error(`${this.modelName} with ID ${id} not found`);
+      throw new NotFoundError(`${this.modelName} with ID ${id} not found`);
     }
     return record;
   }
@@ -328,7 +329,7 @@ export abstract class BaseRepository<
   ): Promise<T> {
     const record = await this.findUnique(where, includeDeleted);
     if (!record) {
-      throw new Error(
+      throw new NotFoundError(
         `${this.modelName} with where clause ${JSON.stringify(where)} not found`,
       );
     }
