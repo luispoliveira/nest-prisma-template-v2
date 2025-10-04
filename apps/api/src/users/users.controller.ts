@@ -29,24 +29,18 @@ export class UsersController extends BaseAuthController {
 
   @Get('')
   async findAll() {
-    return await this._userRepository.findMany({
-      isActive: true,
-    });
-    // return await this._prismaService.user.findMany({
-    //   include: {
-    //     role: true,
-    //   },
-    // });
+    return await this._userRepository.findMany(
+      {
+        isActive: true,
+      },
+      {},
+      {},
+    );
   }
 
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
-    return await this._prismaService.user.findUnique({
-      where: { id },
-      include: {
-        role: true,
-      },
-    });
+    return await this._userRepository.findById(id);
   }
 
   @Post('')

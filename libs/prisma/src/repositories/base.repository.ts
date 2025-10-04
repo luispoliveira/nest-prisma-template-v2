@@ -37,6 +37,7 @@ export abstract class BaseRepository<
   UpdateInput,
   WhereUniqueInput,
   WhereInput,
+  IncludeOptions,
 > {
   protected readonly logger = new Logger(this.constructor.name);
   protected abstract modelName: string;
@@ -58,6 +59,7 @@ export abstract class BaseRepository<
    */
   async findById(
     id: number | string,
+    include?: IncludeOptions,
     includeDeleted = false,
   ): Promise<T | null> {
     const where: any = { id };
@@ -66,7 +68,10 @@ export abstract class BaseRepository<
     }
 
     return this._prisma.executeWithErrorHandling(() =>
-      (this._prisma as any)[this.modelName].findFirst({ where }),
+      (this._prisma as any)[this.modelName].findFirst({
+        where,
+        include,
+      }),
     );
   }
 
@@ -75,9 +80,10 @@ export abstract class BaseRepository<
    */
   async findByIdOrThrow(
     id: number | string,
+    include?: IncludeOptions,
     includeDeleted = false,
   ): Promise<T> {
-    const record = await this.findById(id, includeDeleted);
+    const record = await this.findById(id, include, includeDeleted);
     if (!record) {
       throw new NotFoundError(`${this.modelName} with ID ${id} not found`);
     }
@@ -90,6 +96,7 @@ export abstract class BaseRepository<
   async findMany(
     where: WhereInput,
     options: PaginationOptions = {},
+    include?: IncludeOptions,
     includeDeleted = false,
   ): Promise<PaginationResult<T>> {
     const {
@@ -112,6 +119,7 @@ export abstract class BaseRepository<
           skip,
           take: limit,
           orderBy: { [orderBy]: orderDirection },
+          include,
         }),
       ) as Promise<T[]>,
       this._prisma.executeWithErrorHandling(() =>
@@ -291,6 +299,7 @@ export abstract class BaseRepository<
    */
   async findFirst(
     where: WhereInput,
+    include?: IncludeOptions,
     includeDeleted = false,
   ): Promise<T | null> {
     if (!includeDeleted) {
@@ -298,7 +307,10 @@ export abstract class BaseRepository<
     }
 
     return this._prisma.executeWithErrorHandling(() =>
-      (this._prisma as any)[this.modelName].findFirst({ where }),
+      (this._prisma as any)[this.modelName].findFirst({
+        where,
+        include,
+      }),
     );
   }
 
@@ -307,10 +319,14 @@ export abstract class BaseRepository<
    */
   async findUnique(
     where: WhereUniqueInput,
+    include?: IncludeOptions,
     includeDeleted = false,
   ): Promise<T | null> {
     const record = (await this._prisma.executeWithErrorHandling(() =>
-      (this._prisma as any)[this.modelName].findUnique({ where }),
+      (this._prisma as any)[this.modelName].findUnique({
+        where,
+        include,
+      }),
     )) as T | null;
 
     if (!includeDeleted && record && record.deletedAt) {
@@ -325,9 +341,10 @@ export abstract class BaseRepository<
    */
   async findUniqueOrThrow(
     where: WhereUniqueInput,
+    include?: IncludeOptions,
     includeDeleted = false,
   ): Promise<T> {
-    const record = await this.findUnique(where, includeDeleted);
+    const record = await this.findUnique(where, include, includeDeleted);
     if (!record) {
       throw new NotFoundError(
         `${this.modelName} with where clause ${JSON.stringify(where)} not found`,

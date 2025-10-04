@@ -6,7 +6,8 @@ export class UserRepository extends BaseRepository<
   Prisma.UserCreateInput,
   Prisma.UserUpdateInput,
   Prisma.UserWhereUniqueInput,
-  Prisma.UserWhereInput
+  Prisma.UserWhereInput,
+  Prisma.UserInclude
 > {
   protected modelName = 'user';
 }
