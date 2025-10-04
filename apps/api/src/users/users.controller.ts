@@ -1,153 +1,100 @@
-import { Prisma } from '@gen/prisma-client';
 import { BaseAuthController, CurrentUser, LoggedUser } from '@lib/auth';
-import { PasswordUtil, TokenUtil } from '@lib/common';
-import { PrismaErrorHandler, PrismaService, UserRepository } from '@lib/prisma';
+import {
+  CreateUserUseCase,
+  GetUserUseCase,
+  GetAllUsersUseCase,
+  CreateUserRequest,
+  GetUserRequest,
+  GetAllUsersRequest,
+} from '@lib/application';
 import {
   Body,
   Controller,
   Get,
-  Inject,
   Param,
   ParseIntPipe,
   Patch,
   Post,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ENHANCED_PRISMA } from '@zenstackhq/server/nestjs';
 import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
 
 @Controller('users')
 @ApiTags('Users')
 export class UsersController extends BaseAuthController {
-  private readonly _userRepository: UserRepository;
   constructor(
-    @Inject(ENHANCED_PRISMA) private readonly _prismaService: PrismaService,
+    private readonly _createUserUseCase: CreateUserUseCase,
+    private readonly _getUserUseCase: GetUserUseCase,
+    private readonly _getAllUsersUseCase: GetAllUsersUseCase,
   ) {
     super();
-    this._userRepository = new UserRepository(this._prismaService);
   }
 
   @Get('')
   async findAll() {
-    return await this._userRepository.findMany(
-      {
-        isActive: true,
-      },
-      {},
-      {},
-    );
+    const request: GetAllUsersRequest = {};
+    return await this._getAllUsersUseCase.execute(request);
   }
 
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
-    return await this._userRepository.findById(id);
+    const request: GetUserRequest = { id };
+    return await this._getUserUseCase.execute(request);
   }
 
   @Post('')
   async create(@Body() body: CreateUserDto) {
-    try {
-      return await this._prismaService.user.create({
-        data: body,
-      });
-    } catch (error: any) {
-      throw PrismaErrorHandler.handlePrismaError(error);
-    }
+    const request: CreateUserRequest = {
+      email: body.email,
+      password: body.password,
+      roleId: body.roleId,
+    };
+    return await this._createUserUseCase.execute(request);
   }
 
   @Patch(':id')
   async update(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() body: UpdateUserDto,
+    @Param('id', ParseIntPipe) _id: number,
+    @Body() _body: UpdateUserDto,
   ) {
-    try {
-      const { password, ...rest } = body;
-
-      const data: Prisma.UserUpdateInput = {
-        ...rest,
-      };
-
-      if (password) data.password = await PasswordUtil.hashPassword(password);
-
-      return await this._prismaService.user.update({
-        where: { id },
-        data,
-      });
-    } catch (error: any) {
-      throw PrismaErrorHandler.handlePrismaError(error);
-    }
+    // TODO: Implement UpdateUserUseCase
+    return { message: 'UpdateUser use case not implemented yet' };
   }
 
   @Patch(':id/reset-password')
   async resetPassword(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', ParseIntPipe) _id: number,
     @CurrentUser() _user: LoggedUser,
   ) {
-    try {
-      const token = TokenUtil.generate();
-
-      const user = await this._prismaService.user.update({
-        where: { id },
-        data: {
-          resetPasswordToken: token,
-          resetPasswordTokenExpiresAt: new Date(
-            Date.now() + 3 * 24 * 60 * 60 * 1000,
-          ), // 3 days,
-          isActive: false,
-        },
-      });
-
-      /**
-       * send email to user
-       */
-      return user;
-    } catch (error: any) {
-      throw PrismaErrorHandler.handlePrismaError(error);
-    }
+    // TODO: Implement ResetPasswordUseCase
+    return { message: 'ResetPassword use case not implemented yet' };
   }
 
   @Patch(':id/activate')
   async activate(
-    @Param('id', ParseIntPipe) id: number,
-    @CurrentUser() user: LoggedUser,
+    @Param('id', ParseIntPipe) _id: number,
+    @CurrentUser() _user: LoggedUser,
   ) {
-    return await this._prismaService.user.update({
-      where: { id },
-      data: {
-        isActive: true,
-        activatedAt: new Date(),
-        activatedBy: user.email,
-      },
-    });
+    // TODO: Implement ActivateUserUseCase
+    return { message: 'ActivateUser use case not implemented yet' };
   }
 
   @Patch(':id/deactivate')
   async deactivate(
-    @Param('id', ParseIntPipe) id: number,
-    @CurrentUser() user: LoggedUser,
+    @Param('id', ParseIntPipe) _id: number,
+    @CurrentUser() _user: LoggedUser,
   ) {
-    return await this._prismaService.user.update({
-      where: { id },
-      data: {
-        isActive: false,
-        deactivatedAt: new Date(),
-        deactivatedBy: user.email,
-      },
-    });
+    // TODO: Implement DeactivateUserUseCase
+    return { message: 'DeactivateUser use case not implemented yet' };
   }
 
   @Patch(':id/role')
   async alterRole(
-    @Param('id', ParseIntPipe) id: number,
-    @Body('role', ParseIntPipe) roleId: number,
+    @Param('id', ParseIntPipe) _id: number,
+    @Body('role', ParseIntPipe) _roleId: number,
     @CurrentUser() _user: LoggedUser,
   ) {
-    try {
-      return await this._prismaService.user.update({
-        where: { id },
-        data: { role: { connect: { id: roleId } } },
-      });
-    } catch (error: any) {
-      throw PrismaErrorHandler.handlePrismaError(error);
-    }
+    // TODO: Implement ChangeUserRoleUseCase
+    return { message: 'ChangeUserRole use case not implemented yet' };
   }
 }

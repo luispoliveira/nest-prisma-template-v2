@@ -64,6 +64,24 @@
       ],
       "@lib/queue/*": [
         "libs/queue/src/*"
+      ],
+      "@lib/domain": [
+        "libs/domain/src"
+      ],
+      "@lib/domain/*": [
+        "libs/domain/src/*"
+      ],
+      "@lib/application": [
+        "libs/application/src"
+      ],
+      "@lib/application/*": [
+        "libs/application/src/*"
+      ],
+      "@lib/infrastructure": [
+        "libs/infrastructure/src"
+      ],
+      "@lib/infrastructure/*": [
+        "libs/infrastructure/src/*"
       ]
     }
   },
