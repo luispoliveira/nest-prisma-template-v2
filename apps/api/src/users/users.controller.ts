@@ -1,7 +1,7 @@
 import { Prisma } from '@gen/prisma-client';
 import { BaseAuthController, CurrentUser, LoggedUser } from '@lib/auth';
 import { PasswordUtil, TokenUtil } from '@lib/common';
-import { PrismaErrorHandler, PrismaService } from '@lib/prisma';
+import { PrismaErrorHandler, PrismaService, UserRepository } from '@lib/prisma';
 import {
   Body,
   Controller,
@@ -19,19 +19,24 @@ import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
 @Controller('users')
 @ApiTags('Users')
 export class UsersController extends BaseAuthController {
+  private readonly _userRepository: UserRepository;
   constructor(
     @Inject(ENHANCED_PRISMA) private readonly _prismaService: PrismaService,
   ) {
     super();
+    this._userRepository = new UserRepository(this._prismaService);
   }
 
   @Get('')
   async findAll() {
-    return await this._prismaService.user.findMany({
-      include: {
-        role: true,
-      },
+    return await this._userRepository.findMany({
+      isActive: true,
     });
+    // return await this._prismaService.user.findMany({
+    //   include: {
+    //     role: true,
+    //   },
+    // });
   }
 
   @Get(':id')

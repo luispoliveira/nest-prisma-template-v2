@@ -52,6 +52,7 @@ model User {
   id                          Int               @id() @default(autoincrement())
   createdAt                   DateTime          @default(now())
   updatedAt                   DateTime          @updatedAt()
+  deletedAt                   DateTime?
   createdBy                   String?
   updatedBy                   String?
   email                       String            @unique()
@@ -78,15 +79,16 @@ model User {
 }
 
 model ApiKey {
-  id          Int      @id() @default(autoincrement())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt()
+  id          Int       @id() @default(autoincrement())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt()
+  deletedAt   DateTime?
   createdBy   String?
   updatedBy   String?
-  name        String   @unique()
+  name        String    @unique()
   description String?
-  key         String   @unique()
-  isActive    Boolean  @default(true)
+  key         String    @unique()
+  isActive    Boolean   @default(true)
   expiresAt   DateTime
 
   @@map("api_key")
@@ -96,6 +98,7 @@ model Otp {
   id        Int            @id() @default(autoincrement())
   createdAt DateTime       @default(now())
   updatedAt DateTime       @updatedAt()
+  deletedAt DateTime?
   createdBy String?
   updatedBy String?
   user      User           @relation(fields: [userId], references: [id])
@@ -111,6 +114,7 @@ model Role {
   id              Int               @id() @default(autoincrement())
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt()
+  deletedAt       DateTime?
   createdBy       String?
   updatedBy       String?
   name            String            @unique()
@@ -125,6 +129,7 @@ model Permission {
   id              Int               @id() @default(autoincrement())
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt()
+  deletedAt       DateTime?
   createdBy       String?
   updatedBy       String?
   name            String            @unique()
@@ -140,6 +145,7 @@ model Permission2Role {
   id           Int        @id() @default(autoincrement())
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt()
+  deletedAt    DateTime?
   createdBy    String?
   updatedBy    String?
   permission   Permission @relation(fields: [permissionId], references: [id])
@@ -156,6 +162,7 @@ model Permission2User {
   id           Int        @id() @default(autoincrement())
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt()
+  deletedAt    DateTime?
   createdBy    String?
   updatedBy    String?
   permission   Permission @relation(fields: [permissionId], references: [id])

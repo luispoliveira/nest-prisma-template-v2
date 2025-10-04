@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { PrismaTx } from '../types/tx-type';
 
@@ -7,6 +7,8 @@ export interface BaseEntity {
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date | null;
+  createdBy?: string | null;
+  updatedBy?: string | null;
 }
 
 export interface PaginationOptions {
@@ -28,11 +30,12 @@ export interface PaginationResult<T> {
   };
 }
 
-@Injectable()
 export abstract class BaseRepository<
   T extends BaseEntity,
   CreateInput,
   UpdateInput,
+  WhereUniqueInput,
+  WhereInput,
 > {
   protected readonly logger = new Logger(this.constructor.name);
   protected abstract modelName: string;
@@ -84,7 +87,7 @@ export abstract class BaseRepository<
    * Find many records with pagination
    */
   async findMany(
-    where: any = {},
+    where: WhereInput,
     options: PaginationOptions = {},
     includeDeleted = false,
   ): Promise<PaginationResult<T>> {
@@ -96,7 +99,7 @@ export abstract class BaseRepository<
     } = options;
 
     if (!includeDeleted) {
-      where.deletedAt = null;
+      (where as any).deletedAt = null;
     }
 
     const skip = (page - 1) * limit;
@@ -189,7 +192,7 @@ export abstract class BaseRepository<
    * Upsert record
    */
   async upsert(
-    where: any,
+    where: WhereUniqueInput,
     create: CreateInput,
     update: UpdateInput,
     tx?: PrismaTx,
@@ -207,9 +210,9 @@ export abstract class BaseRepository<
   /**
    * Count records
    */
-  async count(where: any = {}, includeDeleted = false): Promise<number> {
+  async count(where: WhereInput, includeDeleted = false): Promise<number> {
     if (!includeDeleted) {
-      where.deletedAt = null;
+      (where as any).deletedAt = null;
     }
 
     return this._prisma.executeWithErrorHandling(() =>
@@ -220,9 +223,9 @@ export abstract class BaseRepository<
   /**
    * Check if record exists
    */
-  async exists(where: any, includeDeleted = false): Promise<boolean> {
+  async exists(where: WhereInput, includeDeleted = false): Promise<boolean> {
     if (!includeDeleted) {
-      where.deletedAt = null;
+      (where as any).deletedAt = null;
     }
 
     const count = (await this._prisma.executeWithErrorHandling(() =>
@@ -253,7 +256,7 @@ export abstract class BaseRepository<
    * Bulk update records
    */
   async updateMany(
-    where: any,
+    where: WhereInput,
     data: Partial<UpdateInput>,
     tx?: PrismaTx,
   ): Promise<{ count: number }> {
@@ -269,7 +272,10 @@ export abstract class BaseRepository<
   /**
    * Bulk soft delete records
    */
-  async softDeleteMany(where: any, tx?: PrismaTx): Promise<{ count: number }> {
+  async softDeleteMany(
+    where: WhereInput,
+    tx?: PrismaTx,
+  ): Promise<{ count: number }> {
     const client = tx || this._prisma;
     return this._prisma.executeWithErrorHandling(() =>
       (client as any)[this.modelName].updateMany({
@@ -282,9 +288,12 @@ export abstract class BaseRepository<
   /**
    * Find first record matching criteria
    */
-  async findFirst(where: any, includeDeleted = false): Promise<T | null> {
+  async findFirst(
+    where: WhereInput,
+    includeDeleted = false,
+  ): Promise<T | null> {
     if (!includeDeleted) {
-      where.deletedAt = null;
+      (where as any).deletedAt = null;
     }
 
     return this._prisma.executeWithErrorHandling(() =>
@@ -295,7 +304,10 @@ export abstract class BaseRepository<
   /**
    * Find unique record
    */
-  async findUnique(where: any, includeDeleted = false): Promise<T | null> {
+  async findUnique(
+    where: WhereUniqueInput,
+    includeDeleted = false,
+  ): Promise<T | null> {
     const record = (await this._prisma.executeWithErrorHandling(() =>
       (this._prisma as any)[this.modelName].findUnique({ where }),
     )) as T | null;
@@ -310,7 +322,10 @@ export abstract class BaseRepository<
   /**
    * Find unique record or throw error
    */
-  async findUniqueOrThrow(where: any, includeDeleted = false): Promise<T> {
+  async findUniqueOrThrow(
+    where: WhereUniqueInput,
+    includeDeleted = false,
+  ): Promise<T> {
     const record = await this.findUnique(where, includeDeleted);
     if (!record) {
       throw new Error(

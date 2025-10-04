@@ -2,6 +2,7 @@ export * from './config/configuration';
 export * from './prisma/prisma.module';
 export * from './prisma/prisma.service';
 export * from './repositories/base.repository';
+export * from './repositories/user.repository';
 export * from './types/tx-type';
 export * from './utils/database-connection.utils';
 export * from './utils/database-health.utils';
