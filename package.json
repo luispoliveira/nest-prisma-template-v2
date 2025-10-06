@@ -163,7 +163,8 @@
       "^@lib/health(|/.*)$": "<rootDir>/libs/health/src/$1",
       "^@lib/mail(|/.*)$": "<rootDir>/libs/mail/src/$1",
       "^@lib/prisma(|/.*)$": "<rootDir>/libs/prisma/src/$1",
-      "^@lib/queue(|/.*)$": "<rootDir>/libs/queue/src/$1"
+      "^@lib/queue(|/.*)$": "<rootDir>/libs/queue/src/$1",
+      "^@lib/sibs(|/.*)$": "<rootDir>/libs/sibs/src/$1"
     }
   },
   "prisma": {

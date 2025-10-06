@@ -5,7 +5,9 @@ import { AuditService } from './audit.service';
 import { configuration } from './config/configuration';
 import { validationSchema } from './config/validation';
 import { LogService } from './log/log.service';
+import { SibsLogService } from './log/sibs-log.service';
 import { Log, LogSchema } from './schemas/log.schema';
+import { SibsLog, SibsLogSchema } from './schemas/sibs-log.schema';
 
 @Global()
 @Module({
@@ -27,9 +29,13 @@ import { Log, LogSchema } from './schemas/log.schema';
         name: Log.name,
         schema: LogSchema,
       },
+      {
+        name: SibsLog.name,
+        schema: SibsLogSchema,
+      },
     ]),
   ],
-  providers: [AuditService, LogService],
-  exports: [AuditService, LogService],
+  providers: [AuditService, LogService, SibsLogService],
+  exports: [AuditService, LogService, SibsLogService],
 })
 export class AuditModule {}

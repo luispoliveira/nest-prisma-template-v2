@@ -95,6 +95,15 @@
         "tsConfigPath": "libs/queue/tsconfig.lib.json"
       }
     },
+    "sibs": {
+      "type": "library",
+      "root": "libs/sibs",
+      "entryFile": "index",
+      "sourceRoot": "libs/sibs/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/sibs/tsconfig.lib.json"
+      }
+    },
     "worker": {
       "type": "application",
       "root": "apps/worker",
