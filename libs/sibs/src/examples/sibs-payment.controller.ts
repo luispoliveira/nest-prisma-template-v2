@@ -231,22 +231,24 @@ export class SibsPaymentController {
   })
   async handleWebhook(
     @Body() rawPayload: any,
-    @Headers('x-sibs-signature') signature: string,
+    @Headers('x-initialization-vector') iv: string,
+    @Headers('x-authentication-tag') at: string,
   ): Promise<{
     success: boolean;
-    transactionId: string;
-    paymentStatus: string;
+    statusMsg: string;
+    notificationID: string;
   }> {
-    if (!signature) {
-      throw new BadRequestException('Webhook signature is required');
+    if (!iv || !at) {
+      throw new BadRequestException('Webhook IV and Auth Tag are required');
     }
 
     try {
-      this.logger.log('Processing SIBS webhook', { signature });
+      this.logger.log('Processing SIBS webhook', { iv, at });
 
       const webhookData = this._sibsService.processWebhook(
         JSON.stringify(rawPayload),
-        signature,
+        iv,
+        at,
       );
 
       this.logger.log('Webhook processed successfully', {
@@ -259,8 +261,8 @@ export class SibsPaymentController {
 
       return {
         success: true,
-        transactionId: webhookData.transactionId,
-        paymentStatus: webhookData.paymentStatus,
+        statusMsg: 'Success',
+        notificationID: webhookData.notificationID,
       };
     } catch (error) {
       this.logger.error('Failed to process webhook', { error });

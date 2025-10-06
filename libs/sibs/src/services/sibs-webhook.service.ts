@@ -1,8 +1,7 @@
 import { ConfigUtil } from '@lib/common';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as crypto from 'crypto';
-import { SibsValidationException } from '../exceptions/sibs.exception';
+import { createDecipheriv } from 'node:crypto';
 import { SibsWebhookPayload } from '../interfaces/sibs-api.interface';
 
 @Injectable()
@@ -23,29 +22,23 @@ export class SibsWebhookService {
    * @param signature The signature from the webhook header
    * @returns true if valid, throws exception if invalid
    */
-  validateWebhookSignature(payload: string, signature: string): boolean {
+  decryptWebhookPayload(payload: string, iv: string, at: string): string {
     try {
-      const expectedSignature = this.generateSignature(payload);
+      const key = Buffer.from(this.webhookSecret, 'base64');
+      const ivBuffer = Buffer.from(iv, 'base64');
+      const authTagBuffer = Buffer.from(at, 'base64');
+      const cipherText = Buffer.from(payload, 'base64');
 
-      // Use timingSafeEqual to prevent timing attacks
-      const providedSignatureBuffer = Buffer.from(signature, 'hex');
-      const expectedSignatureBuffer = Buffer.from(expectedSignature, 'hex');
+      const decipher = createDecipheriv('aes-256-gcm', key, ivBuffer);
+      decipher.setAuthTag(authTagBuffer);
 
-      if (providedSignatureBuffer.length !== expectedSignatureBuffer.length) {
-        throw new SibsValidationException('Invalid webhook signature length');
-      }
-
-      const isValid = crypto.timingSafeEqual(
-        providedSignatureBuffer,
-        expectedSignatureBuffer,
-      );
-
-      if (!isValid) {
-        throw new SibsValidationException('Invalid webhook signature');
-      }
+      const decrypted = Buffer.concat([
+        decipher.update(cipherText),
+        decipher.final(),
+      ]);
 
       this.logger.debug('Webhook signature validated successfully');
-      return true;
+      return decrypted.toString('utf-8');
     } catch (error) {
       this.logger.error('Webhook signature validation failed', { error });
       throw error;
@@ -64,6 +57,7 @@ export class SibsWebhookService {
     paymentMethod?: string;
     amount: { value: number; currency: string };
     timestamp: string;
+    notificationID: string;
   } {
     this.logger.log('Processing SIBS webhook', {
       transactionId: payload.transactionID,
@@ -78,13 +72,7 @@ export class SibsWebhookService {
       paymentMethod: payload.paymentMethod,
       amount: payload.amount,
       timestamp: payload.timestamp,
+      notificationID: payload.notificationID,
     };
-  }
-
-  private generateSignature(payload: string): string {
-    return crypto
-      .createHmac('sha256', this.webhookSecret)
-      .update(payload)
-      .digest('hex');
   }
 }

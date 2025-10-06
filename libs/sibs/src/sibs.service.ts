@@ -180,7 +180,8 @@ export class SibsService {
    */
   processWebhook(
     payload: string,
-    signature: string,
+    initializationVector: string,
+    authenticationTag: string,
   ): {
     transactionId: string;
     merchantTransactionId: string;
@@ -188,13 +189,18 @@ export class SibsService {
     paymentMethod?: string;
     amount: { value: number; currency: string };
     timestamp: string;
+    notificationID: string;
   } {
     try {
       // Validate signature
-      this._sibsWebhookService.validateWebhookSignature(payload, signature);
+      const decryptedPayload = this._sibsWebhookService.decryptWebhookPayload(
+        payload,
+        initializationVector,
+        authenticationTag,
+      );
 
       // Parse payload
-      const webhookPayload: SibsWebhookPayload = JSON.parse(payload);
+      const webhookPayload: SibsWebhookPayload = JSON.parse(decryptedPayload);
 
       // Process webhook
       return this._sibsWebhookService.processWebhook(webhookPayload);

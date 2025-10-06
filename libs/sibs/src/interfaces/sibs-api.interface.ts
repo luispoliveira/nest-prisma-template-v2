@@ -99,4 +99,5 @@ export interface SibsWebhookPayload {
   amount: SibsAmount;
   timestamp: string;
   signature: string;
+  notificationID: string;
 }
