@@ -44,7 +44,7 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Run Unit Tests
-        run: yarn test:unit
+        run: yarn test
         env:
           PORT: 3000
           NODE_ENV: test
