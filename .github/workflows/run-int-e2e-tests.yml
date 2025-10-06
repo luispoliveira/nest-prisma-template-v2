@@ -57,6 +57,11 @@ jobs:
       - name: Install Dependencies
         run: yarn install --frozen-lockfile
 
+      - name: Generate Prisma Client
+        run: yarn zenstack generate
+        env:
+          DISABLE_ERD: true
+
       - name: Run Integration Tests
         run: yarn test:int
         env:

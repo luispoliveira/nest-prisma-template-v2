@@ -18,6 +18,7 @@ import { validationSchema } from './config/validation';
 import { PermissionsModule } from './permissions/permissions.module';
 
 import { MailModule } from '@lib/mail';
+import { SibsModule } from '@lib/sibs';
 import { RolesModule } from './roles/roles.module';
 import { UsersModule } from './users/users.module';
 @Module({
@@ -82,6 +83,7 @@ import { UsersModule } from './users/users.module';
     UsersModule,
     RolesModule,
     PermissionsModule,
+    SibsModule,
   ],
   controllers: [AppController],
   providers: [
